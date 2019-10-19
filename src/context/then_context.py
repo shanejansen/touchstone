@@ -1,0 +1,3 @@
+class ThenContext(object):
+    def __init__(self, config):
+        self.config = config
