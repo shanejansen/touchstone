@@ -1,3 +1,14 @@
 {
-  "version": "0.0"
+  "dev": "true",
+  "mocks": [
+    {
+      "type": "http",
+      "devConfig": "./config/http-config.json"
+    },
+    {
+      "type": "rabbitmq",
+      "devConfig": "./config/rabbitmq-config.json",
+      "port": 2222
+    }
+  ]
 }

@@ -6,6 +6,7 @@ class SomeTest(TouchstoneTest):
         return 'Some Test'
 
     def given(self, given_context):
+        given_context.mocks.http()
         pass
 
     def when(self, when_context):
