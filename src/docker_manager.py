@@ -1,6 +1,8 @@
 import subprocess
 import uuid
 
+import exceptions
+
 
 class DockerManager:
     __instance = None
@@ -35,8 +37,10 @@ class DockerManager:
 
         name = uuid.uuid4().hex
         command = f'docker run -d --name {name} -p {exposed_port}:{container_port} {additional_params} {image}'
-        subprocess.run(command, shell=True, stdout=subprocess.DEVNULL)
+        result = subprocess.run(command, shell=True, stdout=subprocess.DEVNULL)
 
+        if result.returncode is not 0:
+            raise exceptions.ContainerException(f'Container image {image} could not be started.')
         self.containers.append(name)
         return name
 

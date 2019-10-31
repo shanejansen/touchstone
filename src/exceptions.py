@@ -5,3 +5,7 @@ class NotMockedException(Exception):
 
 class MockNotSupportedException(Exception):
     pass
+
+
+class ContainerException(Exception):
+    pass

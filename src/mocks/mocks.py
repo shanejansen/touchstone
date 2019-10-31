@@ -12,10 +12,9 @@ class Mocks(object):
 
     def start(self):
         self.__parse_mocks()
-        dev_mode = True if self.touchstone_config['dev'] == 'true' else False
         print(f'Starting mocks {[_.pretty_name() for _ in self.mocks]}...')
         for mock in self.mocks:
-            mock.start(dev_mode=dev_mode)
+            mock.start(dev_mode=self.touchstone_config['dev'])
             # TODO: wait for mocks to become healthy?
         print('Finished starting mocks.')
 

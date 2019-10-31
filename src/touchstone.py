@@ -14,7 +14,7 @@ class Touchstone(object):
         self.services = services
         self.results = None
         with open(touchstone_config, 'r') as file:
-            self.touchstone_config = json.load(file)
+            self.touchstone_config = self.__parse_touchstone_config(json.load(file))
 
     def run(self):
         try:
@@ -31,7 +31,7 @@ class Touchstone(object):
         mocks.start()
         self.results = self.__run_test_groups(mocks)
 
-        if self.touchstone_config['dev'] == 'true':
+        if self.touchstone_config['dev'] is True:
             self.__accept_user_command()
         else:
             self.__exit()
@@ -45,6 +45,13 @@ class Touchstone(object):
         thread_pool.close()
         thread_pool.join()
         return results
+
+    def __parse_touchstone_config(self, touchstone_config):
+        dev = False
+        if 'dev' in touchstone_config:
+            dev = True if touchstone_config['dev'] == 'true' else False
+        touchstone_config['dev'] = dev
+        return touchstone_config
 
     def __accept_user_command(self):
         print('All Touchstone tests finished. In dev mode; keeping alive\n'
