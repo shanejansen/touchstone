@@ -1,6 +1,9 @@
+from touchstone_config import TouchstoneConfig
+
+
 class Config(object):
     def __init__(self,
-                 service_host='localhost',
+                 service_host=TouchstoneConfig.instance().config['host'],
                  service_port=8080,
                  service_exposed_port=None,
                  service_dockerfile=None,

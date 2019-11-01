@@ -30,7 +30,7 @@ class Service(object):
             self.__log('FAILED - Could not connect to service\'s availability endpoint.\n')
             return False
 
-        return self.__run_tests(given_context, when_context, then_context)
+        return self.__run_tests(mocks, given_context, when_context, then_context)
 
     def __log(self, message):
         print(f'{self.config.service_host} :: {message}')
@@ -50,7 +50,7 @@ class Service(object):
             return False
         return True
 
-    def __run_tests(self, given_context, when_context, then_context):
+    def __run_tests(self, mocks, given_context, when_context, then_context):
         tests_passed = True
         for touchstone_test in self.touchstone_tests:
             test_name = touchstone_test.name()
@@ -63,4 +63,5 @@ class Service(object):
                 tests_passed = False
             else:
                 self.__log(f'PASSED - {test_name}.\n')
+            mocks.cleanup()
         return tests_passed

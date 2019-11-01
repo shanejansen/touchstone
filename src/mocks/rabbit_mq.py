@@ -7,12 +7,15 @@ class RabbitMq(Mock):
     def name():
         return 'rabbitmq'
 
+    def default_exposed_port(self):
+        return 24672
+
     @staticmethod
     def pretty_name():
         return 'Rabbit MQ'
 
-    def default_exposed_port(self):
-        return 24672
-
     def start(self, dev_mode=False):
         DockerManager.instance().run_image('rabbitmq:management-alpine', self.exposed_port(), 5672, dev_ports=[15672])
+
+    def cleanup(self):
+        pass

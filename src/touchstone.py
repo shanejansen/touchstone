@@ -1,12 +1,12 @@
 import json
 import os
 import sys
-from multiprocessing.pool import ThreadPool
 
 from pyfiglet import figlet_format
 
 from docker_manager import DockerManager
 from mocks.mocks import Mocks
+from touchstone_config import TouchstoneConfig
 
 
 class Touchstone(object):
@@ -14,7 +14,7 @@ class Touchstone(object):
         self.services = services
         self.results = None
         with open(touchstone_config, 'r') as file:
-            self.touchstone_config = self.__parse_touchstone_config(json.load(file))
+            TouchstoneConfig.instance().merge(json.load(file))
 
     def run(self):
         try:
@@ -27,34 +27,30 @@ class Touchstone(object):
     def __run(self):
         print(figlet_format('Touchstone'))
 
-        mocks = Mocks(self.touchstone_config)
+        mocks = Mocks()
         mocks.start()
-        self.results = self.__run_test_groups(mocks)
+        self.results = self.__run_all_service_tests(mocks)
 
-        if self.touchstone_config['dev'] is True:
+        if TouchstoneConfig.instance().config['dev'] is True:
+            mocks.print_available_mocks()
             self.__accept_user_command()
         else:
             self.__exit()
 
-    def __run_test_groups(self, mocks):
-        thread_pool = ThreadPool(len(self.services))
+    # Not threading for now since each mock is cleaned up after a test is ran
+    def __run_all_service_tests(self, mocks):
+        # thread_pool = ThreadPool(len(self.services))
         results = []
-        for test_group in self.services:
-            results.append(thread_pool.apply_async(lambda: test_group.run(mocks)))
-        results = [r.get() for r in results]
-        thread_pool.close()
-        thread_pool.join()
+        for service in self.services:
+            results.append(service.run(mocks))
+            # results.append(thread_pool.apply_async(lambda: service.run(mocks)))
+        # results = [r.get() for r in results]
+        # thread_pool.close()
+        # thread_pool.join()
         return results
 
-    def __parse_touchstone_config(self, touchstone_config):
-        dev = False
-        if 'dev' in touchstone_config:
-            dev = True if touchstone_config['dev'] == 'true' else False
-        touchstone_config['dev'] = dev
-        return touchstone_config
-
     def __accept_user_command(self):
-        print('All Touchstone tests finished. In dev mode; keeping alive\n'
+        print('\nAll Touchstone tests finished. In dev mode; keeping alive\n'
               'exit - Exit dev mode')
         while True:
             command = input('Touchstone Command: ')

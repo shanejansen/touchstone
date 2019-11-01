@@ -1,3 +1,5 @@
+import json
+
 from touchstone_test import TouchstoneTest
 
 
@@ -6,8 +8,10 @@ class SomeTest(TouchstoneTest):
         return 'Some Test'
 
     def given(self, given_context):
-        # given_context.mocks.http()
-        pass
+        response = {
+            'foo': 'bar'
+        }
+        given_context.mocks.http.mock_get('/foo', json.dumps(response))
 
     def when(self, when_context):
         return 1

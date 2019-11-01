@@ -23,8 +23,12 @@ class Mock(object):
         return None
 
     @abc.abstractmethod
-    def start(self, dev_mode=False):
+    def start(self):
         """Starts this mock"""
+
+    @abc.abstractmethod
+    def cleanup(self):
+        """Cleanup this mock to prepare for the next test"""
 
     def exposed_port(self):
         if 'port' in self.mock_config:
