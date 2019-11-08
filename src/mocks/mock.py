@@ -9,19 +9,21 @@ class Mock(object):
         self.mock_config = mock_config
 
     @staticmethod
-    def name():
+    def name() -> str:
         """The name of this mock. This is used to match the mock type in touchstone.json and mock-defaults"""
 
     @staticmethod
-    def pretty_name():
+    def pretty_name() -> str:
         """A pretty, display name for this mock"""
-        return "Undefined"
 
     @abc.abstractmethod
-    def default_exposed_port(self):
-        """The default port where this mock will be exposed. Be sure to call the method exposed_port() in case it
+    def default_exposed_port(self) -> str:
+        """The default port where this mock will be exposed. Be sure to call the method self.exposed_port() in case it
         has been overridden"""
-        return None
+
+    @abc.abstractmethod
+    def is_healthy(self) -> bool:
+        """Returns True when this mock is in a healthy state and ready to use."""
 
     @abc.abstractmethod
     def start(self):
@@ -35,7 +37,7 @@ class Mock(object):
     def cleanup(self):
         """Cleanup this mock to prepare for the next test"""
 
-    def exposed_port(self):
+    def exposed_port(self) -> str:
         if 'port' in self.mock_config:
             return self.mock_config['port']
         return self.default_exposed_port()

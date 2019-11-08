@@ -5,14 +5,16 @@ from first.touchstone.tests.some_test import SomeTest
 from service import Service
 from touchstone import Touchstone
 
+root = os.path.abspath(os.path.dirname(__file__))
+
 touchstone = Touchstone([
     Service(
         config=Config(
-            service_exposed_port=8090,
-            service_dockerfile=os.path.abspath('../')
+            service_exposed_port=8080,
+            service_dockerfile=os.path.join(root, '..')
         ),
         touchstone_tests=[
             SomeTest()
         ])
-], root=os.path.abspath(os.path.dirname(__file__)))
+], root=root)
 touchstone.run()

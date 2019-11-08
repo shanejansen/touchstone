@@ -14,6 +14,9 @@ class RabbitMq(Mock):
     def pretty_name():
         return 'Rabbit MQ'
 
+    def is_healthy(self) -> bool:
+        pass
+
     def start(self, dev_mode=False):
         DockerManager.instance().run_image('rabbitmq:management-alpine', self.exposed_port(), 5672, dev_ports=[15672])
 

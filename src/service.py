@@ -1,4 +1,5 @@
 import http
+import http.client
 import time
 import urllib.error
 import urllib.parse
@@ -8,6 +9,7 @@ from context.given_context import GivenContext
 from context.then_context import ThenContext
 from context.when_context import WhenContext
 from docker_manager import DockerManager
+from touchstone_config import TouchstoneConfig
 
 
 class Service(object):
@@ -20,7 +22,7 @@ class Service(object):
         when_context = WhenContext(self.config, mocks)
         then_context = ThenContext(self.config, mocks)
 
-        if self.config.service_dockerfile is not None:
+        if TouchstoneConfig.instance().config['dev'] is False and self.config.service_dockerfile is not None:
             self.__log('Building and running Dockerfile...')
             tag = DockerManager.instance().build_dockerfile(self.config.service_dockerfile)
             DockerManager.instance().run_image(tag, self.config.service_exposed_port,

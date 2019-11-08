@@ -1,4 +1,7 @@
+import http
+import http.client
 import json
+import urllib.error
 import urllib.parse
 import urllib.request
 from typing import Dict
@@ -24,6 +27,14 @@ class Http(Mock):
 
     def default_exposed_port(self):
         return 24080
+
+    def is_healthy(self) -> bool:
+        try:
+            response = urllib.request.urlopen(
+                f'http://{TouchstoneConfig.instance().config["host"]}:{self.exposed_port()}/__admin/mappings').read()
+            return False if response is None else True
+        except (urllib.error.URLError, http.client.RemoteDisconnected):
+            return False
 
     def start(self):
         DockerManager.instance().run_image('rodolpheche/wiremock', self.exposed_port(), 8080)

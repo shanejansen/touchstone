@@ -40,7 +40,8 @@ class DockerManager:
         result = subprocess.run(command, shell=True, stdout=subprocess.DEVNULL)
 
         if result.returncode is not 0:
-            raise exceptions.ContainerException(f'Container image {image} could not be started.')
+            raise exceptions.ContainerException(
+                f'Container image {image} could not be started. Port {exposed_port} may already be in use.')
         self.containers.append(name)
         return name
 

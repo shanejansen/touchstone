@@ -1,5 +1,6 @@
 import json
 import os
+import time
 
 import exceptions
 from mocks.http.http import Http
@@ -18,7 +19,7 @@ class Mocks(object):
         print(f'Starting mocks {[_.pretty_name() for _ in self.mocks]}...')
         for mock in self.mocks:
             mock.start()
-            # TODO: wait for mocks to become healthy?
+        self.__wait_for_healthy_mocks()
         print('Finished starting mocks.')
 
     def load_defaults(self):
@@ -53,3 +54,17 @@ class Mocks(object):
             else:
                 raise exceptions.MockNotSupportedException(
                     f'{mock_type} is not a supported mock. Please check your touchstone.json file.')
+
+    def __wait_for_healthy_mocks(self):
+        for mock in self.mocks:
+            retries = 0
+            healthy = False
+            while not healthy and retries is not 10:
+                retries += 1
+                if mock.is_healthy():
+                    healthy = True
+                    retries = 0
+                else:
+                    time.sleep(5)
+            if retries is 10:
+                raise exceptions.MockException(f'Mock {mock.pretty_name()} timed out on initialization.')
