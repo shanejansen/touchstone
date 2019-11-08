@@ -1,4 +1,5 @@
 import abc
+from typing import Dict
 
 
 class Mock(object):
@@ -9,7 +10,7 @@ class Mock(object):
 
     @staticmethod
     def name():
-        """The name of this mock. This is used to match the mock type in touchstone.json"""
+        """The name of this mock. This is used to match the mock type in touchstone.json and mock-defaults"""
 
     @staticmethod
     def pretty_name():
@@ -25,6 +26,10 @@ class Mock(object):
     @abc.abstractmethod
     def start(self):
         """Starts this mock"""
+
+    @abc.abstractmethod
+    def load_defaults(self, defaults: Dict):
+        """Load defaults for this mock provided by the user for dev purposes"""
 
     @abc.abstractmethod
     def cleanup(self):

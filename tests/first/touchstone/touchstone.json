@@ -1,8 +1,7 @@
 {
   "mocks": [
     {
-      "type": "http",
-      "devConfig": "./config/http-config.json"
+      "type": "http"
     }
   ]
 }

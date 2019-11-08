@@ -14,7 +14,8 @@ class Config(object):
         self.service_host = service_host
         self.service_port = service_port
         if service_exposed_port is None:
-            self.service_exposed_port = service_port
+            service_exposed_port = service_port
+        self.service_exposed_port = service_exposed_port
         self.service_dockerfile = service_dockerfile
         self.service_base_url = service_base_url
         self.service_availability_endpoint = service_availability_endpoint

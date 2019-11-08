@@ -1,6 +1,9 @@
+import json
+import os
+
 import exceptions
-from mocks.http import Http
-from mocks.rabbit_mq import RabbitMq
+from mocks.http.http import Http
+from mocks.rabbitmq.rabbit_mq import RabbitMq
 from touchstone_config import TouchstoneConfig
 
 
@@ -18,6 +21,16 @@ class Mocks(object):
             # TODO: wait for mocks to become healthy?
         print('Finished starting mocks.')
 
+    def load_defaults(self):
+        for mock in self.mocks:
+            try:
+                with open(os.path.join(TouchstoneConfig.instance().config['root'], f'mock-defaults/{mock.name()}.json'),
+                          'r') as file:
+                    defaults = json.load(file)
+                    mock.load_defaults(defaults)
+            except FileNotFoundError:
+                pass
+
     def cleanup(self):
         for mock in self.mocks:
             mock.cleanup()
@@ -26,7 +39,7 @@ class Mocks(object):
         for mock in self.mocks:
             print(
                 f'Mock {mock.pretty_name()} running on: '
-                f'http://{TouchstoneConfig.instance().config["host"]}/{mock.exposed_port()}')
+                f'http://{TouchstoneConfig.instance().config["host"]}:{mock.exposed_port()}')
 
     def __parse_mocks(self):
         for mock in TouchstoneConfig.instance().config['mocks']:
