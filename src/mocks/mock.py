@@ -1,23 +1,26 @@
 import abc
-from typing import Dict
+
+from mocks.mock_case import Setup, Exercise, Verify
 
 
 class Mock(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, mock_config):
-        self.mock_config = mock_config
+    def __init__(self, mock_config: dict):
+        self.mock_config: dict = mock_config
 
     @staticmethod
+    @abc.abstractmethod
     def name() -> str:
-        """The name of this mock. This is used to match the mock type in touchstone.json and mock-defaults"""
+        """The name of this mock. This is used to match the mock type in touchstone.json and dev-defaults"""
 
     @staticmethod
+    @abc.abstractmethod
     def pretty_name() -> str:
         """A pretty, display name for this mock"""
 
     @abc.abstractmethod
-    def default_exposed_port(self) -> str:
+    def default_exposed_port(self) -> int:
         """The default port where this mock will be exposed. Be sure to call the method self.exposed_port() in case it
         has been overridden"""
 
@@ -30,14 +33,18 @@ class Mock(object):
         """Starts this mock"""
 
     @abc.abstractmethod
-    def load_defaults(self, defaults: Dict):
-        """Load defaults for this mock provided by the user for dev purposes"""
+    def setup(self) -> Setup:
+        """"""
 
     @abc.abstractmethod
-    def cleanup(self):
-        """Cleanup this mock to prepare for the next test"""
+    def exercise(self) -> Exercise:
+        """"""
 
-    def exposed_port(self) -> str:
+    @abc.abstractmethod
+    def verify(self) -> Verify:
+        """"""
+
+    def exposed_port(self) -> int:
         if 'port' in self.mock_config:
             return self.mock_config['port']
         return self.default_exposed_port()

@@ -1,5 +1,6 @@
 import subprocess
 import uuid
+from typing import Optional
 
 import exceptions
 
@@ -15,10 +16,10 @@ class DockerManager:
 
     def __init__(self):
         DockerManager.__instance = self
-        self.images = []
-        self.containers = []
+        self.images: list = []
+        self.containers: list = []
 
-    def build_dockerfile(self, dockerfile_path):
+    def build_dockerfile(self, dockerfile_path: str) -> Optional[str]:
         if dockerfile_path.endswith('Dockerfile'):
             dockerfile_path = dockerfile_path[:-10]
         tag = uuid.uuid4().hex
@@ -28,7 +29,7 @@ class DockerManager:
         self.images.append(tag)
         return tag
 
-    def run_image(self, image, exposed_port, container_port, dev_ports=None):
+    def run_image(self, image: str, exposed_port: int, container_port: int, dev_ports: list = None) -> str:
         additional_params = ''
 
         if dev_ports is not None:

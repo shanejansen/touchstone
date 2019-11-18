@@ -1,0 +1,14 @@
+{
+  "services": [
+    {
+      "name": "some-app",
+      "tests": "./tests"
+    }
+  ],
+  "mocks": [
+    {
+      "type": "http",
+      "port": 8085
+    }
+  ]
+}

@@ -1,31 +1,34 @@
 import http
 import http.client
-import json
 import urllib.error
 import urllib.parse
 import urllib.request
-from typing import Dict
 
-import exceptions
 from docker_manager import DockerManager
+from mocks.http.http_exercise import HttpExercise
+from mocks.http.http_setup import HttpSetup
+from mocks.http.http_verify import HttpVerify
 from mocks.mock import Mock
+from mocks.mock_case import Verify, Exercise, Setup
 from touchstone_config import TouchstoneConfig
 
 
 class Http(Mock):
-    def __init__(self, mock_config):
+    def __init__(self, mock_config: dict):
         super().__init__(mock_config)
-        self.mock_ids = []
+        self.__setup = HttpSetup(self.exposed_port())
+        self.__exercise = HttpExercise(self.exposed_port())
+        self.__verify = HttpVerify(self.exposed_port())
 
     @staticmethod
-    def name():
+    def name() -> str:
         return 'http'
 
     @staticmethod
-    def pretty_name():
+    def pretty_name() -> str:
         return 'HTTP'
 
-    def default_exposed_port(self):
+    def default_exposed_port(self) -> int:
         return 24080
 
     def is_healthy(self) -> bool:
@@ -39,89 +42,11 @@ class Http(Mock):
     def start(self):
         DockerManager.instance().run_image('rodolpheche/wiremock', self.exposed_port(), 8080)
 
-    def load_defaults(self, defaults: Dict):
-        for default in defaults:
-            self.__submit_mock(default)
+    def setup(self) -> Setup:
+        return self.__setup
 
-    def cleanup(self):
-        for mock_id in self.mock_ids:
-            request = urllib.request.Request(
-                f'http://{TouchstoneConfig.instance().config["host"]}:{self.exposed_port()}/__admin/mappings/{mock_id}',
-                method='DELETE')
-            urllib.request.urlopen(request)
+    def exercise(self) -> Exercise:
+        return self.__exercise
 
-    def mock_get(self, endpoint: str, response: str, response_status: int = 200,
-                 response_headers: Dict = {'Content-Type': 'application/json'}):
-        self.__check_mock_response_type(response)
-        mock = {
-            'request': {
-                'method': 'GET',
-                'url': endpoint
-            },
-            'response': {
-                'status': response_status,
-                'headers': response_headers,
-                'body': response
-            }
-        }
-        self.__submit_mock(mock)
-
-    def mock_post(self, endpoint: str, response: str, response_status: int = 200,
-                  response_headers: Dict = {'Content-Type': 'application/json'}):
-        self.__check_mock_response_type(response)
-        mock = {
-            'request': {
-                'method': 'POST',
-                'url': endpoint
-            },
-            'response': {
-                'status': response_status,
-                'headers': response_headers,
-                'body': response
-            }
-        }
-        self.__submit_mock(mock)
-
-    def mock_put(self, endpoint: str, response: str, response_status: int = 200,
-                 response_headers: Dict = {'Content-Type': 'application/json'}):
-        self.__check_mock_response_type(response)
-        mock = {
-            'request': {
-                'method': 'PUT',
-                'url': endpoint
-            },
-            'response': {
-                'status': response_status,
-                'headers': response_headers,
-                'body': response
-            }
-        }
-        self.__submit_mock(mock)
-
-    def mock_delete(self, endpoint: str, response: str, response_status: int = 200,
-                    response_headers: Dict = {'Content-Type': 'application/json'}):
-        self.__check_mock_response_type(response)
-        mock = {
-            'request': {
-                'method': 'DELETE',
-                'url': endpoint
-            },
-            'response': {
-                'status': response_status,
-                'headers': response_headers,
-                'body': response
-            }
-        }
-        self.__submit_mock(mock)
-
-    def __check_mock_response_type(self, response):
-        if type(response) is not str:
-            raise exceptions.MockException('Response must be of type str.')
-
-    def __submit_mock(self, mock: Dict):
-        data = json.dumps(mock).encode('utf8')
-        request = urllib.request.Request(
-            f'http://{TouchstoneConfig.instance().config["host"]}:{self.exposed_port()}/__admin/mappings', data=data,
-            headers={'Content-Type': 'application/json'})
-        response = urllib.request.urlopen(request).read()
-        self.mock_ids.append(json.loads(response)['id'])
+    def verify(self) -> Verify:
+        return self.__verify

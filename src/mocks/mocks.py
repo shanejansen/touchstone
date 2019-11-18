@@ -10,9 +10,9 @@ from touchstone_config import TouchstoneConfig
 
 class Mocks(object):
     def __init__(self):
-        self.mocks = []
-        self.http = None
-        self.rabbit_mq = None
+        self.mocks: list = []
+        self.http: Http = None
+        self.rabbit_mq: RabbitMq = None
 
     def start(self):
         self.__parse_mocks()
@@ -25,16 +25,16 @@ class Mocks(object):
     def load_defaults(self):
         for mock in self.mocks:
             try:
-                with open(os.path.join(TouchstoneConfig.instance().config['root'], f'mock-defaults/{mock.name()}.json'),
+                with open(os.path.join(TouchstoneConfig.instance().config['root'], f'dev-defaults/{mock.name()}.json'),
                           'r') as file:
                     defaults = json.load(file)
-                    mock.load_defaults(defaults)
+                    mock.given().load_defaults(defaults)
             except FileNotFoundError:
                 pass
 
     def cleanup(self):
         for mock in self.mocks:
-            mock.cleanup()
+            mock.setup().cleanup()
 
     def print_available_mocks(self):
         for mock in self.mocks:

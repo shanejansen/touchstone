@@ -1,5 +1,4 @@
 import sys
-from typing import Dict
 
 
 class TouchstoneConfig:
@@ -13,7 +12,7 @@ class TouchstoneConfig:
 
     def __init__(self):
         TouchstoneConfig.__instance = self
-        self.config = {
+        self.config: dict = {
             'root': None,
             'dev': False,
             'host': 'localhost'
@@ -22,8 +21,8 @@ class TouchstoneConfig:
         if 'dev' in sys.argv:
             self.config['dev'] = True
 
-    def set_root(self, root):
+    def set_root(self, root: str):
         self.config['root'] = root
 
-    def merge(self, other: Dict):
+    def merge(self, other: dict):
         self.config = dict(list(self.config.items()) + list(other.items()))

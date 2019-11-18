@@ -1,21 +1,23 @@
 import json
 import os
 import sys
+from typing import List
 
 from pyfiglet import figlet_format
 
 from docker_manager import DockerManager
 from mocks.mocks import Mocks
+from service import Service
 from touchstone_config import TouchstoneConfig
 
 
 class Touchstone(object):
-    def __init__(self, services, root=os.path.abspath('./')):
-        self.services = services
+    def __init__(self, services: List[Service], root: str = os.path.abspath('./')):
+        self.services: List[Service] = services
         TouchstoneConfig.instance().set_root(root)
         with open(os.path.join(TouchstoneConfig.instance().config['root'], 'touchstone.json'), 'r') as file:
             TouchstoneConfig.instance().merge(json.load(file))
-        self.mocks = Mocks()
+        self.mocks: Mocks = Mocks()
 
     def run(self):
         try:
@@ -26,7 +28,7 @@ class Touchstone(object):
             raise e
 
     def __run(self):
-        print(figlet_format('Touchstone'))
+        print(figlet_format('Touchstone', font='larry3d'))
 
         self.mocks.start()
 
@@ -40,7 +42,7 @@ class Touchstone(object):
     def __run_all_service_tests(self) -> bool:
         results = []
         for service in self.services:
-            results.append(service.run(self.mocks))
+            results.append(service.run_tests(self.mocks))
         if False in results:
             print('One or more Touchstone tests failed.')
             return False
@@ -50,18 +52,19 @@ class Touchstone(object):
 
     def __accept_user_command(self):
         print('\nIn dev mode - keeping alive\n'
-              'run - Runs all Touchstone tests. Changed tests will not be used until re-running Touchstone.\n'
+              'run - Runs all Touchstone tests. Changed tests take affect until re-running Touchstone.\n'
               'exit - Exit Touchstone dev mode.')
         while True:
             command = input('Touchstone Command: ')
             if command == 'run':
                 self.__run_all_service_tests()
+                self.mocks.load_defaults()
             elif command == 'exit':
                 self.__exit(True)
             else:
                 print(f'Unknown command "{command}"')
 
-    def __exit(self, did_pass):
+    def __exit(self, did_pass: bool):
         print('Exiting...')
         if did_pass:
             code = 0
