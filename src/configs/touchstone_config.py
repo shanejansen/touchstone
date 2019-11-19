@@ -15,7 +15,9 @@ class TouchstoneConfig:
         self.config: dict = {
             'root': None,
             'dev': False,
-            'host': 'localhost'
+            'host': 'localhost',
+            'mocks': [],
+            'services': []
         }
 
         if 'dev' in sys.argv:

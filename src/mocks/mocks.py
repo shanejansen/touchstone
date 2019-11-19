@@ -3,9 +3,9 @@ import os
 import time
 
 import exceptions
+from configs.touchstone_config import TouchstoneConfig
 from mocks.http.http import Http
 from mocks.rabbitmq.rabbit_mq import RabbitMq
-from touchstone_config import TouchstoneConfig
 
 
 class Mocks(object):

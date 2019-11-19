@@ -4,13 +4,13 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
+from configs.touchstone_config import TouchstoneConfig
 from docker_manager import DockerManager
 from mocks.http.http_exercise import HttpExercise
 from mocks.http.http_setup import HttpSetup
 from mocks.http.http_verify import HttpVerify
 from mocks.mock import Mock
 from mocks.mock_case import Verify, Exercise, Setup
-from touchstone_config import TouchstoneConfig
 
 
 class Http(Mock):

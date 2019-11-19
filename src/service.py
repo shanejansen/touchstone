@@ -5,11 +5,11 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from config import Config
+from configs.service_config import Config
+from configs.touchstone_config import TouchstoneConfig
 from docker_manager import DockerManager
 from mocks.mocks import Mocks
 from test_context import TestContext
-from touchstone_config import TouchstoneConfig
 
 
 class Service(object):

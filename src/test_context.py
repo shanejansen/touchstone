@@ -1,4 +1,4 @@
-from config import Config
+from configs.service_config import Config
 from mocks.mocks import Mocks
 
 

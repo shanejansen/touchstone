@@ -1,7 +1,7 @@
 import os
 
 from app.touchstone.tests.some_test import SomeTest
-from config import Config
+from configs.service_config import Config
 from service import Service
 from touchstone import Touchstone
 
