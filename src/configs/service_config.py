@@ -4,6 +4,7 @@ from configs.touchstone_config import TouchstoneConfig
 class ServiceConfig(object):
     def __init__(self):
         self.config: dict = {
+            'name': 'Unnamed Service',
             'host': TouchstoneConfig.instance().config['host'],
             'port': 8080,
             'dockerfile': None,

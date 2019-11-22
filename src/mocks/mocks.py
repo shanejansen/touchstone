@@ -15,12 +15,14 @@ class Mocks(object):
         self.rabbit_mq: RabbitMq = None
 
     def start(self):
+        if self.mocks:
+            raise exceptions.MockException('Mocks have already been started. They cannot be started again.')
         self.__parse_mocks()
         print(f'Starting mocks {[_.pretty_name() for _ in self.mocks]}...')
         for mock in self.mocks:
             mock.start()
         self.__wait_for_healthy_mocks()
-        print('Finished starting mocks.')
+        print('Finished starting mocks.\n')
 
     def load_defaults(self):
         for mock in self.mocks:
@@ -28,7 +30,7 @@ class Mocks(object):
                 with open(os.path.join(TouchstoneConfig.instance().config['root'], f'dev-defaults/{mock.name()}.json'),
                           'r') as file:
                     defaults = json.load(file)
-                    mock.given().load_defaults(defaults)
+                    mock.setup().load_defaults(defaults)
             except FileNotFoundError:
                 pass
 

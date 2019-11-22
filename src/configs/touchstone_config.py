@@ -26,5 +26,8 @@ class TouchstoneConfig:
     def set_root(self, root: str):
         self.config['root'] = root
 
+    def set_dev(self):
+        self.config['dev'] = True
+
     def merge(self, other: dict):
         self.config = dict(list(self.config.items()) + list(other.items()))

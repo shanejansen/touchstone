@@ -1,25 +1,24 @@
 import abc
 
-from test_context import TestContext
+from mocks.mocks import Mocks
 
 
 class TouchstoneTest(object):
     __metaclass__ = abc.ABCMeta
 
-    @abc.abstractmethod
-    def name(self) -> str:
-        """A name for this Touchstone test."""
+    def __init__(self, mocks: Mocks):
+        self.mocks = mocks
 
     @abc.abstractmethod
-    def given(self, test_context: TestContext):
+    def given(self):
         """GIVEN this data and/or state. Set the state of the system here."""
 
     @abc.abstractmethod
-    def when(self, test_context: TestContext):
+    def when(self):
         """WHEN we run this test. Your custom test code goes here. Return the result of the test to be verified."""
         return None
 
     @abc.abstractmethod
-    def then(self, test_context: TestContext, test_result) -> bool:
+    def then(self, test_result) -> bool:
         """THEN check that the result is correct. Return True/False for a passed/failed test respectively."""
         return False

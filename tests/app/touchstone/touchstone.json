@@ -1,8 +1,8 @@
 {
   "services": [
     {
-      "name": "some-app",
-      "tests": "./tests",
+      "name": "My App",
+      "tests": "tests",
       "port": 8080,
       "dockerfile": "../"
     }

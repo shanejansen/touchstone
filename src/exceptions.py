@@ -1,3 +1,7 @@
+class TouchstoneException(Exception):
+    pass
+
+
 class MockNotSupportedException(Exception):
     pass
 
