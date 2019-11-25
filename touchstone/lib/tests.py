@@ -2,7 +2,7 @@ import glob
 import importlib.util
 import inspect
 
-from mocks.mocks import Mocks
+from lib.mocks.mocks import Mocks
 
 
 class Tests(object):

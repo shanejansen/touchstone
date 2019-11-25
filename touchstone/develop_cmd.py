@@ -1,14 +1,15 @@
 from pyfiglet import figlet_format
 
-from commands import common
-from configs.touchstone_config import TouchstoneConfig
-from docker_manager import DockerManager
-from mocks.mocks import Mocks
-from services import Services
+import common
+from lib.configs.touchstone_config import TouchstoneConfig
+from lib.docker_manager import DockerManager
+from lib.mocks.mocks import Mocks
+from lib.services import Services
 
 
 def execute():
     try:
+        common.prep_run()
         print(figlet_format('Touchstone', font='larry3d'))
         TouchstoneConfig.instance().set_dev()
         mocks = Mocks()

@@ -1,6 +1,6 @@
-from mocks.mock_case import Exercise
+from lib.mocks.mock_case import Verify
 
 
-class HttpExercise(Exercise):
+class HttpVerify(Verify):
     def __init__(self, exposed_port: int):
         super().__init__(exposed_port)

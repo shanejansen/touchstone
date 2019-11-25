@@ -1,4 +1,4 @@
-from touchstone_test import TouchstoneTest
+from lib.touchstone_test import TouchstoneTest
 
 
 class ThisShouldPass(TouchstoneTest):

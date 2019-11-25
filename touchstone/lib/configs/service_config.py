@@ -1,4 +1,4 @@
-from configs.touchstone_config import TouchstoneConfig
+from lib.configs.touchstone_config import TouchstoneConfig
 
 
 class ServiceConfig(object):

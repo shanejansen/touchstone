@@ -1,7 +1,7 @@
 import json
 import os
 
-from commands import common
+import common
 
 
 def execute():

@@ -5,10 +5,10 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from configs.service_config import ServiceConfig
-from configs.touchstone_config import TouchstoneConfig
-from docker_manager import DockerManager
-from tests import Tests
+from lib.configs.service_config import ServiceConfig
+from lib.configs.touchstone_config import TouchstoneConfig
+from lib.docker_manager import DockerManager
+from lib.tests import Tests
 
 
 class Service(object):
@@ -27,7 +27,7 @@ class Service(object):
             self.__log('Could not connect to service\'s availability endpoint.\n')
             return False
 
-        self.__log('Running tests\n')
+        self.__log('Available. Running tests\n')
         return self.tests.run()
 
     def __wait_for_availability(self) -> bool:
@@ -39,7 +39,7 @@ class Service(object):
                 response = urllib.request.urlopen(full_endpoint).read()
                 return True
             except (urllib.error.URLError, http.client.RemoteDisconnected):
-                self.__log(f'Not available. Retry {retry_num + 1} of {self.service_config.config["num_retries"]}.')
+                self.__log(f'Not available. Retry {retry_num + 1} of {self.service_config.config["num_retries"]}')
                 time.sleep(self.service_config.config['seconds_between_retries'])
         if response is None:
             return False

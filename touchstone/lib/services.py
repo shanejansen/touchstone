@@ -1,8 +1,10 @@
-from configs.service_config import ServiceConfig
-from configs.touchstone_config import TouchstoneConfig
-from mocks.mocks import Mocks
-from service import Service
-from tests import Tests
+import os
+
+from lib.configs.service_config import ServiceConfig
+from lib.configs.touchstone_config import TouchstoneConfig
+from lib.mocks.mocks import Mocks
+from lib.service import Service
+from lib.tests import Tests
 
 
 class Services(object):
@@ -23,7 +25,7 @@ class Services(object):
         for given_service_config in TouchstoneConfig.instance().config['services']:
             service_config = ServiceConfig()
             service_config.merge(given_service_config)
-            tests_path = f'{TouchstoneConfig.instance().config["root"]}/{service_config.config["tests"]}'
+            tests_path = os.path.join(TouchstoneConfig.instance().config["root"], service_config.config["tests"])
             tests = Tests(self.mocks, tests_path)
             service = Service(service_config, tests)
             self.services.append(service)

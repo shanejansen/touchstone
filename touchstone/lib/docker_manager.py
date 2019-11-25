@@ -2,7 +2,7 @@ import subprocess
 import uuid
 from typing import Optional
 
-import exceptions
+from lib import exceptions
 
 
 class DockerManager:

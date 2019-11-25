@@ -1,5 +1,5 @@
-from docker_manager import DockerManager
-from mocks.mock import Mock
+from lib.docker_manager import DockerManager
+from lib.mocks.mock import Mock
 
 
 class RabbitMq(Mock):
