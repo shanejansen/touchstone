@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "e245bb5e262bae776878d3309215cda9f8a2f2754a1793d4a9a395084ca16090"
+            "sha256": "aa5fd9f9922d1b1cdf6d21e85434d430ac30eb357a1de36888250d2275e26bef"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -31,6 +31,10 @@
             ],
             "index": "pypi",
             "version": "==0.8.post1"
+        },
+        "touchstone": {
+            "editable": true,
+            "path": "."
         }
     },
     "develop": {}

@@ -2,8 +2,8 @@ import json
 import os
 import sys
 
-from lib.configs.touchstone_config import TouchstoneConfig
-from lib.docker_manager import DockerManager
+from touchstone.lib.configs.touchstone_config import TouchstoneConfig
+from touchstone.lib.docker_manager import DockerManager
 
 
 def load_config():

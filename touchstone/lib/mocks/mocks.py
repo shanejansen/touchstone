@@ -2,10 +2,10 @@ import json
 import os
 import time
 
-from lib import exceptions
-from lib.configs.touchstone_config import TouchstoneConfig
-from lib.mocks.http.http import Http
-from lib.mocks.rabbitmq.rabbit_mq import RabbitMq
+from touchstone.lib import exceptions
+from touchstone.lib.configs.touchstone_config import TouchstoneConfig
+from touchstone.lib.mocks.http.http import Http
+from touchstone.lib.mocks.rabbitmq.rabbit_mq import RabbitMq
 
 
 class Mocks(object):

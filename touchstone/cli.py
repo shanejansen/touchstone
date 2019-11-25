@@ -2,10 +2,10 @@ import os
 
 import click
 
-import develop_cmd
-import init_cmd
-import run_cmd
-from lib.configs.touchstone_config import TouchstoneConfig
+from touchstone import develop_cmd
+from touchstone import init_cmd
+from touchstone import run_cmd
+from touchstone.lib.configs.touchstone_config import TouchstoneConfig
 
 
 @click.group()

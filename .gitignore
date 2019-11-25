@@ -2,3 +2,4 @@
 .idea
 *.iml
 *.pyc
+touchstone.egg-info

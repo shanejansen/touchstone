@@ -1,5 +1,5 @@
-from lib.docker_manager import DockerManager
-from lib.mocks.mock import Mock
+from touchstone.lib.docker_manager import DockerManager
+from touchstone.lib.mocks.mock import Mock
 
 
 class RabbitMq(Mock):

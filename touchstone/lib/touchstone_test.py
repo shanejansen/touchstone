@@ -1,6 +1,6 @@
 import abc
 
-from lib.mocks.mocks import Mocks
+from touchstone.lib.mocks.mocks import Mocks
 
 
 class TouchstoneTest(object):

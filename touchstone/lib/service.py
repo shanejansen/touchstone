@@ -5,10 +5,10 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from lib.configs.service_config import ServiceConfig
-from lib.configs.touchstone_config import TouchstoneConfig
-from lib.docker_manager import DockerManager
-from lib.tests import Tests
+from touchstone.lib.configs.service_config import ServiceConfig
+from touchstone.lib.configs.touchstone_config import TouchstoneConfig
+from touchstone.lib.docker_manager import DockerManager
+from touchstone.lib.tests import Tests
 
 
 class Service(object):

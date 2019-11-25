@@ -1,7 +1,7 @@
 import json
 import os
 
-import common
+from touchstone import common
 
 
 def execute():

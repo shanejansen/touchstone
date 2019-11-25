@@ -1,10 +1,10 @@
 from pyfiglet import figlet_format
 
-import common
-from lib.configs.touchstone_config import TouchstoneConfig
-from lib.docker_manager import DockerManager
-from lib.mocks.mocks import Mocks
-from lib.services import Services
+from touchstone import common
+from touchstone.lib.configs.touchstone_config import TouchstoneConfig
+from touchstone.lib.docker_manager import DockerManager
+from touchstone.lib.mocks.mocks import Mocks
+from touchstone.lib.services import Services
 
 
 def execute():

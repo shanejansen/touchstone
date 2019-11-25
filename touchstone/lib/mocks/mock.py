@@ -1,6 +1,6 @@
 import abc
 
-from lib.mocks.mock_case import Setup, Exercise, Verify
+from touchstone.lib.mocks.mock_case import Setup, Exercise, Verify
 
 
 class Mock(object):

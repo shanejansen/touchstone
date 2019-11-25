@@ -2,7 +2,7 @@ import subprocess
 import uuid
 from typing import Optional
 
-from lib import exceptions
+from touchstone.lib import exceptions
 
 
 class DockerManager:

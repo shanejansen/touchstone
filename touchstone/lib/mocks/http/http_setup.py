@@ -4,9 +4,9 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from lib import exceptions
-from lib.configs.touchstone_config import TouchstoneConfig
-from lib.mocks.mock_case import Setup
+from touchstone.lib import exceptions
+from touchstone.lib.configs.touchstone_config import TouchstoneConfig
+from touchstone.lib.mocks.mock_case import Setup
 
 
 class HttpSetup(Setup):

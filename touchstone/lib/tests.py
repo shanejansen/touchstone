@@ -2,7 +2,7 @@ import glob
 import importlib.util
 import inspect
 
-from lib.mocks.mocks import Mocks
+from touchstone.lib.mocks.mocks import Mocks
 
 
 class Tests(object):

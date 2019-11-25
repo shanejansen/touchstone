@@ -1,6 +1,6 @@
 import json
 
-from lib.touchstone_test import TouchstoneTest
+from touchstone.lib.touchstone_test import TouchstoneTest
 
 
 class HttpMocking(TouchstoneTest):

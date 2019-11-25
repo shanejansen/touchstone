@@ -1,4 +1,4 @@
-from lib.mocks.mock_case import Verify
+from touchstone.lib.mocks.mock_case import Verify
 
 
 class HttpVerify(Verify):

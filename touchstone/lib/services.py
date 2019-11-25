@@ -1,10 +1,10 @@
 import os
 
-from lib.configs.service_config import ServiceConfig
-from lib.configs.touchstone_config import TouchstoneConfig
-from lib.mocks.mocks import Mocks
-from lib.service import Service
-from lib.tests import Tests
+from touchstone.lib.configs.service_config import ServiceConfig
+from touchstone.lib.configs.touchstone_config import TouchstoneConfig
+from touchstone.lib.mocks.mocks import Mocks
+from touchstone.lib.service import Service
+from touchstone.lib.tests import Tests
 
 
 class Services(object):
