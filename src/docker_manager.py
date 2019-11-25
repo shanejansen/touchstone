@@ -42,7 +42,8 @@ class DockerManager:
 
         if result.returncode is not 0:
             raise exceptions.ContainerException(
-                f'Container image {image} could not be started. Port {exposed_port} may already be in use.')
+                f'Container image {image} could not be started. Ensure Docker is running and port {exposed_port} '
+                f'is not already in use.')
         self.containers.append(name)
         return name
 

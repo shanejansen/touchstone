@@ -1,15 +1,20 @@
+import json
+
 from touchstone_test import TouchstoneTest
 
 
-class Blah(TouchstoneTest):
+class HttpMocking(TouchstoneTest):
     def given(self):
-        pass
+        response = {
+            'foo': 'bar'
+        }
+        self.mocks.http.setup().get('/foo', json.dumps(response))
 
     def when(self):
-        pass
+        return 1
 
     def then(self, test_result) -> bool:
-        pass
+        return test_result == 1
 
 
 class AnotherOne(TouchstoneTest):
@@ -20,4 +25,4 @@ class AnotherOne(TouchstoneTest):
         pass
 
     def then(self, test_result) -> bool:
-        pass
+        return True
