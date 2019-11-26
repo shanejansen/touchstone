@@ -12,17 +12,17 @@ class Mock(object):
     @staticmethod
     @abc.abstractmethod
     def name() -> str:
-        """The name of this mock. This is used to match the mock type in touchstone.json and dev-defaults"""
+        """The name of this mock. This is used to match the mock type in touchstone.json and dev-defaults."""
 
     @staticmethod
     @abc.abstractmethod
     def pretty_name() -> str:
-        """A pretty, display name for this mock"""
+        """A pretty, display name for this mock."""
 
     @abc.abstractmethod
     def default_exposed_port(self) -> int:
         """The default port where this mock will be exposed. Be sure to call the method self.exposed_port() in case it
-        has been overridden"""
+        has been overridden."""
 
     @abc.abstractmethod
     def is_healthy(self) -> bool:
@@ -30,7 +30,7 @@ class Mock(object):
 
     @abc.abstractmethod
     def start(self):
-        """Starts this mock"""
+        """Starts this mock."""
 
     @abc.abstractmethod
     def setup(self) -> Setup:

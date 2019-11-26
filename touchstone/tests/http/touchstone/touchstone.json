@@ -4,7 +4,7 @@
       "name": "My App",
       "tests": "./tests",
       "port": 8080,
-      "dockerfile": "../"
+      "dockerfile": "../Dockerfile"
     }
   ],
   "mocks": [

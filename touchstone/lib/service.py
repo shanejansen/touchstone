@@ -1,5 +1,6 @@
 import http
 import http.client
+import os
 import time
 import urllib.error
 import urllib.parse
@@ -19,7 +20,9 @@ class Service(object):
     def run_tests(self) -> bool:
         if TouchstoneConfig.instance().config['dev'] is False and self.service_config.config['dockerfile'] is not None:
             self.__log('Building and running Dockerfile...')
-            tag = DockerManager.instance().build_dockerfile(self.service_config.config['dockerfile'])
+            dockerfile_path = os.path.abspath(
+                os.path.join(TouchstoneConfig.instance().config["root"], self.service_config.config['dockerfile']))
+            tag = DockerManager.instance().build_dockerfile(dockerfile_path)
             DockerManager.instance().run_image(tag, self.service_config.config['port'],
                                                self.service_config.config['port'])
 

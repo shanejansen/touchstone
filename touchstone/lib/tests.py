@@ -1,6 +1,7 @@
 import glob
 import importlib.util
 import inspect
+import traceback
 
 from touchstone.lib.mocks.mocks import Mocks
 
@@ -10,29 +11,55 @@ class Tests(object):
         self.mocks = mocks
         self.tests_path = tests_path
 
+    class TestContainer(object):
+        def __init__(self, file):
+            self.file = file
+            self.test_classes = []
+
+        def add_test_class(self, test_class):
+            self.test_classes.append(test_class)
+
+    class TestClass(object):
+        def __init__(self, name, clazz):
+            self.name = name
+            self.clazz = clazz
+
     def run(self) -> bool:
-        class_defs = self.__load_test_classes()
+        all_test_containers = self.__load_test_classes()
+        if len(all_test_containers) == 0:
+            print(f'No tests found at {self.tests_path}')
+            return False
 
         tests_passed = True
-        for class_def in class_defs:
-            name = class_def['name']
-            clazz = class_def['class']
-            print(f'{name} :: RUNNING')
-            clazz.given()
-            result = clazz.when()
-            did_pass = clazz.then(result)
-            if not did_pass:
-                print(f'{name} :: FAILED. Unexpected value "{result}"\n')
-                tests_passed = False
-            else:
-                print(f'{name} :: PASSED\n')
-            self.mocks.cleanup()
+        for test_container in all_test_containers:
+            print(test_container.file)
+            for test_class in test_container.test_classes:
+                class_instance = test_class.clazz(self.mocks)
+                print(f'{test_class.name} :: RUNNING')
+
+                try:
+                    class_instance.given()
+                    result = class_instance.when()
+                    did_pass = class_instance.then(result)
+                except Exception as e:
+                    traceback.print_tb(e.__traceback__)
+                    return False
+
+                if not did_pass:
+                    print(f'{test_class.name} :: FAILED. Test result: "{result}"\n')
+                    tests_passed = False
+                else:
+                    print(f'{test_class.name} :: PASSED\n')
+                self.mocks.cleanup()
         return tests_passed
 
     def __load_test_classes(self):
         files = glob.glob(f'{self.tests_path}/*.py')
-        class_defs = []
+        all_test_containers = []
         for file in files:
+            test_container = self.TestContainer(file)
+            all_test_containers.append(test_container)
+
             spec = importlib.util.spec_from_file_location(file, file)
             module = importlib.util.module_from_spec(spec)
             spec.loader.exec_module(module)
@@ -42,10 +69,6 @@ class Tests(object):
                 class_name = member[0]
                 class_type = member[1]
                 if module.__file__ == class_type.__module__:
-                    clazz = class_type(self.mocks)
-                    class_def = {
-                        'name': class_name,
-                        'class': clazz
-                    }
-                    class_defs.append(class_def)
-        return class_defs
+                    test_class = self.TestClass(class_name, class_type)
+                    test_container.add_test_class(test_class)
+        return all_test_containers

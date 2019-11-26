@@ -1,3 +1,4 @@
+import os
 import subprocess
 import uuid
 from typing import Optional
@@ -20,10 +21,11 @@ class DockerManager:
         self.containers: list = []
 
     def build_dockerfile(self, dockerfile_path: str) -> Optional[str]:
-        if dockerfile_path.endswith('Dockerfile'):
-            dockerfile_path = dockerfile_path[:-10]
+        # Build context will always be the same location as the Dockerfile for our purposes
+        build_context = os.path.dirname(dockerfile_path)
         tag = uuid.uuid4().hex
-        result = subprocess.run(['docker', 'build', '-t', tag, dockerfile_path], stdout=subprocess.DEVNULL)
+        result = subprocess.run(['docker', 'build', '-t', tag, '-f', dockerfile_path, build_context],
+                                stdout=subprocess.DEVNULL)
         if result.returncode is not 0:
             return None
         self.images.append(tag)

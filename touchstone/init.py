@@ -22,3 +22,4 @@ def execute():
         json.dump(data, f, ensure_ascii=False, indent=2)
     os.makedirs('dev-defaults')
     open('dev-defaults/.gitkeep', 'a').close()
+    print('Touchstone has been initialized.')

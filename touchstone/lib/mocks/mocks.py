@@ -5,14 +5,14 @@ import time
 from touchstone.lib import exceptions
 from touchstone.lib.configs.touchstone_config import TouchstoneConfig
 from touchstone.lib.mocks.http.http import Http
-from touchstone.lib.mocks.rabbitmq.rabbit_mq import RabbitMq
+from touchstone.lib.mocks.rabbitmq.rabbitmq import Rabbitmq
 
 
 class Mocks(object):
     def __init__(self):
         self.mocks: list = []
         self.http: Http = None
-        self.rabbit_mq: RabbitMq = None
+        self.rabbit_mq: Rabbitmq = None
 
     def start(self):
         if self.mocks:
@@ -50,8 +50,8 @@ class Mocks(object):
             if mock_type == Http.name():
                 self.http = Http(mock)
                 self.mocks.append(self.http)
-            elif mock_type == RabbitMq.name():
-                self.rabbit_mq = RabbitMq(mock)
+            elif mock_type == Rabbitmq.name():
+                self.rabbit_mq = Rabbitmq(mock)
                 self.mocks.append(self.rabbit_mq)
             else:
                 raise exceptions.MockNotSupportedException(

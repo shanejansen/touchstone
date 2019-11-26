@@ -7,11 +7,11 @@ class Setup(object):
 
     @abc.abstractmethod
     def load_defaults(self, defaults: dict):
-        """Load defaults for this mock provided by the user for dev purposes"""
+        """Load defaults for this mock provided by the user for dev purposes."""
 
     @abc.abstractmethod
     def cleanup(self):
-        """Cleanup this mock to prepare for the next test"""
+        """Cleanup this mock to prepare for the next test."""
 
 
 class Exercise(object):

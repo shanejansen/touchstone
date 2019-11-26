@@ -15,6 +15,7 @@ class HttpSetup(Setup):
         self.mock_ids: list = []
 
     def cleanup(self):
+        # Remove all mocked endpoints
         for mock_id in self.mock_ids:
             request = urllib.request.Request(
                 f'http://{TouchstoneConfig.instance().config["host"]}:{self.exposed_port}/__admin/mappings/'
@@ -22,6 +23,12 @@ class HttpSetup(Setup):
                 method='DELETE')
             urllib.request.urlopen(request)
         self.mock_ids = []
+
+        # Reset 'verify' journal
+        request = urllib.request.Request(
+            f'http://{TouchstoneConfig.instance().config["host"]}:{self.exposed_port}/__admin/requests',
+            method='DELETE')
+        urllib.request.urlopen(request)
 
     def load_defaults(self, defaults: dict):
         for default in defaults:

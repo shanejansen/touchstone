@@ -2,7 +2,7 @@ from touchstone.lib.docker_manager import DockerManager
 from touchstone.lib.mocks.mock import Mock
 
 
-class RabbitMq(Mock):
+class Rabbitmq(Mock):
     @staticmethod
     def name():
         return 'rabbitmq'

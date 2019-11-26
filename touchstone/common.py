@@ -27,7 +27,7 @@ def prep_run():
 
 
 def exit_touchstone(is_successful: bool):
-    print('Exiting...')
+    print('Shutting down...')
     if is_successful:
         code = 0
     else:

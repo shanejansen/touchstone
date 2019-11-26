@@ -25,7 +25,8 @@ class Services(object):
         for given_service_config in TouchstoneConfig.instance().config['services']:
             service_config = ServiceConfig()
             service_config.merge(given_service_config)
-            tests_path = os.path.join(TouchstoneConfig.instance().config["root"], service_config.config["tests"])
+            tests_path = os.path.abspath(
+                os.path.join(TouchstoneConfig.instance().config["root"], service_config.config["tests"]))
             tests = Tests(self.mocks, tests_path)
             service = Service(service_config, tests)
             self.services.append(service)
