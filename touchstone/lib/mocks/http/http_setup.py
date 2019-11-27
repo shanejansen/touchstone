@@ -24,7 +24,7 @@ class HttpSetup(Setup):
             urllib.request.urlopen(request)
         self.mock_ids = []
 
-        # Reset 'verify' journal
+        # Reset requests journal
         request = urllib.request.Request(
             f'http://{TouchstoneConfig.instance().config["host"]}:{self.exposed_port}/__admin/requests',
             method='DELETE')
@@ -36,6 +36,7 @@ class HttpSetup(Setup):
 
     def get(self, endpoint: str, response: str, response_status: int = 200,
             response_headers: dict = {'Content-Type': 'application/json'}):
+        """Returns the given response when a GET request is made to the given endpoint."""
         self.__check_mock_response_type(response)
         mock = {
             'request': {
@@ -52,6 +53,7 @@ class HttpSetup(Setup):
 
     def post(self, endpoint: str, response: str, response_status: int = 200,
              response_headers: dict = {'Content-Type': 'application/json'}):
+        """Returns the given response when a POST request is made to the given endpoint."""
         self.__check_mock_response_type(response)
         mock = {
             'request': {
@@ -68,6 +70,7 @@ class HttpSetup(Setup):
 
     def put(self, endpoint: str, response: str, response_status: int = 200,
             response_headers: dict = {'Content-Type': 'application/json'}):
+        """Returns the given response when a PUT request is made to the given endpoint."""
         self.__check_mock_response_type(response)
         mock = {
             'request': {
@@ -84,6 +87,7 @@ class HttpSetup(Setup):
 
     def delete(self, endpoint: str, response: str, response_status: int = 200,
                response_headers: dict = {'Content-Type': 'application/json'}):
+        """Returns the given response when a DELETE request is made to the given endpoint."""
         self.__check_mock_response_type(response)
         mock = {
             'request': {

@@ -65,10 +65,13 @@ class DeleteCalled(TouchstoneTest):
 
 class PostContained(TouchstoneTest):
     def given(self):
-        pass
+        self.mocks.http.setup().post('/some-endpoint', 'hello http!')
 
     def when(self):
-        pass
+        body = 'foo'.encode('utf8')
+        request = urllib.request.Request('http://localhost:8085/some-endpoint', method='POST', data=body)
+        urllib.request.urlopen(request)
 
     def then(self, test_result) -> bool:
-        return True
+        expected_body = 'foo'
+        return self.mocks.http.verify().post_contained('/some-endpoint', expected_body)

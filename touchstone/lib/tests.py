@@ -37,16 +37,18 @@ class Tests(object):
                 class_instance = test_class.clazz(self.mocks)
                 print(f'{test_class.name} :: RUNNING')
 
+                did_pass = False
+                result = None
                 try:
                     class_instance.given()
                     result = class_instance.when()
                     did_pass = class_instance.then(result)
                 except Exception as e:
                     traceback.print_tb(e.__traceback__)
-                    return False
+                    tests_passed = False
 
                 if not did_pass:
-                    print(f'{test_class.name} :: FAILED. Test result: "{result}"\n')
+                    print(f'{test_class.name} :: FAILED. Actual result: "{result}"\n')
                     tests_passed = False
                 else:
                     print(f'{test_class.name} :: PASSED\n')

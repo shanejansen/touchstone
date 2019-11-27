@@ -10,19 +10,29 @@ class HttpVerify(Verify):
         super().__init__(exposed_port)
 
     def get_called(self, endpoint: str, times: int = None) -> bool:
+        """Returns True if the given endpoint has been called with a GET request the given number of times.
+        If times is not supplied, the endpoint can be called any number of times."""
         return self.__count_verification(endpoint, 'GET', times)
 
     def post_called(self, endpoint: str, times: int = None) -> bool:
+        """Returns True if the given endpoint has been called with a POST request the given number of times.
+        If times is not supplied, the endpoint can be called any number of times."""
         return self.__count_verification(endpoint, 'POST', times)
 
     def put_called(self, endpoint: str, times: int = None) -> bool:
+        """Returns True if the given endpoint has been called with a PUT request the given number of times.
+        If times is not supplied, the endpoint can be called any number of times."""
         return self.__count_verification(endpoint, 'PUT', times)
 
     def delete_called(self, endpoint: str, times: int = None) -> bool:
+        """Returns True if the given endpoint has been called with a DELETE request the given number of times.
+        If times is not supplied, the endpoint can be called any number of times."""
         return self.__count_verification(endpoint, 'DELETE', times)
 
-    def post_contained(self, expected_payload: str, call_num: int = 1) -> bool:
-        return False
+    def post_contained(self, endpoint: str, expected_body: str) -> bool:
+        """Returns True if the given endpoint has been called with a POST request containing the given expected
+        body."""
+        return self.__contained_verification(endpoint, "POST", expected_body)
 
     def __count_verification(self, endpoint, http_verb, times):
         payload = {
@@ -39,3 +49,21 @@ class HttpVerify(Verify):
         if not times:
             return call_count > 0
         return times == call_count
+
+    def __contained_verification(self, endpoint, http_verb, expected_body):
+        payload = {
+            'method': http_verb,
+            'url': endpoint
+        }
+        data = json.dumps(payload).encode('utf8')
+        request = urllib.request.Request(
+            f'http://{TouchstoneConfig.instance().config["host"]}:{self.exposed_port}/__admin/requests/find',
+            data=data,
+            headers={'Content-Type': 'application/json'})
+        response = urllib.request.urlopen(request).read()
+        bodies = []
+        for request in json.loads(response)['requests']:
+            bodies.append(request['body'])
+        if expected_body in bodies:
+            return True
+        self.assert_true(expected_body, bodies)
