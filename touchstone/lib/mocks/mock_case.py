@@ -23,7 +23,8 @@ class Verify(object):
     def __init__(self, exposed_port: int):
         self.exposed_port: int = exposed_port
 
-    def assert_true(self, expected, actual):
+    def expected_matches_actual(self, expected, actual):
         if expected == actual:
             return True
         print(f'Expected "{expected}" does not match actual "{actual}".')
+        return False

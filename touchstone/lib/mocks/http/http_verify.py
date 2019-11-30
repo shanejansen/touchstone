@@ -34,6 +34,16 @@ class HttpVerify(Verify):
         body."""
         return self.__contained_verification(endpoint, "POST", expected_body)
 
+    def put_contained(self, endpoint: str, expected_body: str) -> bool:
+        """Returns True if the given endpoint has been called with a PUT request containing the given expected
+        body."""
+        return self.__contained_verification(endpoint, "PUT", expected_body)
+
+    def delete_contained(self, endpoint: str, expected_body: str) -> bool:
+        """Returns True if the given endpoint has been called with a DELETE request containing the given expected
+        body."""
+        return self.__contained_verification(endpoint, "DELETE", expected_body)
+
     def __count_verification(self, endpoint, http_verb, times):
         payload = {
             'method': http_verb,
@@ -48,7 +58,7 @@ class HttpVerify(Verify):
         call_count = json.loads(response)['count']
         if not times:
             return call_count > 0
-        return times == call_count
+        return self.expected_matches_actual(times, call_count)
 
     def __contained_verification(self, endpoint, http_verb, expected_body):
         payload = {
@@ -66,4 +76,5 @@ class HttpVerify(Verify):
             bodies.append(request['body'])
         if expected_body in bodies:
             return True
-        self.assert_true(expected_body, bodies)
+        print(f'Expected "{expected_body}" was not found in actual "{bodies}".')
+        return False

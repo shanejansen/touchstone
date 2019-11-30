@@ -75,3 +75,31 @@ class PostContained(TouchstoneTest):
     def then(self, test_result) -> bool:
         expected_body = 'foo'
         return self.mocks.http.verify().post_contained('/some-endpoint', expected_body)
+
+
+class PutContained(TouchstoneTest):
+    def given(self):
+        self.mocks.http.setup().put('/some-endpoint', 'hello http!')
+
+    def when(self):
+        body = 'foo'.encode('utf8')
+        request = urllib.request.Request('http://localhost:8085/some-endpoint', method='PUT', data=body)
+        urllib.request.urlopen(request)
+
+    def then(self, test_result) -> bool:
+        expected_body = 'foo'
+        return self.mocks.http.verify().put_contained('/some-endpoint', expected_body)
+
+
+class DeleteContained(TouchstoneTest):
+    def given(self):
+        self.mocks.http.setup().delete('/some-endpoint', 'hello http!')
+
+    def when(self):
+        body = 'foo'.encode('utf8')
+        request = urllib.request.Request('http://localhost:8085/some-endpoint', method='DELETE', data=body)
+        urllib.request.urlopen(request)
+
+    def then(self, test_result) -> bool:
+        expected_body = 'foo'
+        return self.mocks.http.verify().delete_contained('/some-endpoint', expected_body)

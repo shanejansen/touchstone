@@ -40,7 +40,7 @@ class Http(Mock):
             return False
 
     def start(self):
-        DockerManager.instance().run_image('rodolpheche/wiremock', self.exposed_port(), 8080)
+        DockerManager.instance().run_image('rodolpheche/wiremock:2.25.1-alpine', self.exposed_port(), 8080)
 
     def setup(self) -> Setup:
         return self.__setup
