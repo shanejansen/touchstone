@@ -9,8 +9,7 @@
   ],
   "mocks": [
     {
-      "type": "http",
-      "port": 8085
+      "type": "http"
     }
   ]
 }

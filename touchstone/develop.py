@@ -17,18 +17,27 @@ def execute():
         mocks.load_defaults()
         mocks.print_available_mocks()
         services = Services(mocks)
-        print('\nIn dev mode - keeping alive\n'
+        print('\nDevelopment mode:\n'
               'run - Runs all Touchstone tests.\n'
-              'exit - Exit Touchstone.')
+              'mocks print - Prints mock UI URLs.\n'
+              'mocks reset - Resets all mocks to their default state.\n'
+              'exit - Exit Touchstone.\n')
         while True:
             command = input('Touchstone Command: ')
             if command == 'run':
+                mocks.cleanup()
                 common.load_config()
                 tests_did_pass = services.run_tests()
                 if tests_did_pass:
                     print('All Touchstone tests passed successfully!')
                 else:
                     print('One or more Touchstone tests failed.')
+                mocks.cleanup()
+                mocks.load_defaults()
+            elif command == 'mocks print':
+                mocks.print_available_mocks()
+            elif command == 'mocks reset':
+                mocks.cleanup()
                 mocks.load_defaults()
             elif command == 'exit':
                 common.exit_touchstone(True)

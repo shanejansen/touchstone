@@ -23,8 +23,8 @@ class Service(object):
             dockerfile_path = os.path.abspath(
                 os.path.join(TouchstoneConfig.instance().config["root"], self.service_config.config['dockerfile']))
             tag = DockerManager.instance().build_dockerfile(dockerfile_path)
-            DockerManager.instance().run_image(tag, self.service_config.config['port'],
-                                               self.service_config.config['port'])
+            service_port = self.service_config.config['port']
+            DockerManager.instance().run_image(tag, [(service_port, service_port)])
 
         if self.__wait_for_availability() is False:
             self.__log('Could not connect to service\'s availability endpoint.\n')

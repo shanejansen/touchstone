@@ -8,15 +8,15 @@ class ServiceConfig(object):
             'host': TouchstoneConfig.instance().config['host'],
             'port': 8080,
             'dockerfile': None,
-            'base_url': '',
             'availability_endpoint': '',
             'num_retries': 20,
             'seconds_between_retries': 10
         }
-
-        self.config['url'] = f'http://{self.config["host"]}' \
-                             f':{self.config["port"]}' \
-                             f'{self.config["base_url"]}'
+        self.__build_url()
 
     def merge(self, other: dict):
         self.config = dict(list(self.config.items()) + list(other.items()))
+        self.__build_url()
+
+    def __build_url(self):
+        self.config['url'] = f'http://{self.config["host"]}:{self.config["port"]}'

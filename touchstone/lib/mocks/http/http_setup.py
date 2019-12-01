@@ -5,20 +5,20 @@ import urllib.parse
 import urllib.request
 
 from touchstone.lib import exceptions
-from touchstone.lib.configs.touchstone_config import TouchstoneConfig
 from touchstone.lib.mocks.mock_case import Setup
+from touchstone.lib.mocks.mock_context import MockContext
 
 
 class HttpSetup(Setup):
-    def __init__(self, exposed_port: int):
-        super().__init__(exposed_port)
+    def __init__(self, mock_context: MockContext):
+        super().__init__(mock_context)
         self.mock_ids: list = []
 
     def cleanup(self):
         # Remove all mocked endpoints
         for mock_id in self.mock_ids:
             request = urllib.request.Request(
-                f'http://{TouchstoneConfig.instance().config["host"]}:{self.exposed_port}/__admin/mappings/'
+                f'{self.mock_context.default_url}/__admin/mappings/'
                 f'{mock_id}',
                 method='DELETE')
             urllib.request.urlopen(request)
@@ -26,7 +26,7 @@ class HttpSetup(Setup):
 
         # Reset requests journal
         request = urllib.request.Request(
-            f'http://{TouchstoneConfig.instance().config["host"]}:{self.exposed_port}/__admin/requests',
+            f'{self.mock_context.default_url}/__admin/requests',
             method='DELETE')
         urllib.request.urlopen(request)
 
@@ -109,7 +109,7 @@ class HttpSetup(Setup):
     def __submit_mock(self, mock: dict):
         data = json.dumps(mock).encode('utf8')
         request = urllib.request.Request(
-            f'http://{TouchstoneConfig.instance().config["host"]}:{self.exposed_port}/__admin/mappings',
+            f'{self.mock_context.default_url}/__admin/mappings',
             data=data,
             headers={'Content-Type': 'application/json'})
         response = urllib.request.urlopen(request).read()

@@ -31,15 +31,14 @@ class DockerManager:
         self.images.append(tag)
         return tag
 
-    def run_image(self, image: str, exposed_port: int, container_port: int, dev_ports: list = None) -> str:
+    def run_image(self, image: str, ports: list) -> str:
         additional_params = ''
 
-        if dev_ports is not None:
-            for dev_port in dev_ports:
-                additional_params += f' -p {dev_port}:{dev_port}'
+        for host, container in ports:
+            additional_params += f' -p {host}:{container}'
 
         name = uuid.uuid4().hex
-        command = f'docker run -d --name {name} -p {exposed_port}:{container_port} {additional_params} {image}'
+        command = f'docker run -d --name {name} {additional_params} {image}'
         result = subprocess.run(command, shell=True, stdout=subprocess.DEVNULL)
 
         if result.returncode is not 0:

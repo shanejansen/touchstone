@@ -1,13 +1,13 @@
 import json
 import urllib.request
 
-from touchstone.lib.configs.touchstone_config import TouchstoneConfig
 from touchstone.lib.mocks.mock_case import Verify
+from touchstone.lib.mocks.mock_context import MockContext
 
 
 class HttpVerify(Verify):
-    def __init__(self, exposed_port: int):
-        super().__init__(exposed_port)
+    def __init__(self, mock_context: MockContext):
+        super().__init__(mock_context)
 
     def get_called(self, endpoint: str, times: int = None) -> bool:
         """Returns True if the given endpoint has been called with a GET request the given number of times.
@@ -51,7 +51,7 @@ class HttpVerify(Verify):
         }
         data = json.dumps(payload).encode('utf8')
         request = urllib.request.Request(
-            f'http://{TouchstoneConfig.instance().config["host"]}:{self.exposed_port}/__admin/requests/count',
+            f'{self.mock_context.default_url}/__admin/requests/count',
             data=data,
             headers={'Content-Type': 'application/json'})
         response = urllib.request.urlopen(request).read()
@@ -67,7 +67,7 @@ class HttpVerify(Verify):
         }
         data = json.dumps(payload).encode('utf8')
         request = urllib.request.Request(
-            f'http://{TouchstoneConfig.instance().config["host"]}:{self.exposed_port}/__admin/requests/find',
+            f'{self.mock_context.default_url}/__admin/requests/find',
             data=data,
             headers={'Content-Type': 'application/json'})
         response = urllib.request.urlopen(request).read()

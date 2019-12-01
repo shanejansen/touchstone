@@ -40,9 +40,7 @@ class Mocks(object):
 
     def print_available_mocks(self):
         for mock in self.mocks:
-            print(
-                f'Mock {mock.pretty_name()} running on: '
-                f'http://{TouchstoneConfig.instance().config["host"]}:{mock.exposed_port()}')
+            print(f'Mock {mock.pretty_name()} UI running at: {mock.ui_url()}')
 
     def __parse_mocks(self):
         for mock in TouchstoneConfig.instance().config['mocks']:
@@ -69,4 +67,5 @@ class Mocks(object):
                 else:
                     time.sleep(5)
             if retries is 10:
-                raise exceptions.MockException(f'Mock {mock.pretty_name()} timed out on initialization.')
+                raise exceptions.MockException(
+                    f'Mock {mock.pretty_name()} never became healthy and timed out on initialization.')

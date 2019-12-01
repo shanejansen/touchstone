@@ -1,9 +1,11 @@
 import abc
 
+from touchstone.lib.mocks.mock_context import MockContext
+
 
 class Setup(object):
-    def __init__(self, exposed_port: int):
-        self.exposed_port: int = exposed_port
+    def __init__(self, mock_context: MockContext):
+        self.mock_context: MockContext = mock_context
 
     @abc.abstractmethod
     def load_defaults(self, defaults: dict):
@@ -11,17 +13,17 @@ class Setup(object):
 
     @abc.abstractmethod
     def cleanup(self):
-        """Cleanup this mock to prepare for the next test."""
+        """Return this mock to its original, plain state."""
 
 
 class Exercise(object):
-    def __init__(self, exposed_port: int):
-        self.exposed_port: int = exposed_port
+    def __init__(self, mock_context: MockContext):
+        self.mock_context: MockContext = mock_context
 
 
 class Verify(object):
-    def __init__(self, exposed_port: int):
-        self.exposed_port: int = exposed_port
+    def __init__(self, mock_context: MockContext):
+        self.mock_context: MockContext = mock_context
 
     def expected_matches_actual(self, expected, actual):
         if expected == actual:

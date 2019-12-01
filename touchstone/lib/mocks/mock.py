@@ -1,5 +1,6 @@
 import abc
 
+from touchstone.lib.configs.touchstone_config import TouchstoneConfig
 from touchstone.lib.mocks.mock_case import Setup, Exercise, Verify
 
 
@@ -20,9 +21,26 @@ class Mock(object):
         """A pretty, display name for this mock."""
 
     @abc.abstractmethod
-    def default_exposed_port(self) -> int:
-        """The default port where this mock will be exposed. Be sure to call the method self.exposed_port() in case it
-        has been overridden."""
+    def default_port(self) -> int:
+        """The default port and endpoint where this mock will be exposed."""
+
+    def default_endpoint(self) -> str:
+        """Optional: The default endpoint where this mock will be exposed."""
+        return ''
+
+    def default_url(self) -> str:
+        return f'http://{TouchstoneConfig.instance().config["host"]}:{self.default_port()}{self.default_endpoint()}'
+
+    def ui_port(self) -> int:
+        """Optional: The port where this mock's UI is available."""
+        return self.default_port()
+
+    def ui_endpoint(self) -> str:
+        """Optional: The endpoint where this mock's UI is available."""
+        return ''
+
+    def ui_url(self):
+        return f'http://{TouchstoneConfig.instance().config["host"]}:{self.ui_port()}{self.ui_endpoint()}'
 
     @abc.abstractmethod
     def is_healthy(self) -> bool:
@@ -43,8 +61,3 @@ class Mock(object):
     @abc.abstractmethod
     def verify(self) -> Verify:
         """"""
-
-    def exposed_port(self) -> int:
-        if 'port' in self.mock_config:
-            return self.mock_config['port']
-        return self.default_exposed_port()
