@@ -3,13 +3,22 @@ import http.client
 import urllib.error
 import urllib.request
 
-from touchstone.lib.configs.touchstone_config import TouchstoneConfig
 from touchstone.lib.docker_manager import DockerManager
 from touchstone.lib.mocks.mock import Mock
 from touchstone.lib.mocks.mock_case import Verify, Exercise, Setup
+from touchstone.lib.mocks.mock_context import MockContext
+from touchstone.lib.mocks.rabbitmq.rabbitmq_exercise import RabbitmqExercise
+from touchstone.lib.mocks.rabbitmq.rabbitmq_setup import RabbitmqSetup
+from touchstone.lib.mocks.rabbitmq.rabbitmq_verify import RabbitmqVerify
 
 
 class Rabbitmq(Mock):
+    def __init__(self, mock_config: dict):
+        super().__init__(mock_config)
+        mock_context = MockContext(self.default_url())
+        self.__setup = RabbitmqSetup(mock_context)
+        self.__exercise = RabbitmqExercise(mock_context)
+        self.__verify = RabbitmqVerify(mock_context)
 
     @staticmethod
     def name() -> str:
@@ -33,17 +42,15 @@ class Rabbitmq(Mock):
             return False
 
     def start(self):
-        dev_ports = None
-        if TouchstoneConfig.instance().config['dev']:
-            dev_ports = [15672]
-        DockerManager.instance().run_image('rabbitmq:3.7.22-management-alpine', self.exposed_port(), 5672,
-                                           dev_ports=dev_ports)
+        DockerManager.instance().run_image('rabbitmq:3.7.22-management-alpine',
+                                           [(self.default_port(), 5672),
+                                            (self.ui_port(), 15672)])
 
     def setup(self) -> Setup:
-        pass
+        return self.__setup
 
     def exercise(self) -> Exercise:
-        pass
+        return self.__exercise
 
     def verify(self) -> Verify:
-        pass
+        return self.__verify

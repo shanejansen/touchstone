@@ -1,5 +1,6 @@
 import json
 import os
+
 import time
 
 from touchstone.lib import exceptions
@@ -43,13 +44,13 @@ class Mocks(object):
             print(f'Mock {mock.pretty_name()} UI running at: {mock.ui_url()}')
 
     def __parse_mocks(self):
-        for mock in TouchstoneConfig.instance().config['mocks']:
-            mock_type = mock['type']
+        for mock_config in TouchstoneConfig.instance().config['mocks']:
+            mock_type = mock_config['type']
             if mock_type == Http.name():
-                self.http = Http(mock)
+                self.http = Http(mock_config)
                 self.mocks.append(self.http)
             elif mock_type == Rabbitmq.name():
-                self.rabbit_mq = Rabbitmq(mock)
+                self.rabbit_mq = Rabbitmq(mock_config)
                 self.mocks.append(self.rabbit_mq)
             else:
                 raise exceptions.MockNotSupportedException(
