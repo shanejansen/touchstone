@@ -9,6 +9,7 @@ verify_ssl = true
 pyfiglet = "*"
 click = "*"
 touchstone = {editable = true,path = "."}
+aio-pika = "*"
 
 [requires]
 python_version = "3.6"
