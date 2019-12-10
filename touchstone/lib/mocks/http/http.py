@@ -10,16 +10,14 @@ from touchstone.lib.mocks.http.http_setup import HttpSetup
 from touchstone.lib.mocks.http.http_verify import HttpVerify
 from touchstone.lib.mocks.mock import Mock
 from touchstone.lib.mocks.mock_case import Verify, Exercise, Setup
-from touchstone.lib.mocks.mock_context import MockContext
 
 
 class Http(Mock):
     def __init__(self, mock_config: dict):
         super().__init__(mock_config)
-        mock_context = MockContext(self.default_url())
-        self.__setup = HttpSetup(mock_context)
-        self.__exercise = HttpExercise(mock_context)
-        self.__verify = HttpVerify(mock_context)
+        self.__setup = HttpSetup(self.default_url())
+        self.__exercise = HttpExercise()
+        self.__verify = HttpVerify(self.default_url())
 
     @staticmethod
     def name() -> str:
@@ -31,6 +29,9 @@ class Http(Mock):
 
     def default_port(self) -> int:
         return 24080
+
+    def default_url(self) -> str:
+        return 'http://' + super().default_url()
 
     def ui_endpoint(self) -> str:
         return '/__admin'

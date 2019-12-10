@@ -1,34 +1,36 @@
-[
-  {
-    "request": {
-      "method": "GET",
-      "url": "/api/v1/foo"
-    },
-    "response": {
-      "status": 200,
-      "headers": {
-        "Content-Type": "text/plain"
+{
+  "requests": [
+    {
+      "request": {
+        "method": "GET",
+        "url": "/api/v1/foo"
       },
-      "body": "Hello HTTP!"
-    }
-  },
-  {
-    "request": {
-      "method": "GET",
-      "url": "/api/v1/bar"
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "text/plain"
+        },
+        "body": "Hello HTTP!"
+      }
     },
-    "response": {
-      "status": 200,
-      "headers": {
-        "Content-Type": "application/json"
+    {
+      "request": {
+        "method": "GET",
+        "url": "/api/v1/bar"
       },
-      "jsonBody": {
-        "customJson": [
-          "Hello",
-          "HTTP"
-        ],
-        "foo": "bar"
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "customJson": [
+            "Hello",
+            "HTTP"
+          ],
+          "foo": "bar"
+        }
       }
     }
-  }
-]
+  ]
+}

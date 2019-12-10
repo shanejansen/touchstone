@@ -20,16 +20,20 @@ class Mock(object):
     def pretty_name() -> str:
         """A pretty, display name for this mock."""
 
+    def default_host(self) -> str:
+        """The default host where this mock will be exposed."""
+        return TouchstoneConfig.instance().config["host"]
+
     @abc.abstractmethod
     def default_port(self) -> int:
-        """The default port and endpoint where this mock will be exposed."""
+        """The default port where this mock will be exposed."""
 
     def default_endpoint(self) -> str:
-        """Optional: The default endpoint where this mock will be exposed."""
+        """The default endpoint where this mock will be exposed. This will simply appended to the default URL."""
         return ''
 
     def default_url(self) -> str:
-        return f'http://{TouchstoneConfig.instance().config["host"]}:{self.default_port()}{self.default_endpoint()}'
+        return f'{self.default_host()}:{self.default_port()}{self.default_endpoint()}'
 
     def ui_port(self) -> int:
         """Optional: The port where this mock's UI is available."""
@@ -40,7 +44,7 @@ class Mock(object):
         return ''
 
     def ui_url(self):
-        return f'http://{TouchstoneConfig.instance().config["host"]}:{self.ui_port()}{self.ui_endpoint()}'
+        return f'http://{self.default_host()}:{self.ui_port()}{self.ui_endpoint()}'
 
     @abc.abstractmethod
     def is_healthy(self) -> bool:
@@ -49,6 +53,10 @@ class Mock(object):
     @abc.abstractmethod
     def start(self):
         """Starts this mock."""
+
+    def initialize(self):
+        """Called when this mock becomes healthy."""
+        pass
 
     @abc.abstractmethod
     def setup(self) -> Setup:

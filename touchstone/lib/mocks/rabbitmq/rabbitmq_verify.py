@@ -1,7 +1,9 @@
+from pika.adapters.blocking_connection import BlockingChannel
+
 from touchstone.lib.mocks.mock_case import Verify
-from touchstone.lib.mocks.mock_context import MockContext
 
 
 class RabbitmqVerify(Verify):
-    def __init__(self, mock_context: MockContext):
-        super().__init__(mock_context)
+    def __init__(self, channel: BlockingChannel):
+        super().__init__()
+        self.channel: BlockingChannel = channel

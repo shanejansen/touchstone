@@ -3,10 +3,11 @@ import http.client
 import urllib.error
 import urllib.request
 
+import pika
+
 from touchstone.lib.docker_manager import DockerManager
 from touchstone.lib.mocks.mock import Mock
 from touchstone.lib.mocks.mock_case import Verify, Exercise, Setup
-from touchstone.lib.mocks.mock_context import MockContext
 from touchstone.lib.mocks.rabbitmq.rabbitmq_exercise import RabbitmqExercise
 from touchstone.lib.mocks.rabbitmq.rabbitmq_setup import RabbitmqSetup
 from touchstone.lib.mocks.rabbitmq.rabbitmq_verify import RabbitmqVerify
@@ -15,10 +16,9 @@ from touchstone.lib.mocks.rabbitmq.rabbitmq_verify import RabbitmqVerify
 class Rabbitmq(Mock):
     def __init__(self, mock_config: dict):
         super().__init__(mock_config)
-        mock_context = MockContext(self.default_url())
-        self.__setup = RabbitmqSetup(mock_context)
-        self.__exercise = RabbitmqExercise(mock_context)
-        self.__verify = RabbitmqVerify(mock_context)
+        self.__setup = None
+        self.__exercise = None
+        self.__verify = None
 
     @staticmethod
     def name() -> str:
@@ -37,7 +37,7 @@ class Rabbitmq(Mock):
     def is_healthy(self) -> bool:
         try:
             response = urllib.request.urlopen(f'{self.ui_url()}').read()
-            return False if response is None else True
+            return response is not None
         except (urllib.error.URLError, http.client.RemoteDisconnected):
             return False
 
@@ -45,6 +45,19 @@ class Rabbitmq(Mock):
         DockerManager.instance().run_image('rabbitmq:3.7.22-management-alpine',
                                            [(self.default_port(), 5672),
                                             (self.ui_port(), 15672)])
+
+    def initialize(self):
+        connection = pika.BlockingConnection(
+            pika.ConnectionParameters(
+                host=self.default_host(),
+                port=self.default_port(),
+                credentials=pika.PlainCredentials('guest', 'guest'),
+                heartbeat=0
+            ))
+        channel = connection.channel()
+        self.__setup = RabbitmqSetup(channel)
+        self.__exercise = RabbitmqExercise(channel)
+        self.__verify = RabbitmqVerify(channel)
 
     def setup(self) -> Setup:
         return self.__setup

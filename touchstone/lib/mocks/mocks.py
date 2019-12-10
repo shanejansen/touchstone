@@ -23,6 +23,8 @@ class Mocks(object):
         for mock in self.mocks:
             mock.start()
         self.__wait_for_healthy_mocks()
+        for mock in self.mocks:
+            mock.initialize()
         print('Finished starting mocks.\n')
 
     def load_defaults(self):

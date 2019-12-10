@@ -6,10 +6,10 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
+touchstone = {editable = true,path = "."}
 pyfiglet = "*"
 click = "*"
-touchstone = {editable = true,path = "."}
-aio-pika = "*"
+pika = "*"
 
 [requires]
 python_version = "3.6"

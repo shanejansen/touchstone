@@ -1,0 +1,40 @@
+{
+  "exchanges": [
+    {
+      "name": "direct-dev.exchange",
+      "type": "direct",
+      "queues": [
+        {
+          "name": "direct-dev.queue",
+          "routingKey": "foo"
+        }
+      ]
+    },
+    {
+      "name": "fanout-dev.exchange",
+      "type": "fanout",
+      "queues": [
+        {
+          "name": "fanout-dev1.queue"
+        },
+        {
+          "name": "fanout-dev2.queue"
+        }
+      ]
+    },
+    {
+      "name": "topic-dev.exchange",
+      "type": "topic",
+      "queues": [
+        {
+          "name": "topic-dev1.queue",
+          "routingKey": "foo"
+        },
+        {
+          "name": "topic-dev2.queue",
+          "routingKey": "bar"
+        }
+      ]
+    }
+  ]
+}
