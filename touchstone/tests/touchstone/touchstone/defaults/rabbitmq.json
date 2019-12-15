@@ -1,37 +1,37 @@
 {
   "exchanges": [
     {
-      "name": "direct-dev.exchange",
+      "name": "default-direct.exchange",
       "type": "direct",
       "queues": [
         {
-          "name": "direct-dev.queue",
+          "name": "default-direct.queue",
           "routingKey": "foo"
         }
       ]
     },
     {
-      "name": "fanout-dev.exchange",
+      "name": "default-fanout.exchange",
       "type": "fanout",
       "queues": [
         {
-          "name": "fanout-dev1.queue"
+          "name": "default-fanout1.queue"
         },
         {
-          "name": "fanout-dev2.queue"
+          "name": "default-fanout2.queue"
         }
       ]
     },
     {
-      "name": "topic-dev.exchange",
+      "name": "default-topic.exchange",
       "type": "topic",
       "queues": [
         {
-          "name": "topic-dev1.queue",
+          "name": "default-topic1.queue",
           "routingKey": "foo"
         },
         {
-          "name": "topic-dev2.queue",
+          "name": "default-topic2.queue",
           "routingKey": "bar"
         }
       ]

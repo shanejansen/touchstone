@@ -11,6 +11,7 @@ from touchstone.lib.mocks.mock_case import Verify, Exercise, Setup
 from touchstone.lib.mocks.rabbitmq.rabbitmq_exercise import RabbitmqExercise
 from touchstone.lib.mocks.rabbitmq.rabbitmq_setup import RabbitmqSetup
 from touchstone.lib.mocks.rabbitmq.rabbitmq_verify import RabbitmqVerify
+from touchstone.lib.mocks.rabbitmq.rmq_context import RmqContext
 
 
 class Rabbitmq(Mock):
@@ -54,8 +55,9 @@ class Rabbitmq(Mock):
                 credentials=pika.PlainCredentials('guest', 'guest'),
                 heartbeat=0
             ))
+        rmq_context = RmqContext()
         channel = connection.channel()
-        self.__setup = RabbitmqSetup(channel)
+        self.__setup = RabbitmqSetup(channel, rmq_context)
         self.__exercise = RabbitmqExercise(channel)
         self.__verify = RabbitmqVerify(channel)
 

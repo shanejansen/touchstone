@@ -25,19 +25,20 @@ def execute():
         while True:
             command = input('Touchstone Command: ')
             if command == 'run':
-                mocks.cleanup()
+                mocks.reset()
+                mocks.load_defaults()
                 common.load_config()
                 tests_did_pass = services.run_tests()
                 if tests_did_pass:
                     print('All Touchstone tests passed successfully!')
                 else:
                     print('One or more Touchstone tests failed.')
-                mocks.cleanup()
+                mocks.reset()
                 mocks.load_defaults()
             elif command == 'mocks print':
                 mocks.print_available_mocks()
             elif command == 'mocks reset':
-                mocks.cleanup()
+                mocks.reset()
                 mocks.load_defaults()
             elif command == 'exit':
                 common.exit_touchstone(True)

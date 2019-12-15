@@ -42,9 +42,12 @@ class DockerManager:
         result = subprocess.run(command, shell=True, stdout=subprocess.DEVNULL)
 
         if result.returncode is not 0:
+            exposed_ports = []
+            for host, container in ports:
+                exposed_ports.append(host)
             raise exceptions.ContainerException(
-                f'Container image {image} could not be started. Ensure Docker is running and port {exposed_port} '
-                f'is not already in use.')
+                f'Container image {image} could not be started. Ensure Docker is running and ports {exposed_ports} '
+                f'are not already in use.')
         self.containers.append(name)
         return name
 

@@ -1,5 +1,6 @@
 import json
 import os
+
 import sys
 
 from touchstone.lib.configs.touchstone_config import TouchstoneConfig
@@ -14,13 +15,13 @@ def load_config():
 
 def sanity_check_passes() -> bool:
     touchstone_json_path = os.path.join(TouchstoneConfig.instance().config['root'], 'touchstone.json')
-    dev_defaults_path = os.path.join(TouchstoneConfig.instance().config['root'], 'dev-defaults')
-    return os.path.exists(touchstone_json_path) and os.path.exists(dev_defaults_path)
+    defaults_path = os.path.join(TouchstoneConfig.instance().config['root'], 'defaults')
+    return os.path.exists(touchstone_json_path) and os.path.exists(defaults_path)
 
 
 def prep_run():
     if not sanity_check_passes():
-        print('touchstone.json and dev-defaults could not be found. '
+        print('touchstone.json and the defaults directory could not be found. '
               'If touchstone has not been initialized, run \'touchstone init\'.')
         exit(1)
     load_config()

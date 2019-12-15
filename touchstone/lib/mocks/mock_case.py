@@ -7,7 +7,7 @@ class Setup(object):
         """Loads defaults for this mock provided by the user for dev purposes."""
 
     @abc.abstractmethod
-    def cleanup(self):
+    def reset(self):
         """Returns this mock to its original state."""
 
 

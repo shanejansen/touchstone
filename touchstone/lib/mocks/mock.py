@@ -13,7 +13,7 @@ class Mock(object):
     @staticmethod
     @abc.abstractmethod
     def name() -> str:
-        """The name of this mock. This is used to match the mock type in touchstone.json and dev-defaults."""
+        """The name of this mock. This is used to match the mock type in touchstone.json and defaults."""
 
     @staticmethod
     @abc.abstractmethod

@@ -12,6 +12,7 @@ def execute():
         print(figlet_format('Touchstone', font='larry3d'))
         mocks = Mocks()
         mocks.start()
+        mocks.load_defaults()
         services = Services(mocks)
         tests_did_pass = services.run_tests()
         if tests_did_pass:

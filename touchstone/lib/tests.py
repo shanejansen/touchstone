@@ -52,7 +52,7 @@ class Tests(object):
                     tests_passed = False
                 else:
                     print(f'{test_class.name} :: PASSED\n')
-                self.mocks.cleanup()
+                self.mocks.reset()
         return tests_passed
 
     def __load_test_classes(self):

@@ -30,16 +30,16 @@ class Mocks(object):
     def load_defaults(self):
         for mock in self.mocks:
             try:
-                with open(os.path.join(TouchstoneConfig.instance().config['root'], f'dev-defaults/{mock.name()}.json'),
+                with open(os.path.join(TouchstoneConfig.instance().config['root'], f'defaults/{mock.name()}.json'),
                           'r') as file:
                     defaults = json.load(file)
                     mock.setup().load_defaults(defaults)
             except FileNotFoundError:
                 pass
 
-    def cleanup(self):
+    def reset(self):
         for mock in self.mocks:
-            mock.setup().cleanup()
+            mock.setup().reset()
 
     def print_available_mocks(self):
         for mock in self.mocks:

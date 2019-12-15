@@ -14,7 +14,11 @@ class HttpSetup(Setup):
         self.url = url
         self.mock_ids: list = []
 
-    def cleanup(self):
+    def load_defaults(self, defaults: dict):
+        for request in defaults["requests"]:
+            self.__submit_mock(request)
+
+    def reset(self):
         # Remove all mocked endpoints
         for mock_id in self.mock_ids:
             request = urllib.request.Request(
@@ -29,10 +33,6 @@ class HttpSetup(Setup):
             f'{self.url}/__admin/requests',
             method='DELETE')
         urllib.request.urlopen(request)
-
-    def load_defaults(self, defaults: dict):
-        for request in defaults["requests"]:
-            self.__submit_mock(request)
 
     def get(self, endpoint: str, response: str, response_status: int = 200,
             response_headers: dict = {'Content-Type': 'application/json'}):
