@@ -13,13 +13,6 @@ class RabbitmqSetup(Setup):
         self.channel: BlockingChannel = channel
         self.rmq_context: RmqContext = rmq_context
 
-        # Listen to shadow queue
-        # Update dictionary as messages are received
-
-        self.channel.connection.add_callback_threadsafe()
-        thread = Thread(target=self.channel.start_consuming())
-        thread.start()
-
         self.exchanges: list = []
         self.queues: list = []
         self.default_exchanges: list = []
@@ -31,6 +24,8 @@ class RabbitmqSetup(Setup):
             for queue in exchange['queues']:
                 routing_key = queue.get('routingKey', None)
                 self.__create_default_queue(queue['name'], exchange['name'], routing_key)
+        consuming_thread = Thread(target=self.channel.start_consuming)
+        consuming_thread.start()
 
     def reset(self):
         for queue in self.queues:
@@ -71,11 +66,11 @@ class RabbitmqSetup(Setup):
             self.default_queues.append(name)
 
     def __consume(self, queue_name: str):
-        def test_consume(channel: BlockingChannel, method: spec.Basic.Deliver, properties: spec.BasicProperties,
-                         body: bytes):
+        def message_received(channel: BlockingChannel, method: spec.Basic.Deliver, properties: spec.BasicProperties,
+                             body: bytes):
             print(method)
             print(properties)
             print(body)
             channel.basic_ack(delivery_tag=method.delivery_tag)
 
-        self.channel.basic_consume(queue_name, test_consume)
+        self.channel.basic_consume(queue_name, message_received)
