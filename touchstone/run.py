@@ -14,6 +14,7 @@ def execute():
         mocks.start()
         mocks.load_defaults()
         services = Services(mocks)
+        services.start()
         tests_did_pass = services.run_tests()
         if tests_did_pass:
             print('All Touchstone tests passed successfully!')

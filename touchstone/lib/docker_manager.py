@@ -6,11 +6,11 @@ from typing import Optional
 from touchstone.lib import exceptions
 
 
-class DockerManager:
-    __instance = None
+class DockerManager(object):
+    __instance: 'DockerManager' = None
 
     @staticmethod
-    def instance():
+    def instance() -> 'DockerManager':
         if DockerManager.__instance is None:
             DockerManager()
         return DockerManager.__instance
@@ -51,11 +51,18 @@ class DockerManager:
         self.containers.append(name)
         return name
 
+    def stop_container(self, name):
+        subprocess.run(['docker', 'container', 'stop', name], stdout=subprocess.DEVNULL)
+        subprocess.run(['docker', 'container', 'rm', name], stdout=subprocess.DEVNULL)
+        self.containers.remove(name)
+
     def cleanup(self):
         if self.images:
             for image in self.images:
                 subprocess.run(['docker', 'image', 'rm', image], stdout=subprocess.DEVNULL)
+        self.images = []
         if self.containers:
             for container in self.containers:
                 subprocess.run(['docker', 'container', 'stop', container], stdout=subprocess.DEVNULL)
                 subprocess.run(['docker', 'container', 'rm', container], stdout=subprocess.DEVNULL)
+        self.containers = []

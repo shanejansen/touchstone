@@ -2,10 +2,10 @@ import sys
 
 
 class TouchstoneConfig:
-    __instance = None
+    __instance: 'TouchstoneConfig' = None
 
     @staticmethod
-    def instance():
+    def instance() -> 'TouchstoneConfig':
         if TouchstoneConfig.__instance is None:
             TouchstoneConfig()
         return TouchstoneConfig.__instance

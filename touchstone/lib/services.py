@@ -9,8 +9,18 @@ from touchstone.lib.tests import Tests
 
 class Services(object):
     def __init__(self, mocks: Mocks):
-        self.mocks = mocks
+        self.mocks: Mocks = mocks
         self.services: list = []
+
+    def start(self):
+        self.stop()
+        self.__parse_services()
+        for service in self.services:
+            service.start()
+
+    def stop(self):
+        for service in self.services:
+            service.stop()
 
     def run_tests(self) -> bool:
         self.__parse_services()
