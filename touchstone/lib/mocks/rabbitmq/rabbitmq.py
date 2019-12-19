@@ -17,9 +17,10 @@ from touchstone.lib.mocks.rabbitmq.rmq_context import RmqContext
 class Rabbitmq(Mock):
     def __init__(self, mock_config: dict):
         super().__init__(mock_config)
-        self.__setup = None
-        self.__exercise = None
-        self.__verify = None
+        self.__container_name: str = None
+        self.__setup: RabbitmqSetup = None
+        self.__exercise: RabbitmqExercise = None
+        self.__verify: RabbitmqVerify = None
 
     @staticmethod
     def name() -> str:
@@ -43,23 +44,27 @@ class Rabbitmq(Mock):
             return False
 
     def start(self):
-        DockerManager.instance().run_image('rabbitmq:3.7.22-management-alpine',
-                                           [(self.default_port(), 5672),
-                                            (self.ui_port(), 15672)])
+        self.__container_name = DockerManager.instance().run_image('rabbitmq:3.7.22-management-alpine',
+                                                                   [(self.default_port(), 5672),
+                                                                    (self.ui_port(), 15672)])
 
     def initialize(self):
-        connection = pika.BlockingConnection(
-            pika.ConnectionParameters(
-                host=self.default_host(),
-                port=self.default_port(),
-                credentials=pika.PlainCredentials('guest', 'guest'),
-                heartbeat=0
-            ))
+        connection_params = pika.ConnectionParameters(
+            host=self.default_host(),
+            port=self.default_port(),
+            credentials=pika.PlainCredentials('guest', 'guest'),
+            heartbeat=0
+        )
+        connection = pika.BlockingConnection(connection_params)
         rmq_context = RmqContext()
         channel = connection.channel()
-        self.__setup = RabbitmqSetup(channel, rmq_context)
+        self.__setup = RabbitmqSetup(channel, connection_params, rmq_context)
         self.__exercise = RabbitmqExercise(channel)
         self.__verify = RabbitmqVerify(channel)
+
+    def stop(self):
+        self.__setup.stop_listening()
+        DockerManager.instance().stop_container(self.__container_name)
 
     def setup(self) -> Setup:
         return self.__setup

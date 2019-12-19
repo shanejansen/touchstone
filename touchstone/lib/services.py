@@ -1,5 +1,6 @@
 import os
 
+from touchstone.lib import exceptions
 from touchstone.lib.configs.service_config import ServiceConfig
 from touchstone.lib.configs.touchstone_config import TouchstoneConfig
 from touchstone.lib.mocks.mocks import Mocks
@@ -13,14 +14,19 @@ class Services(object):
         self.services: list = []
 
     def start(self):
-        self.stop()
+        if self.services:
+            raise exceptions.ServiceException('Services have already been started. They cannot be started again.')
         self.__parse_services()
+        print(f'Starting services {[_.name() for _ in self.services]}...')
         for service in self.services:
             service.start()
+        print('Finished starting services.\n')
 
     def stop(self):
+        print('Stopping services...')
         for service in self.services:
             service.stop()
+        self.services = []
 
     def run_tests(self) -> bool:
         self.__parse_services()

@@ -10,7 +10,7 @@ class ServiceConfig(object):
             'dockerfile': None,
             'availability_endpoint': '',
             'num_retries': 20,
-            'seconds_between_retries': 10
+            'seconds_between_retries': 5
         }
         self.__build_url()
 

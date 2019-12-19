@@ -2,11 +2,15 @@ class TouchstoneException(Exception):
     pass
 
 
-class MockNotSupportedException(Exception):
+class ServiceException(Exception):
     pass
 
 
 class MockException(Exception):
+    pass
+
+
+class MockNotSupportedException(Exception):
     pass
 
 

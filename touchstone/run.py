@@ -10,16 +10,22 @@ def execute():
     try:
         common.prep_run()
         print(figlet_format('Touchstone', font='larry3d'))
+
         mocks = Mocks()
         mocks.start()
         mocks.load_defaults()
+
         services = Services(mocks)
         services.start()
+
         tests_did_pass = services.run_tests()
         if tests_did_pass:
             print('All Touchstone tests passed successfully!')
         else:
             print('One or more Touchstone tests failed.')
+
+        services.stop()
+        mocks.stop()
         common.exit_touchstone(tests_did_pass)
     except (Exception, KeyboardInterrupt) as e:
         print('\nTouchstone was interrupted. Cleaning up...')

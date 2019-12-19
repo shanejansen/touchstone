@@ -15,6 +15,7 @@ from touchstone.lib.mocks.mock_case import Verify, Exercise, Setup
 class Http(Mock):
     def __init__(self, mock_config: dict):
         super().__init__(mock_config)
+        self.__container_name: str = None
         self.__setup = HttpSetup(self.default_url())
         self.__exercise = HttpExercise()
         self.__verify = HttpVerify(self.default_url())
@@ -44,7 +45,11 @@ class Http(Mock):
             return False
 
     def start(self):
-        DockerManager.instance().run_image('rodolpheche/wiremock:2.25.1-alpine', [(self.default_port(), 8080)])
+        self.__container_name = DockerManager.instance().run_image('rodolpheche/wiremock:2.25.1-alpine',
+                                                                   [(self.default_port(), 8080)])
+
+    def stop(self):
+        DockerManager.instance().stop_container(self.__container_name)
 
     def setup(self) -> Setup:
         return self.__setup

@@ -12,11 +12,14 @@ def execute():
         common.prep_run()
         print(figlet_format('Touchstone', font='larry3d'))
         TouchstoneConfig.instance().set_dev()
+
         mocks = Mocks()
         mocks.start()
         mocks.load_defaults()
         mocks.print_available_mocks()
+
         services = Services(mocks)
+
         __print_help()
         while True:
             command = input('Touchstone Command: ')
@@ -34,6 +37,8 @@ def execute():
                 mocks.reset()
                 mocks.load_defaults()
             elif command == 'exit':
+                services.stop()
+                mocks.stop()
                 common.exit_touchstone(True)
             else:
                 print(f'Unknown command "{command}"')

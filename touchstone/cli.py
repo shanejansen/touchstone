@@ -18,7 +18,7 @@ def init_cmd():
     init.execute()
 
 
-@cli.command(name='run', help='Runs Touchstone with an exit code.')
+@cli.command(name='run', help='Run Touchstone and exit.')
 def run_cmd():
     run.execute()
 

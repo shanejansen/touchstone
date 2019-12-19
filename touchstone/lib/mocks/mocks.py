@@ -27,6 +27,12 @@ class Mocks(object):
             mock.initialize()
         print('Finished starting mocks.\n')
 
+    def stop(self):
+        print('Stopping mocks...')
+        for mock in self.mocks:
+            mock.stop()
+        self.mocks = []
+
     def load_defaults(self):
         for mock in self.mocks:
             try:

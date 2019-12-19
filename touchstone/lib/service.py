@@ -20,6 +20,9 @@ class Service(object):
         self.tests = tests
         self.container_name: Optional[str] = None
 
+    def name(self):
+        return self.service_config.config['name']
+
     def start(self):
         if self.service_config.config['dockerfile'] is not None:
             self.__log('Building and running Dockerfile...')

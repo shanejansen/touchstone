@@ -59,6 +59,11 @@ class Mock(object):
         pass
 
     @abc.abstractmethod
+    def stop(self):
+        """Stops this mock."""
+        pass
+
+    @abc.abstractmethod
     def setup(self) -> Setup:
         """"""
 
