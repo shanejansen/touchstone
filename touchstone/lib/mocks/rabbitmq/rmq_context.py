@@ -3,6 +3,15 @@ class RmqContext(object):
         self.__shadow_queues: dict = {}
 
     def add_shadow_queue(self, name: str):
+        test = {
+            'exchange-name': {
+                'routing-key-name': {
+                    'times': 0,
+                    'payloads': []
+                }
+            }
+        }
+
         self.__shadow_queues[name] = {
             'times': 0,
             'payloads': []

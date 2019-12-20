@@ -8,5 +8,5 @@ class RabbitmqExercise(Exercise):
         super().__init__()
         self.channel: BlockingChannel = channel
 
-    def publish(self, exchange: str, payload: str, routing_key: str = None):
-        self.channel.basic_publish(exchange, routing_key, bytes(payload))
+    def publish(self, exchange: str, payload: str, routing_key: str = ''):
+        self.channel.basic_publish(exchange, routing_key, bytes(payload, encoding='utf8'))

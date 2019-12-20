@@ -21,13 +21,15 @@ class MessageConsumer(Thread):
         super().run()
         self.channel.start_consuming()
 
-    def consume(self, queue_name: str):
-        def message_received(channel: BlockingChannel, method: spec.Basic.Deliver, body: bytes):
+    def consume(self, exchange: str, routing_key: str, queue: str):
+        def message_received(channel: BlockingChannel, method: spec.Basic.Deliver, properties: spec.BasicProperties,
+                             body: bytes):
             payload = str(body)
-            self.__rmq_context.shadow_queue_payload_received(queue_name, payload)
+            # TODO: use exchange/routing key here
+            self.__rmq_context.shadow_queue_payload_received(queue, payload)
             channel.basic_ack(delivery_tag=method.delivery_tag)
 
-        self.channel.basic_consume(queue_name, message_received)
+        self.channel.basic_consume(queue, message_received)
 
 
 class RabbitmqSetup(Setup):
@@ -51,6 +53,8 @@ class RabbitmqSetup(Setup):
 
     def reset(self):
         self.__rmq_context.reset()
+        for queue in self.__queues:
+            self.__channel.queue_purge(queue)
 
     def stop_listening(self):
         def callback():
@@ -64,13 +68,15 @@ class RabbitmqSetup(Setup):
             self.__channel.exchange_declare(name, exchange_type=exchange_type)
             self.__exchanges.append(name)
 
-            shadow_queue = name + '.touchstone-shadow'
-            self.__create_queue(shadow_queue, name)
-            self.__rmq_context.add_shadow_queue(shadow_queue)
-            self.__message_consumer.consume(shadow_queue)
-
-    def __create_queue(self, name: str, exchange: str, routing_key: str = None):
+    def __create_queue(self, name: str, exchange: str, routing_key: str = ''):
         if name not in self.__queues:
             self.__channel.queue_declare(name)
             self.__channel.queue_bind(name, exchange, routing_key=routing_key)
             self.__queues.append(name)
+
+            shadow_queue_name = name + '.touchstone-shadow'
+            self.__channel.queue_declare(shadow_queue_name)
+            self.__channel.queue_bind(shadow_queue_name, exchange, routing_key=routing_key)
+            self.__queues.append(shadow_queue_name)
+            self.__rmq_context.add_shadow_queue(shadow_queue_name)
+            self.__message_consumer.consume(shadow_queue_name)

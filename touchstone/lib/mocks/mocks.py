@@ -17,15 +17,16 @@ class Mocks(object):
 
     def start(self):
         if self.mocks:
-            raise exceptions.MockException('Mocks have already been started. They cannot be started again.')
-        self.__parse_mocks()
-        print(f'Starting mocks {[_.pretty_name() for _ in self.mocks]}...')
-        for mock in self.mocks:
-            mock.start()
-        self.__wait_for_healthy_mocks()
-        for mock in self.mocks:
-            mock.initialize()
-        print('Finished starting mocks.\n')
+            print('Mocks have already been started. They cannot be started again.')
+        else:
+            self.__parse_mocks()
+            print(f'Starting mocks {[_.pretty_name() for _ in self.mocks]}...')
+            for mock in self.mocks:
+                mock.start()
+            self.__wait_for_healthy_mocks()
+            for mock in self.mocks:
+                mock.initialize()
+            print('Finished starting mocks.\n')
 
     def stop(self):
         print('Stopping mocks...')

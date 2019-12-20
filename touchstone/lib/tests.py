@@ -43,8 +43,8 @@ class Tests(object):
                     class_instance.given()
                     result = class_instance.when()
                     did_pass = class_instance.then(result)
-                except Exception as e:
-                    traceback.print_tb(e.__traceback__)
+                except Exception:
+                    traceback.print_exc()
                     tests_passed = False
 
                 if not did_pass:
