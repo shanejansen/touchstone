@@ -1,33 +1,27 @@
 class RmqContext(object):
     def __init__(self):
-        self.__shadow_queues: dict = {}
+        self.__exchanges: dict = {}
 
-    def add_shadow_queue(self, name: str):
-        test = {
-            'exchange-name': {
-                'routing-key-name': {
-                    'times': 0,
-                    'payloads': []
-                }
-            }
-        }
-
-        self.__shadow_queues[name] = {
+    def track(self, exchange: str, routing_key: str):
+        if exchange not in self.__exchanges:
+            self.__exchanges[exchange] = {}
+        self.__exchanges[exchange][routing_key] = {
             'times': 0,
             'payloads': []
         }
 
-    def shadow_queue_payload_received(self, name: str, payload: str):
-        self.__shadow_queues[name]['payloads'].append(payload)
-        self.__shadow_queues[name]['times'] += 1
+    def track_payload(self, exchange: str, routing_key: str, payload: str):
+        self.__exchanges[exchange][routing_key]['times'] += 1
+        self.__exchanges[exchange][routing_key]['payloads'].append(payload)
 
-    def times_shadow_queue_called(self, name: str) -> int:
-        return self.__shadow_queues[name]['times']
+    def messages_published(self, exchange: str, routing_key: str) -> int:
+        return self.__exchanges[exchange][routing_key]['times']
 
-    def shadow_queue_has_payload(self, name: str, payload: str) -> bool:
-        return payload in self.__shadow_queues[name]['payloads']
+    def payloads_published(self, exchange: str, routing_key: str) -> list:
+        return self.__exchanges[exchange][routing_key]['payloads']
 
     def reset(self):
-        for shadow_queue in self.__shadow_queues:
-            self.__shadow_queues[shadow_queue]['times'] = 0
-            self.__shadow_queues[shadow_queue]['payloads'] = []
+        for exchange in self.__exchanges:
+            for routing_key in self.__exchanges[exchange]:
+                self.__exchanges[exchange][routing_key]['times'] = 0
+                self.__exchanges[exchange][routing_key]['payloads'] = []

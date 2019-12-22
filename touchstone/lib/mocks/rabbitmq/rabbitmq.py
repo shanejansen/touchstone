@@ -59,8 +59,8 @@ class Rabbitmq(Mock):
         rmq_context = RmqContext()
         channel = connection.channel()
         self.__setup = RabbitmqSetup(channel, connection_params, rmq_context)
-        self.__exercise = RabbitmqExercise(channel)
-        self.__verify = RabbitmqVerify(channel)
+        self.__exercise = RabbitmqExercise(channel, self.__get_consume_length())
+        self.__verify = RabbitmqVerify(channel, rmq_context)
 
     def stop(self):
         self.__setup.stop_listening()
@@ -74,3 +74,8 @@ class Rabbitmq(Mock):
 
     def verify(self) -> Verify:
         return self.__verify
+
+    def __get_consume_length(self) -> float:
+        if 'consumeLength' not in self.mock_config:
+            return 0.5
+        return self.mock_config['consumeLength']

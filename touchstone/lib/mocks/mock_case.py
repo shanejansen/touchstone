@@ -16,8 +16,14 @@ class Exercise(object):
 
 
 class Verify(object):
-    def expected_matches_actual(self, expected, actual):
+    def expected_matches_actual(self, expected, actual) -> bool:
         if expected == actual:
             return True
         print(f'Expected "{expected}" does not match actual "{actual}".')
+        return False
+
+    def expected_in_actual(self, expected, actual) -> bool:
+        if expected in actual:
+            return True
+        print(f'Expected "{expected}" was not found in actual "{actual}".')
         return False

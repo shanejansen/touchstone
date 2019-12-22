@@ -12,7 +12,8 @@
       "type": "http"
     },
     {
-      "type": "rabbitmq"
+      "type": "rabbitmq",
+      "consumeLength": 0.2
     }
   ]
 }

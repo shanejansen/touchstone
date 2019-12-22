@@ -74,7 +74,4 @@ class HttpVerify(Verify):
         bodies = []
         for request in json.loads(response)['requests']:
             bodies.append(request['body'])
-        if expected_body in bodies:
-            return True
-        print(f'Expected "{expected_body}" was not found in actual "{bodies}".')
-        return False
+        return self.expected_in_actual(expected_body, bodies)

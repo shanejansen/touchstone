@@ -25,8 +25,7 @@ class MessageConsumer(Thread):
         def message_received(channel: BlockingChannel, method: spec.Basic.Deliver, properties: spec.BasicProperties,
                              body: bytes):
             payload = str(body)
-            # TODO: use exchange/routing key here
-            self.__rmq_context.shadow_queue_payload_received(queue, payload)
+            self.__rmq_context.track_payload(exchange, routing_key, payload)
             channel.basic_ack(delivery_tag=method.delivery_tag)
 
         self.channel.basic_consume(queue, message_received)
@@ -78,5 +77,5 @@ class RabbitmqSetup(Setup):
             self.__channel.queue_declare(shadow_queue_name)
             self.__channel.queue_bind(shadow_queue_name, exchange, routing_key=routing_key)
             self.__queues.append(shadow_queue_name)
-            self.__rmq_context.add_shadow_queue(shadow_queue_name)
-            self.__message_consumer.consume(shadow_queue_name)
+            self.__rmq_context.track(exchange, routing_key)
+            self.__message_consumer.consume(exchange, routing_key, shadow_queue_name)
