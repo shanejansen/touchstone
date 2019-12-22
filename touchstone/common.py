@@ -1,10 +1,13 @@
 import json
+import logging
 import os
 
 import sys
 
 from touchstone.lib.configs.touchstone_config import TouchstoneConfig
 from touchstone.lib.docker_manager import DockerManager
+
+logger = logging.getLogger('touchstone')
 
 
 def load_config():

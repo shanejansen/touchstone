@@ -1,3 +1,6 @@
+from touchstone import common
+
+
 class RmqContext(object):
     def __init__(self):
         self.__exchanges: dict = {}
@@ -9,6 +12,7 @@ class RmqContext(object):
             'times': 0,
             'payloads': []
         }
+        common.logger.debug(f'Tracking: {self.__exchanges}')
 
     def track_payload(self, exchange: str, routing_key: str, payload: str):
         self.__exchanges[exchange][routing_key]['times'] += 1

@@ -3,6 +3,7 @@ import subprocess
 import uuid
 from typing import Optional
 
+from touchstone import common
 from touchstone.lib import exceptions
 
 
@@ -24,8 +25,9 @@ class DockerManager(object):
         # Build context will always be the same location as the Dockerfile for our purposes
         build_context = os.path.dirname(dockerfile_path)
         tag = uuid.uuid4().hex
-        result = subprocess.run(['docker', 'build', '-t', tag, '-f', dockerfile_path, build_context],
-                                stdout=subprocess.DEVNULL)
+        command = f'docker build -t {tag} -f {dockerfile_path} {build_context}'
+        common.logger.info(f'Building Dockerfile with command: {command}')
+        result = subprocess.run(command, shell=True, stdout=subprocess.DEVNULL)
         if result.returncode is not 0:
             return None
         self.images.append(tag)
@@ -39,6 +41,7 @@ class DockerManager(object):
 
         name = uuid.uuid4().hex
         command = f'docker run -d --name {name} {additional_params} {image}'
+        common.logger.info(f'Running container with command: {command}')
         result = subprocess.run(command, shell=True, stdout=subprocess.DEVNULL)
 
         if result.returncode is not 0:
@@ -52,17 +55,22 @@ class DockerManager(object):
         return name
 
     def stop_container(self, name):
+        common.logger.info(f'Stopping container: {name}')
         subprocess.run(['docker', 'container', 'stop', name], stdout=subprocess.DEVNULL)
+        common.logger.info(f'Removing container: {name}')
         subprocess.run(['docker', 'container', 'rm', name], stdout=subprocess.DEVNULL)
         self.containers.remove(name)
 
     def cleanup(self):
         if self.images:
             for image in self.images:
+                common.logger.info(f'Removing image: {image}')
                 subprocess.run(['docker', 'image', 'rm', image], stdout=subprocess.DEVNULL)
         self.images = []
         if self.containers:
             for container in self.containers:
+                common.logger.info(f'Stopping container: {container}')
                 subprocess.run(['docker', 'container', 'stop', container], stdout=subprocess.DEVNULL)
+                common.logger.info(f'Removing container: {container}')
                 subprocess.run(['docker', 'container', 'rm', container], stdout=subprocess.DEVNULL)
         self.containers = []

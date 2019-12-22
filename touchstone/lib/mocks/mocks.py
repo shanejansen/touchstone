@@ -11,31 +11,32 @@ from touchstone.lib.mocks.rabbitmq.rabbitmq import Rabbitmq
 
 class Mocks(object):
     def __init__(self):
-        self.mocks: list = []
         self.http: Http = None
         self.rabbit_mq: Rabbitmq = None
+        self.__mocks: list = self.__parse_mocks()
+        self.__mocks_running = False
 
     def start(self):
-        if self.mocks:
+        if self.__mocks_running:
             print('Mocks have already been started. They cannot be started again.')
         else:
-            self.__parse_mocks()
-            print(f'Starting mocks {[_.pretty_name() for _ in self.mocks]}...')
-            for mock in self.mocks:
+            print(f'Starting mocks {[_.pretty_name() for _ in self.__mocks]}...')
+            for mock in self.__mocks:
                 mock.start()
             self.__wait_for_healthy_mocks()
-            for mock in self.mocks:
+            for mock in self.__mocks:
                 mock.initialize()
+            self.__mocks_running = True
             print('Finished starting mocks.\n')
 
     def stop(self):
         print('Stopping mocks...')
-        for mock in self.mocks:
+        for mock in self.__mocks:
             mock.stop()
-        self.mocks = []
+        self.__mocks_running = False
 
     def load_defaults(self):
-        for mock in self.mocks:
+        for mock in self.__mocks:
             try:
                 with open(os.path.join(TouchstoneConfig.instance().config['root'], f'defaults/{mock.name()}.json'),
                           'r') as file:
@@ -45,28 +46,30 @@ class Mocks(object):
                 pass
 
     def reset(self):
-        for mock in self.mocks:
+        for mock in self.__mocks:
             mock.setup().reset()
 
     def print_available_mocks(self):
-        for mock in self.mocks:
+        for mock in self.__mocks:
             print(f'Mock {mock.pretty_name()} UI running at: {mock.ui_url()}')
 
-    def __parse_mocks(self):
+    def __parse_mocks(self) -> list:
+        mocks = []
         for mock_config in TouchstoneConfig.instance().config['mocks']:
             mock_type = mock_config['type']
             if mock_type == Http.name():
                 self.http = Http(mock_config)
-                self.mocks.append(self.http)
+                mocks.append(self.http)
             elif mock_type == Rabbitmq.name():
                 self.rabbit_mq = Rabbitmq(mock_config)
-                self.mocks.append(self.rabbit_mq)
+                mocks.append(self.rabbit_mq)
             else:
                 raise exceptions.MockNotSupportedException(
                     f'{mock_type} is not a supported mock. Please check your touchstone.json file.')
+        return mocks
 
     def __wait_for_healthy_mocks(self):
-        for mock in self.mocks:
+        for mock in self.__mocks:
             retries = 0
             healthy = False
             while not healthy and retries is not 10:

@@ -11,5 +11,5 @@ class RabbitmqExercise(Exercise):
         self.__consume_length = consume_length
 
     def publish(self, exchange: str, payload: str, routing_key: str = ''):
-        self.__channel.basic_publish(exchange, routing_key, bytes(payload, encoding='utf8'))
+        self.__channel.basic_publish(exchange, routing_key, bytes(payload, encoding='utf-8'))
         time.sleep(self.__consume_length)

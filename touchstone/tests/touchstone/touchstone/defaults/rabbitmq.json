@@ -5,8 +5,11 @@
       "type": "direct",
       "queues": [
         {
-          "name": "default-direct.queue",
+          "name": "default-direct1.queue",
           "routingKey": "foo"
+        },
+        {
+          "name": "default-direct2.queue"
         }
       ]
     },

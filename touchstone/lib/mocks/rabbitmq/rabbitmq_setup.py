@@ -24,7 +24,7 @@ class MessageConsumer(Thread):
     def consume(self, exchange: str, routing_key: str, queue: str):
         def message_received(channel: BlockingChannel, method: spec.Basic.Deliver, properties: spec.BasicProperties,
                              body: bytes):
-            payload = str(body)
+            payload = str(body, encoding='utf-8')
             self.__rmq_context.track_payload(exchange, routing_key, payload)
             channel.basic_ack(delivery_tag=method.delivery_tag)
 
@@ -45,7 +45,7 @@ class RabbitmqSetup(Setup):
         for exchange in defaults['exchanges']:
             self.__create_exchange(exchange['name'], exchange['type'])
             for queue in exchange['queues']:
-                routing_key = queue.get('routingKey', None)
+                routing_key = queue.get('routingKey', '')
                 self.__create_queue(queue['name'], exchange['name'], routing_key)
         if not self.__message_consumer.is_alive():
             self.__message_consumer.start()
