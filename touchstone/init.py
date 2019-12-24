@@ -1,25 +1,24 @@
 import json
 import os
 
-from touchstone import common
-
 
 def execute():
-    if common.sanity_check_passes():
+    if os.path.exists('touchstone/touchstone.json'):
         print('Touchstone has already been initialized.')
         exit(1)
-    with open('touchstone.json', 'w', encoding='utf-8') as f:
+    os.makedirs('touchstone/defaults')
+    os.makedirs('touchstone/tests')
+    with open('touchstone/touchstone.json', 'w', encoding='utf-8') as f:
         data = {
             "services": [
                 {
                     "name": "My App",
-                    "tests": "tests",
+                    "tests": "./tests",
                     "port": 8080
                 }
             ],
             "mocks": []
         }
         json.dump(data, f, ensure_ascii=False, indent=2)
-    os.makedirs('defaults')
-    open('defaults/.gitkeep', 'a').close()
+    open('touchstone/defaults/.gitkeep', 'a').close()
     print('Touchstone has been initialized.')

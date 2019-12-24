@@ -1,0 +1,14 @@
+{
+  "exchanges": [
+    {
+      "name": "demo.direct.exchange",
+      "type": "direct",
+      "queues": [
+        {
+          "name": "demo.queue",
+          "routingKey": "someKey"
+        }
+      ]
+    }
+  ]
+}

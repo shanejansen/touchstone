@@ -59,8 +59,9 @@ class RabbitmqSetup(Setup):
         def callback():
             self.__message_consumer.channel.stop_consuming()
 
-        self.__message_consumer.channel.connection.add_callback_threadsafe(callback)
-        self.__message_consumer.join()
+        if self.__message_consumer.is_alive():
+            self.__message_consumer.channel.connection.add_callback_threadsafe(callback)
+            self.__message_consumer.join()
 
     def __create_exchange(self, name: str, exchange_type: str = 'direct'):
         if name not in self.__exchanges:

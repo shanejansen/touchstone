@@ -31,10 +31,10 @@ class Rabbitmq(Mock):
         return 'Rabbit MQ'
 
     def default_port(self) -> int:
-        return 24672
+        return 5672
 
     def ui_port(self) -> int:
-        return 24172
+        return 15672
 
     def is_healthy(self) -> bool:
         try:

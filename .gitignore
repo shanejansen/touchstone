@@ -1,5 +1,12 @@
+# IntelliJ
 .DS_Store
 .idea
 *.iml
 *.pyc
+
+# Pipenv
 touchstone.egg-info
+
+# Maven
+examples/java-spring/target/*
+!examples/java-spring/target/demo-1.0.jar

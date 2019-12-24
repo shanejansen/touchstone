@@ -1,0 +1,16 @@
+{
+  "services": [
+    {
+      "name": "My App",
+      "tests": "./tests",
+      "port": 8080,
+      //      "availability_endpoint": "/actuator/health", // TODO!!
+      "dockerfile": "../Dockerfile"
+    }
+  ],
+  "mocks": [
+    {
+      "type": "rabbitmq"
+    }
+  ]
+}
