@@ -15,7 +15,7 @@ class HttpSetup(Setup):
         self.mock_ids: list = []
 
     def load_defaults(self, defaults: dict):
-        for request in defaults["requests"]:
+        for request in defaults['requests']:
             self.__submit_mock(request)
 
     def reset(self):

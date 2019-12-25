@@ -27,7 +27,7 @@ class Service(object):
         if self.service_config.config['dockerfile'] is not None:
             self.__log('Building and running Dockerfile...')
             dockerfile_path = os.path.abspath(
-                os.path.join(TouchstoneConfig.instance().config["root"], self.service_config.config['dockerfile']))
+                os.path.join(TouchstoneConfig.instance().config['root'], self.service_config.config['dockerfile']))
             tag = DockerManager.instance().build_dockerfile(dockerfile_path)
             service_port = self.service_config.config['port']
             self.container_name = DockerManager.instance().run_image(tag, [(service_port, service_port)])

@@ -1,0 +1,9 @@
+---
+services:
+  - name: My App
+    tests: "./tests"
+    port: 8080
+    availability_endpoint: "/actuator/health"
+    dockerfile: "../Dockerfile"
+mocks:
+  - type: rabbitmq

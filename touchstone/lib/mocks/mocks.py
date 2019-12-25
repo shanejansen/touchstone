@@ -1,7 +1,7 @@
-import json
 import os
 
 import time
+import yaml
 
 from touchstone.lib import exceptions
 from touchstone.lib.configs.touchstone_config import TouchstoneConfig
@@ -38,9 +38,9 @@ class Mocks(object):
     def load_defaults(self):
         for mock in self.__mocks:
             try:
-                with open(os.path.join(TouchstoneConfig.instance().config['root'], f'defaults/{mock.name()}.json'),
+                with open(os.path.join(TouchstoneConfig.instance().config['root'], f'defaults/{mock.name()}.yml'),
                           'r') as file:
-                    defaults = json.load(file)
+                    defaults = yaml.safe_load(file)
                     mock.setup().load_defaults(defaults)
             except FileNotFoundError:
                 pass
@@ -56,16 +56,15 @@ class Mocks(object):
     def __parse_mocks(self) -> list:
         mocks = []
         for mock_config in TouchstoneConfig.instance().config['mocks']:
-            mock_type = mock_config['type']
-            if mock_type == Http.name():
+            if Http.name() == mock_config:
                 self.http = Http(mock_config)
                 mocks.append(self.http)
-            elif mock_type == Rabbitmq.name():
+            elif Rabbitmq.name() == mock_config:
                 self.rabbit_mq = Rabbitmq(mock_config)
                 mocks.append(self.rabbit_mq)
             else:
                 raise exceptions.MockNotSupportedException(
-                    f'{mock_type} is not a supported mock. Please check your touchstone.json file.')
+                    f'{mock_config} is not a supported mock. Please check your touchstone.yml file.')
         return mocks
 
     def __wait_for_healthy_mocks(self):

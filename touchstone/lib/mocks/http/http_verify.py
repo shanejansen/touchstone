@@ -32,17 +32,17 @@ class HttpVerify(Verify):
     def post_contained(self, endpoint: str, expected_body: str) -> bool:
         """Returns True if the given endpoint has been called with a POST request containing the given expected
         body."""
-        return self.__contained_verification(endpoint, "POST", expected_body)
+        return self.__contained_verification(endpoint, 'POST', expected_body)
 
     def put_contained(self, endpoint: str, expected_body: str) -> bool:
         """Returns True if the given endpoint has been called with a PUT request containing the given expected
         body."""
-        return self.__contained_verification(endpoint, "PUT", expected_body)
+        return self.__contained_verification(endpoint, 'PUT', expected_body)
 
     def delete_contained(self, endpoint: str, expected_body: str) -> bool:
         """Returns True if the given endpoint has been called with a DELETE request containing the given expected
         body."""
-        return self.__contained_verification(endpoint, "DELETE", expected_body)
+        return self.__contained_verification(endpoint, 'DELETE', expected_body)
 
     def __count_verification(self, endpoint, http_verb, times):
         payload = {

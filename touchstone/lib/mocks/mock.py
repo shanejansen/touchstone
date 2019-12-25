@@ -13,7 +13,7 @@ class Mock(object):
     @staticmethod
     @abc.abstractmethod
     def name() -> str:
-        """The name of this mock. This is used to match the mock type in touchstone.json and defaults."""
+        """The name of this mock. This is used to match the mock type in touchstone.yml and defaults."""
 
     @staticmethod
     @abc.abstractmethod
@@ -22,7 +22,7 @@ class Mock(object):
 
     def default_host(self) -> str:
         """The default host where this mock will be exposed."""
-        return TouchstoneConfig.instance().config["host"]
+        return TouchstoneConfig.instance().config['host']
 
     @abc.abstractmethod
     def default_port(self) -> int:

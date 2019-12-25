@@ -1,8 +1,8 @@
-import json
 import logging
 import os
 
 import sys
+import yaml
 
 from touchstone.lib.configs.touchstone_config import TouchstoneConfig
 from touchstone.lib.docker_manager import DockerManager
@@ -11,20 +11,20 @@ logger = logging.getLogger('touchstone')
 
 
 def load_config():
-    path = os.path.join(TouchstoneConfig.instance().config['root'], 'touchstone.json')
+    path = os.path.join(TouchstoneConfig.instance().config['root'], 'touchstone.yml')
     with open(path, 'r') as file:
-        TouchstoneConfig.instance().merge(json.load(file))
+        TouchstoneConfig.instance().merge(yaml.safe_load(file))
 
 
 def sanity_check_passes() -> bool:
-    touchstone_json_path = os.path.join(TouchstoneConfig.instance().config['root'], 'touchstone.json')
+    touchstone_path = os.path.join(TouchstoneConfig.instance().config['root'], 'touchstone.yml')
     defaults_path = os.path.join(TouchstoneConfig.instance().config['root'], 'defaults')
-    return os.path.exists(touchstone_json_path) and os.path.exists(defaults_path)
+    return os.path.exists(touchstone_path) and os.path.exists(defaults_path)
 
 
 def prep_run():
     if not sanity_check_passes():
-        print('touchstone.json and the defaults directory could not be found. '
+        print('touchstone.yml and the defaults directory could not be found. '
               'If touchstone has not been initialized, run \'touchstone init\'.')
         exit(1)
     load_config()
