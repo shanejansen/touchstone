@@ -18,6 +18,11 @@ class RmqContext(object):
         self.__exchanges[exchange][routing_key]['times'] += 1
         self.__exchanges[exchange][routing_key]['payloads'].append(payload)
 
+    def exchange_is_tracked(self, exchange: str, routing_key: str) -> bool:
+        if exchange not in self.__exchanges:
+            return False
+        return routing_key in self.__exchanges[exchange]
+
     def messages_published(self, exchange: str, routing_key: str) -> int:
         return self.__exchanges[exchange][routing_key]['times']
 

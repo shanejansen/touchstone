@@ -23,7 +23,8 @@ class MessagesPublishedWithTimes(TouchstoneTest):
         self.mocks.rabbit_mq.exercise().publish('default-direct.exchange', 'some payload', routing_key='bar')
 
     def then(self, test_result) -> bool:
-        return self.mocks.rabbit_mq.verify().messages_published('default-direct.exchange', times=3, routing_key='foo')
+        return self.mocks.rabbit_mq.verify().messages_published('default-direct.exchange', num_expected_messages=3,
+                                                                routing_key='foo')
 
 
 class PayloadPublished(TouchstoneTest):

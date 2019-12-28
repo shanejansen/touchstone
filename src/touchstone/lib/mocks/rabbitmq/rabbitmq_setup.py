@@ -65,12 +65,12 @@ class RabbitmqSetup(Setup):
 
     def __create_exchange(self, name: str, exchange_type: str = 'direct'):
         if name not in self.__exchanges:
-            self.__channel.exchange_declare(name, exchange_type=exchange_type)
+            self.__channel.exchange_declare(name, exchange_type=exchange_type, durable=True)
             self.__exchanges.append(name)
 
     def __create_queue(self, name: str, exchange: str, routing_key: str = ''):
         if name not in self.__queues:
-            self.__channel.queue_declare(name)
+            self.__channel.queue_declare(name, durable=True)
             self.__channel.queue_bind(name, exchange, routing_key=routing_key)
             self.__queues.append(name)
 

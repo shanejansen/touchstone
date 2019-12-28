@@ -6,7 +6,8 @@ from touchstone.lib.mocks.mocks import Mocks
 class TouchstoneTest(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, mocks: Mocks):
+    def __init__(self, service_url: str, mocks: Mocks):
+        self.service_url = service_url
         self.mocks = mocks
 
     @abc.abstractmethod

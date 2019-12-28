@@ -1,6 +1,6 @@
 import os
-
 import time
+
 import yaml
 
 from touchstone.lib import exceptions

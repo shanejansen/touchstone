@@ -1,4 +1,4 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name='touchstone',
@@ -8,7 +8,7 @@ setup(
     author='Shane Jansen',
     author_email='shanejjansen@gmail.com',
     license='MIT',
-    packages=find_packages(where='/touchstone', exclude='/touchstone/tests'),
+    packages=['touchstone'],
     install_requires=['pyfiglet', 'click'],
     entry_points={
         'console_scripts': [

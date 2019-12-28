@@ -2,10 +2,9 @@ package com.example.demo;
 
 import com.example.demo.domain.User;
 import com.example.demo.messaging.MessageProducer;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+@RestController
 public class UserController {
     private final MessageProducer messageProducer;
 
@@ -34,7 +33,7 @@ public class UserController {
     @DeleteMapping("/user/{id}")
     public void deleteUser(@PathVariable int id) {
         // TODO
-        String payload = "deleted: " + id;
-        messageProducer.publishMessage(payload);
+        String payload = "UserId: " + id;
+        messageProducer.publishUserDeletedMessage(payload);
     }
 }

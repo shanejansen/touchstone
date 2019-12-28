@@ -4,6 +4,7 @@ services:
     tests: "./tests"
     port: 8080
     dockerfile: "../Dockerfile"
+    verification_timeout: 0.2
 mocks:
   http:
   rabbitmq:

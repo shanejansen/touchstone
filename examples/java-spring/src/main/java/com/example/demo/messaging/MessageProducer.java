@@ -15,8 +15,9 @@ public class MessageProducer {
         this.messageProcessor = messageProcessor;
     }
 
-    public void publishMessage(String payload) {
+    public void publishUserDeletedMessage(String payload) {
+        LOG.info("Publishing user deleted message with payload: {}", payload);
         Message<String> message = MessageBuilder.withPayload(payload).build();
-        messageProcessor.output().send(message);
+        messageProcessor.userDeleted().send(message);
     }
 }

@@ -1,7 +1,7 @@
 import logging
 import os
-
 import sys
+
 import yaml
 
 from touchstone.lib.configs.touchstone_config import TouchstoneConfig

@@ -1,12 +1,11 @@
 import http
 import http.client
 import os
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
 from typing import Optional
-
-import time
 
 from touchstone.lib.configs.service_config import ServiceConfig
 from touchstone.lib.configs.touchstone_config import TouchstoneConfig

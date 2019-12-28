@@ -7,9 +7,10 @@ from touchstone.lib.mocks.mocks import Mocks
 
 
 class Tests(object):
-    def __init__(self, mocks: Mocks, tests_path: str):
-        self.mocks = mocks
-        self.tests_path = tests_path
+    def __init__(self, service_url: str, mocks: Mocks, tests_path: str):
+        self.__service_url = service_url
+        self.__mocks = mocks
+        self.__tests_path = tests_path
 
     class TestContainer(object):
         def __init__(self, file):
@@ -27,14 +28,14 @@ class Tests(object):
     def run(self) -> bool:
         all_test_containers = self.__load_test_classes()
         if len(all_test_containers) == 0:
-            print(f'No tests found at {self.tests_path}')
+            print(f'No tests found at {self.__tests_path}')
             return False
 
         tests_passed = True
         for test_container in all_test_containers:
             print(test_container.file)
             for test_class in test_container.test_classes:
-                class_instance = test_class.clazz(self.mocks)
+                class_instance = test_class.clazz(self.__service_url, self.__mocks)
                 print(f'{test_class.name} :: RUNNING')
 
                 did_pass = False
@@ -52,11 +53,11 @@ class Tests(object):
                     tests_passed = False
                 else:
                     print(f'{test_class.name} :: PASSED\n')
-                self.mocks.reset()
+                self.__mocks.reset()
         return tests_passed
 
     def __load_test_classes(self):
-        files = glob.glob(f'{self.tests_path}/*.py')
+        files = glob.glob(f'{self.__tests_path}/*.py')
         all_test_containers = []
         for file in files:
             test_container = self.TestContainer(file)

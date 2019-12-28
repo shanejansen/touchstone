@@ -40,7 +40,7 @@ class DockerManager(object):
             additional_params += f' -p {host}:{container}'
 
         name = uuid.uuid4().hex
-        command = f'docker run -d --name {name} {additional_params} {image}'
+        command = f'docker run -d --name {name}{additional_params} {image}'
         common.logger.info(f'Running container with command: {command}')
         result = subprocess.run(command, shell=True, stdout=subprocess.DEVNULL)
 

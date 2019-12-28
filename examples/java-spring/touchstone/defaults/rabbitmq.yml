@@ -1,5 +1,9 @@
 ---
 exchanges:
+  - name: order-placed.fanout.exchange
+    type: fanout
+    queues:
+      - name: order-placed.queue
   - name: user.direct.exchange
     type: direct
     queues:

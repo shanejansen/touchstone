@@ -38,12 +38,16 @@ class Services(object):
 
     def __parse_services(self) -> list:
         services = []
+        host = TouchstoneConfig.instance().config['host']
         for given_service_config in TouchstoneConfig.instance().config['services']:
             service_config = ServiceConfig()
             service_config.merge(given_service_config)
+            service_url = f'http://{host}:{service_config.config["port"]}'
             tests_path = os.path.abspath(
                 os.path.join(TouchstoneConfig.instance().config['root'], service_config.config['tests']))
-            tests = Tests(self.__mocks, tests_path)
+
+            tests = Tests(service_url, self.__mocks, tests_path)
             service = Service(service_config, tests)
+
             services.append(service)
         return services

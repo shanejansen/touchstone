@@ -1,12 +1,17 @@
+import time
+import urllib.request
+
 from touchstone.lib.touchstone_test import TouchstoneTest
 
 
 class UserController(TouchstoneTest):
     def given(self):
-        pass
+        pass  # TODO
 
     def when(self):
-        self.mocks.rabbit_mq.exercise().publish('default-direct.exchange', 'some payload')
+        request = urllib.request.Request(f'{self.service_url}/user/1', method='DELETE')
+        urllib.request.urlopen(request)
 
     def then(self, test_result) -> bool:
-        return self.mocks.rabbit_mq.verify().messages_published('default-direct.exchange')
+        time.sleep(0.5)
+        return self.mocks.rabbit_mq.verify().messages_published('user.direct.exchange', routing_key='user-deleted')

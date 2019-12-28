@@ -6,12 +6,12 @@ import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.SubscribableChannel;
 
 public interface MessageProcessor {
-    String INPUT = "input";
-    String OUTPUT = "output";
+    String ORDER_PLACED = "order-placed";
+    String USER_DELETED = "user-deleted";
 
-    @Input(INPUT)
-    SubscribableChannel input();
+    @Input(ORDER_PLACED)
+    SubscribableChannel orderPlaced();
 
-    @Output(OUTPUT)
-    MessageChannel output();
+    @Output(USER_DELETED)
+    MessageChannel userDeleted();
 }

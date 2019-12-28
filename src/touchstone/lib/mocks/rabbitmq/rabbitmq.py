@@ -59,7 +59,7 @@ class Rabbitmq(Mock):
         rmq_context = RmqContext()
         channel = connection.channel()
         self.__setup = RabbitmqSetup(channel, connection_params, rmq_context)
-        self.__exercise = RabbitmqExercise(channel, self.__get_consume_length())
+        self.__exercise = RabbitmqExercise(channel, rmq_context, self.__get_consume_length())
         self.__verify = RabbitmqVerify(channel, rmq_context)
 
     def stop(self):
