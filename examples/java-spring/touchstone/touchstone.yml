@@ -6,4 +6,4 @@ services:
     availability_endpoint: "/actuator/health"
     dockerfile: "../Dockerfile"
 mocks:
-  - type: rabbitmq
+  rabbitmq:

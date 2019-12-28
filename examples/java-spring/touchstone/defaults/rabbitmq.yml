@@ -1,7 +1,7 @@
 ---
 exchanges:
-  - name: demo.direct.exchange
+  - name: user.direct.exchange
     type: direct
     queues:
-      - name: demo.queue
-        routingKey: someKey
+      - name: user-deleted.queue
+        routingKey: user-deleted
