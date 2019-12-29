@@ -52,7 +52,7 @@ def __print_help():
     print('\nDevelopment mode:\n'
           'help - Prints this message.\n'
           'run - Runs all Touchstone tests.\n'
-          'services start - Starts all services under test. Services will be re-started if already running.\n'
+          'services start - Starts all services under test.\n'
           'services stop - Stops all services under test.\n'
           'mocks print - Prints mock UI URLs.\n'
           'mocks reset - Resets all mocks to their default state.\n'

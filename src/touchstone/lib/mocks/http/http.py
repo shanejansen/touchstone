@@ -5,20 +5,17 @@ import urllib.parse
 import urllib.request
 
 from touchstone.lib.docker_manager import DockerManager
-from touchstone.lib.mocks.http.http_exercise import HttpExercise
 from touchstone.lib.mocks.http.http_setup import HttpSetup
 from touchstone.lib.mocks.http.http_verify import HttpVerify
 from touchstone.lib.mocks.mock import Mock
-from touchstone.lib.mocks.mock_case import Verify, Exercise, Setup
 
 
 class Http(Mock):
     def __init__(self, mock_config: dict):
         super().__init__(mock_config)
+        self.setup: HttpSetup = HttpSetup(self.default_url())
+        self.verify: HttpVerify = HttpVerify(self.default_url())
         self.__container_name: str = None
-        self.__setup = HttpSetup(self.default_url())
-        self.__exercise = HttpExercise()
-        self.__verify = HttpVerify(self.default_url())
 
     @staticmethod
     def name() -> str:
@@ -51,11 +48,8 @@ class Http(Mock):
     def stop(self):
         DockerManager.instance().stop_container(self.__container_name)
 
-    def setup(self) -> Setup:
-        return self.__setup
+    def load_defaults(self, defaults: dict):
+        self.setup.load_defaults(defaults)
 
-    def exercise(self) -> Exercise:
-        return self.__exercise
-
-    def verify(self) -> Verify:
-        return self.__verify
+    def reset(self):
+        self.setup.reset()

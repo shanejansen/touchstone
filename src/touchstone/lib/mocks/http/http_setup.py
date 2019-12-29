@@ -5,10 +5,9 @@ import urllib.parse
 import urllib.request
 
 from touchstone.lib import exceptions
-from touchstone.lib.mocks.mock_case import Setup
 
 
-class HttpSetup(Setup):
+class HttpSetup(object):
     def __init__(self, url: str):
         super().__init__()
         self.url = url

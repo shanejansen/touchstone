@@ -18,10 +18,13 @@ class RmqContext(object):
         self.__exchanges[exchange][routing_key]['times'] += 1
         self.__exchanges[exchange][routing_key]['payloads'].append(payload)
 
-    def exchange_is_tracked(self, exchange: str, routing_key: str) -> bool:
-        if exchange not in self.__exchanges:
-            return False
-        return routing_key in self.__exchanges[exchange]
+    def exchange_is_tracked(self, exchange: str, routing_key: str, print_warning=True) -> bool:
+        if exchange in self.__exchanges and routing_key in self.__exchanges[exchange]:
+            return True
+        if print_warning:
+            print(f'This exchange: "{exchange}", routing-key: "{routing_key}" combination is not defined. Check your '
+                  f'"rabbitmq.yml" defaults.')
+        return False
 
     def messages_published(self, exchange: str, routing_key: str) -> int:
         return self.__exchanges[exchange][routing_key]['times']

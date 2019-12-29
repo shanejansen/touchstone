@@ -41,13 +41,13 @@ class Mocks(object):
                 with open(os.path.join(TouchstoneConfig.instance().config['root'], f'defaults/{mock.name()}.yml'),
                           'r') as file:
                     defaults = yaml.safe_load(file)
-                    mock.setup().load_defaults(defaults)
+                    mock.load_defaults(defaults)
             except FileNotFoundError:
                 pass
 
     def reset(self):
         for mock in self.__mocks:
-            mock.setup().reset()
+            mock.reset()
 
     def print_available_mocks(self):
         for mock in self.__mocks:

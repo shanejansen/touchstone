@@ -4,7 +4,6 @@ import pika
 from pika import spec
 from pika.adapters.blocking_connection import BlockingChannel
 
-from touchstone.lib.mocks.mock_case import Setup
 from touchstone.lib.mocks.rabbitmq.rmq_context import RmqContext
 
 
@@ -31,7 +30,7 @@ class MessageConsumer(Thread):
         self.channel.basic_consume(queue, message_received)
 
 
-class RabbitmqSetup(Setup):
+class RabbitmqSetup(object):
     def __init__(self, channel: BlockingChannel, connection_params: pika.ConnectionParameters, rmq_context: RmqContext):
         super().__init__()
         self.__channel = channel

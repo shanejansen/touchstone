@@ -10,6 +10,9 @@ class TouchstoneTest(object):
         self.service_url = service_url
         self.mocks = mocks
 
+    def processing_period(self) -> float:
+        return 0.0
+
     @abc.abstractmethod
     def given(self):
         """GIVEN this data and/or state. Set the state of the system here."""

@@ -4,6 +4,8 @@ import inspect
 import traceback
 
 from touchstone.lib.mocks.mocks import Mocks
+from touchstone.lib.test import Test
+from touchstone.lib.touchstone_test import TouchstoneTest
 
 
 class Tests(object):
@@ -35,24 +37,23 @@ class Tests(object):
         for test_container in all_test_containers:
             print(test_container.file)
             for test_class in test_container.test_classes:
-                class_instance = test_class.clazz(self.__service_url, self.__mocks)
-                print(f'{test_class.name} :: RUNNING')
+                class_instance: TouchstoneTest = test_class.clazz(self.__service_url, self.__mocks)
+                test = Test(test_class.name, class_instance)
+                print(f'{test.name} :: RUNNING')
 
                 did_pass = False
                 result = None
                 try:
-                    class_instance.given()
-                    result = class_instance.when()
-                    did_pass = class_instance.then(result)
+                    did_pass = test.run()
                 except Exception:
                     traceback.print_exc()
                     tests_passed = False
 
                 if not did_pass:
-                    print(f'{test_class.name} :: FAILED. Actual result: "{result}"\n')
+                    print(f'{test.name} :: FAILED. Actual result: "{result}"\n')
                     tests_passed = False
                 else:
-                    print(f'{test_class.name} :: PASSED\n')
+                    print(f'{test.name} :: PASSED\n')
                 self.__mocks.reset()
         return tests_passed
 

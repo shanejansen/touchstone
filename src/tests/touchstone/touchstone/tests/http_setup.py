@@ -9,7 +9,7 @@ class Get(TouchstoneTest):
         response = {
             'foo': 'get'
         }
-        self.mocks.http.setup().get('/get-endpoint', json.dumps(response))
+        self.mocks.http.setup.get('/get-endpoint', json.dumps(response))
 
     def when(self):
         response = urllib.request.urlopen(f'{self.mocks.http.default_url()}/get-endpoint').read()
@@ -27,7 +27,7 @@ class Post(TouchstoneTest):
         response = {
             'foo': 'post'
         }
-        self.mocks.http.setup().post('/post-endpoint', json.dumps(response))
+        self.mocks.http.setup.post('/post-endpoint', json.dumps(response))
 
     def when(self):
         response = urllib.request.urlopen(f'{self.mocks.http.default_url()}/post-endpoint', data=[]).read()
@@ -45,7 +45,7 @@ class Put(TouchstoneTest):
         response = {
             'foo': 'put'
         }
-        self.mocks.http.setup().put('/put-endpoint', json.dumps(response))
+        self.mocks.http.setup.put('/put-endpoint', json.dumps(response))
 
     def when(self):
         request = urllib.request.Request(f'{self.mocks.http.default_url()}/put-endpoint', method='PUT')
@@ -64,7 +64,7 @@ class Delete(TouchstoneTest):
         response = {
             'foo': 'delete'
         }
-        self.mocks.http.setup().delete('/delete-endpoint', json.dumps(response))
+        self.mocks.http.setup.delete('/delete-endpoint', json.dumps(response))
 
     def when(self):
         request = urllib.request.Request(f'{self.mocks.http.default_url()}/delete-endpoint', method='DELETE')

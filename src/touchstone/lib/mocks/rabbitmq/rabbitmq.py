@@ -7,7 +7,6 @@ import pika
 
 from touchstone.lib.docker_manager import DockerManager
 from touchstone.lib.mocks.mock import Mock
-from touchstone.lib.mocks.mock_case import Verify, Exercise, Setup
 from touchstone.lib.mocks.rabbitmq.rabbitmq_exercise import RabbitmqExercise
 from touchstone.lib.mocks.rabbitmq.rabbitmq_setup import RabbitmqSetup
 from touchstone.lib.mocks.rabbitmq.rabbitmq_verify import RabbitmqVerify
@@ -17,10 +16,10 @@ from touchstone.lib.mocks.rabbitmq.rmq_context import RmqContext
 class Rabbitmq(Mock):
     def __init__(self, mock_config: dict):
         super().__init__(mock_config)
+        self.setup: RabbitmqSetup = None
+        self.exercise: RabbitmqExercise = None
+        self.verify: RabbitmqVerify = None
         self.__container_name: str = None
-        self.__setup: RabbitmqSetup = None
-        self.__exercise: RabbitmqExercise = None
-        self.__verify: RabbitmqVerify = None
 
     @staticmethod
     def name() -> str:
@@ -58,24 +57,16 @@ class Rabbitmq(Mock):
         connection = pika.BlockingConnection(connection_params)
         rmq_context = RmqContext()
         channel = connection.channel()
-        self.__setup = RabbitmqSetup(channel, connection_params, rmq_context)
-        self.__exercise = RabbitmqExercise(channel, rmq_context, self.__get_consume_length())
-        self.__verify = RabbitmqVerify(channel, rmq_context)
+        self.setup = RabbitmqSetup(channel, connection_params, rmq_context)
+        self.exercise = RabbitmqExercise(channel, rmq_context)
+        self.verify = RabbitmqVerify(channel, rmq_context)
 
     def stop(self):
-        self.__setup.stop_listening()
+        self.setup.stop_listening()
         DockerManager.instance().stop_container(self.__container_name)
 
-    def setup(self) -> Setup:
-        return self.__setup
+    def load_defaults(self, defaults: dict):
+        self.setup.load_defaults(defaults)
 
-    def exercise(self) -> Exercise:
-        return self.__exercise
-
-    def verify(self) -> Verify:
-        return self.__verify
-
-    def __get_consume_length(self) -> float:
-        if 'consumeLength' not in self.mock_config:
-            return 0.5
-        return self.mock_config['consumeLength']
+    def reset(self):
+        self.setup.reset()

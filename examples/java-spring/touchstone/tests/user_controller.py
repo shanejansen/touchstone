@@ -14,4 +14,4 @@ class UserController(TouchstoneTest):
 
     def then(self, test_result) -> bool:
         time.sleep(0.5)
-        return self.mocks.rabbit_mq.verify().messages_published('user.direct.exchange', routing_key='user-deleted')
+        return self.mocks.rabbit_mq.verify.messages_published('user.direct.exchange', routing_key='user-deleted')

@@ -1,7 +1,6 @@
 import abc
 
 from touchstone.lib.configs.touchstone_config import TouchstoneConfig
-from touchstone.lib.mocks.mock_case import Setup, Exercise, Verify
 
 
 class Mock(object):
@@ -64,13 +63,11 @@ class Mock(object):
         pass
 
     @abc.abstractmethod
-    def setup(self) -> Setup:
-        """"""
+    def load_defaults(self, defaults: dict):
+        """Loads defaults for this mock provided by the user for dev purposes."""
+        pass
 
     @abc.abstractmethod
-    def exercise(self) -> Exercise:
-        """"""
-
-    @abc.abstractmethod
-    def verify(self) -> Verify:
-        """"""
+    def reset(self):
+        """Returns this mock to its original state."""
+        pass
