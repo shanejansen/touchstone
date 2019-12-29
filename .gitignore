@@ -1,5 +1,6 @@
-# IntelliJ
 .DS_Store
+
+# IntelliJ
 .idea
 *.iml
 *.pyc
