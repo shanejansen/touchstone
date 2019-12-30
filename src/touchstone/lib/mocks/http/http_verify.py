@@ -1,7 +1,7 @@
 import json
 import urllib.request
 
-from touchstone.lib.mocks import verification
+from touchstone.lib.mocks import validation
 
 
 class HttpVerify(object):
@@ -58,7 +58,7 @@ class HttpVerify(object):
         call_count = json.loads(response)['count']
         if not times:
             return call_count > 0
-        return verification.expected_matches_actual(times, call_count)
+        return validation.expected_matches_actual(times, call_count)
 
     def __contained_verification(self, endpoint, http_verb, expected_body):
         payload = {
@@ -74,4 +74,4 @@ class HttpVerify(object):
         bodies = []
         for request in json.loads(response)['requests']:
             bodies.append(request['body'])
-        return verification.expected_in_actual(expected_body, bodies)
+        return validation.expected_in_actual(expected_body, bodies)

@@ -1,6 +1,6 @@
 from pika.adapters.blocking_connection import BlockingChannel
 
-from touchstone.lib.mocks import verification
+from touchstone.lib.mocks import validation
 from touchstone.lib.mocks.rabbitmq.rmq_context import RmqContext
 
 
@@ -18,11 +18,11 @@ class RabbitmqVerify(object):
         num_messages = self.__rmq_context.messages_published(exchange, routing_key)
         if not num_expected_messages and num_messages != 0:
             return True
-        return verification.expected_matches_actual(num_expected_messages, num_messages)
+        return validation.expected_matches_actual(num_expected_messages, num_messages)
 
     def payload_published(self, exchange: str, expected_payload: str, routing_key: str = '') -> bool:
         """Returns True if a message with the given payload has been published to the given exchange and routing key."""
         if not self.__rmq_context.exchange_is_tracked(exchange, routing_key):
             return False
         payloads = self.__rmq_context.payloads_published(exchange, routing_key)
-        return verification.expected_in_actual(expected_payload, payloads)
+        return validation.expected_in_actual(expected_payload, payloads)
