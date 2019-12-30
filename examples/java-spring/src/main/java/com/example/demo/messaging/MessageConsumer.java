@@ -12,5 +12,6 @@ public class MessageConsumer {
     @StreamListener(MessageProcessor.ORDER_PLACED)
     public void handleMessage(String payload) {
         LOG.info("Order placed message received with payload: {}", payload);
+        // TODO - Write order to Mongo
     }
 }

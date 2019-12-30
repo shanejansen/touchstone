@@ -32,8 +32,7 @@ public class UserController {
 
     @DeleteMapping("/user/{id}")
     public void deleteUser(@PathVariable int id) {
-        // TODO
-        String payload = "UserId: " + id;
-        messageProducer.publishUserDeletedMessage(payload);
+        // TODO - Remove from MySql
+        messageProducer.publishUserDeletedMessage(String.valueOf(id));
     }
 }

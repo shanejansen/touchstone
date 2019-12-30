@@ -11,6 +11,8 @@ class TouchstoneTest(object):
         self.mocks = mocks
 
     def processing_period(self) -> float:
+        """The amount of time to wait before "then" is executed. This is useful to configure if you are using a mock
+        or service that does not operate synchronously (e.g. Rabbit MQ)."""
         return 0.0
 
     @abc.abstractmethod

@@ -18,8 +18,8 @@ class DockerManager(object):
 
     def __init__(self):
         DockerManager.__instance = self
-        self.images: list = []
-        self.containers: list = []
+        self.__images: list = []
+        self.__containers: list = []
 
     def build_dockerfile(self, dockerfile_path: str) -> Optional[str]:
         # Build context will always be the same location as the Dockerfile for our purposes
@@ -30,7 +30,7 @@ class DockerManager(object):
         result = subprocess.run(command, shell=True, stdout=subprocess.DEVNULL)
         if result.returncode is not 0:
             return None
-        self.images.append(tag)
+        self.__images.append(tag)
         return tag
 
     def run_image(self, image: str, ports: list) -> str:
@@ -51,7 +51,7 @@ class DockerManager(object):
             raise exceptions.ContainerException(
                 f'Container image {image} could not be started. Ensure Docker is running and ports {exposed_ports} '
                 f'are not already in use.')
-        self.containers.append(name)
+        self.__containers.append(name)
         return name
 
     def stop_container(self, name):
@@ -59,18 +59,21 @@ class DockerManager(object):
         subprocess.run(['docker', 'container', 'stop', name], stdout=subprocess.DEVNULL)
         common.logger.info(f'Removing container: {name}')
         subprocess.run(['docker', 'container', 'rm', name], stdout=subprocess.DEVNULL)
-        self.containers.remove(name)
+        self.__containers.remove(name)
 
     def cleanup(self):
-        if self.images:
-            for image in self.images:
+        if self.__images:
+            for image in self.__images:
                 common.logger.info(f'Removing image: {image}')
                 subprocess.run(['docker', 'image', 'rm', image], stdout=subprocess.DEVNULL)
-        self.images = []
-        if self.containers:
-            for container in self.containers:
+        self.__images = []
+        if self.__containers:
+            for container in self.__containers:
                 common.logger.info(f'Stopping container: {container}')
                 subprocess.run(['docker', 'container', 'stop', container], stdout=subprocess.DEVNULL)
                 common.logger.info(f'Removing container: {container}')
                 subprocess.run(['docker', 'container', 'rm', container], stdout=subprocess.DEVNULL)
-        self.containers = []
+        self.__containers = []
+
+    def containers_running(self) -> bool:
+        return len(self.__containers) > 0

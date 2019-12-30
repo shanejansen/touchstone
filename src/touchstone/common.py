@@ -5,7 +5,6 @@ import sys
 import yaml
 
 from touchstone.lib.configs.touchstone_config import TouchstoneConfig
-from touchstone.lib.docker_manager import DockerManager
 
 logger = logging.getLogger('touchstone')
 
@@ -36,5 +35,6 @@ def exit_touchstone(is_successful: bool):
         code = 0
     else:
         code = 1
+    from touchstone.lib.docker_manager import DockerManager
     DockerManager.instance().cleanup()
     sys.exit(code)

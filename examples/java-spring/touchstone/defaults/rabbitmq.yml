@@ -1,10 +1,10 @@
 ---
 exchanges:
-  - name: order-placed.fanout.exchange
+  - name: order-placed.exchange
     type: fanout
     queues:
       - name: order-placed.queue
-  - name: user.direct.exchange
+  - name: user.exchange
     type: direct
     queues:
       - name: user-deleted.queue

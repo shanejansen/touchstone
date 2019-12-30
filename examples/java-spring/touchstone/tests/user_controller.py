@@ -1,10 +1,12 @@
-import time
 import urllib.request
 
 from touchstone.lib.touchstone_test import TouchstoneTest
 
 
-class UserController(TouchstoneTest):
+class DeleteUser(TouchstoneTest):
+    def processing_period(self) -> float:
+        return 0.5
+
     def given(self):
         pass  # TODO
 
@@ -13,5 +15,4 @@ class UserController(TouchstoneTest):
         urllib.request.urlopen(request)
 
     def then(self, test_result) -> bool:
-        time.sleep(0.5)
-        return self.mocks.rabbit_mq.verify.messages_published('user.direct.exchange', routing_key='user-deleted')
+        return self.mocks.rabbit_mq.verify.payload_published('user.exchange', '1', routing_key='user-deleted')
