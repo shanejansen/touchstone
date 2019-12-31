@@ -15,4 +15,4 @@ class DeleteUser(TouchstoneTest):
         urllib.request.urlopen(request)
 
     def then(self, test_result) -> bool:
-        return self.mocks.rabbit_mq.verify.payload_published('user.exchange', '1', routing_key='user-deleted')
+        return self.mocks.rabbitmq.verify.payload_published('user.exchange', '1', routing_key='user-deleted')

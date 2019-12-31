@@ -62,6 +62,11 @@ class RabbitmqSetup(object):
             self.__message_consumer.channel.connection.add_callback_threadsafe(callback)
             self.__message_consumer.join()
 
+    def publish(self, exchange: str, payload: str, routing_key: str = ''):
+        """Publish a message with a payload to the given exchange and optional routing-key."""
+        if self.__rmq_context.exchange_is_tracked(exchange, routing_key):
+            self.__channel.basic_publish(exchange, routing_key, bytes(payload, encoding='utf-8'))
+
     def __create_exchange(self, name: str, exchange_type: str = 'direct'):
         if name not in self.__exchanges:
             self.__channel.exchange_declare(name, exchange_type=exchange_type, durable=True)

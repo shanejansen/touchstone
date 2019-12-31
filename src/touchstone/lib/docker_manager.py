@@ -33,11 +33,17 @@ class DockerManager(object):
         self.__images.append(tag)
         return tag
 
-    def run_image(self, image: str, ports: list) -> str:
+    def run_image(self, image: str, ports: list, environment_vars=None) -> str:
+        if environment_vars is None:
+            environment_vars = []
         additional_params = ''
 
         for host, container in ports:
             additional_params += f' -p {host}:{container}'
+
+        for var, value in environment_vars:
+            value = self.__replace_localhost_with_docker_equivalent(str(value))
+            additional_params += f' -e {var}="{value}"'
 
         name = uuid.uuid4().hex
         command = f'docker run -d --name {name}{additional_params} {image}'
@@ -77,3 +83,7 @@ class DockerManager(object):
 
     def containers_running(self) -> bool:
         return len(self.__containers) > 0
+
+    def __replace_localhost_with_docker_equivalent(self, haystack: str) -> str:
+        replacement = haystack.replace('localhost', 'host.docker.internal')
+        return replacement.replace('127.0.0.1', 'host.docker.internal')

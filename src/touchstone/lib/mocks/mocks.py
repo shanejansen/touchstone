@@ -6,13 +6,15 @@ import yaml
 from touchstone.lib import exceptions
 from touchstone.lib.configs.touchstone_config import TouchstoneConfig
 from touchstone.lib.mocks.http.http import Http
+from touchstone.lib.mocks.mongodb.mongodb import Mongodb
 from touchstone.lib.mocks.rabbitmq.rabbitmq import Rabbitmq
 
 
 class Mocks(object):
     def __init__(self):
         self.http: Http = None
-        self.rabbit_mq: Rabbitmq = None
+        self.rabbitmq: Rabbitmq = None
+        self.mongodb: Mongodb = None
         self.__mocks: list = self.__parse_mocks()
         self.__mocks_running = False
 
@@ -63,8 +65,11 @@ class Mocks(object):
                 self.http = Http(mock_config)
                 mocks.append(self.http)
             elif Rabbitmq.name() == mock_config:
-                self.rabbit_mq = Rabbitmq(mock_config)
-                mocks.append(self.rabbit_mq)
+                self.rabbitmq = Rabbitmq(mock_config)
+                mocks.append(self.rabbitmq)
+            elif Mongodb.name() == mock_config:
+                self.mongodb = Mongodb(mock_config)
+                mocks.append(self.mongodb)
             else:
                 raise exceptions.MockNotSupportedException(
                     f'{mock_config} is not a supported mock. Please check your touchstone.yml file.')

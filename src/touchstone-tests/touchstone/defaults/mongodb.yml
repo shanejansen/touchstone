@@ -1,0 +1,8 @@
+---
+databases:
+  - name: myapp
+    collections:
+      - name: users
+        documents:
+          - {"firstName": "John", "lastName": "Smith"}
+          - {"firstName": "Jane", "lastName": "Brown"}
