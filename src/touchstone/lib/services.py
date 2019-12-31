@@ -36,6 +36,9 @@ class Services(object):
                 return False
         return True
 
+    def are_running(self) -> bool:
+        return self.__services_running
+
     def __parse_services(self) -> list:
         services = []
         host = TouchstoneConfig.instance().config['host']

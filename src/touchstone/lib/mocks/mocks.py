@@ -35,6 +35,9 @@ class Mocks(object):
             mock.stop()
         self.__mocks_running = False
 
+    def are_running(self):
+        return self.__mocks_running
+
     def load_defaults(self):
         for mock in self.__mocks:
             try:
