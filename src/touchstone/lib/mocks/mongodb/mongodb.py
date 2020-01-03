@@ -8,8 +8,8 @@ from touchstone.lib.mocks.mongodb.mongodb_verify import MongodbVerify
 
 
 class Mongodb(Mock):
-    def __init__(self, mock_config: dict):
-        super().__init__(mock_config)
+    def __init__(self):
+        super().__init__()
         self.setup: MongodbSetup = None
         self.verify: MongodbVerify = None
         self.__container_name: str = None

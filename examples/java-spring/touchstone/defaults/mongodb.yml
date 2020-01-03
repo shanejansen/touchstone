@@ -1,0 +1,7 @@
+---
+databases:
+  - name: myapp
+    collections:
+      - name: orders
+        documents:
+          - {"userId": 1, "item": "Shoes", "quantity": 5}

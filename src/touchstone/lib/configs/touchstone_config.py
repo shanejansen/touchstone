@@ -1,5 +1,7 @@
 import sys
 
+from touchstone.lib import common
+
 
 class TouchstoneConfig:
     __instance: 'TouchstoneConfig' = None
@@ -30,4 +32,4 @@ class TouchstoneConfig:
         self.config['dev'] = True
 
     def merge(self, other: dict):
-        self.config = dict(list(self.config.items()) + list(other.items()))
+        self.config = common.dict_merge(self.config, other)

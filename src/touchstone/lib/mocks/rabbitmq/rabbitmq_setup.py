@@ -31,10 +31,12 @@ class MessageConsumer(Thread):
 
 
 class RabbitmqSetup(object):
-    def __init__(self, channel: BlockingChannel, connection_params: pika.ConnectionParameters, rmq_context: RmqContext):
+    def __init__(self, channel: BlockingChannel, connection_params: pika.ConnectionParameters, rmq_context: RmqContext,
+                 durable=False):
         super().__init__()
         self.__channel = channel
         self.__rmq_context = rmq_context
+        self.__durable = durable
 
         self.__message_consumer: MessageConsumer = MessageConsumer(connection_params, rmq_context)
         self.__exchanges: list = []
@@ -69,12 +71,12 @@ class RabbitmqSetup(object):
 
     def __create_exchange(self, name: str, exchange_type: str = 'direct'):
         if name not in self.__exchanges:
-            self.__channel.exchange_declare(name, exchange_type=exchange_type, durable=True)
+            self.__channel.exchange_declare(name, exchange_type=exchange_type, durable=self.__durable)
             self.__exchanges.append(name)
 
     def __create_queue(self, name: str, exchange: str, routing_key: str = ''):
         if name not in self.__queues:
-            self.__channel.queue_declare(name, durable=True)
+            self.__channel.queue_declare(name, durable=self.__durable)
             self.__channel.queue_bind(name, exchange, routing_key=routing_key)
             self.__queues.append(name)
 

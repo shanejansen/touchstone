@@ -6,4 +6,7 @@ services:
     availability_endpoint: "/actuator/health"
     dockerfile: "../Dockerfile"
 mocks:
+  http:
   rabbitmq:
+    durable: True
+  mongodb:

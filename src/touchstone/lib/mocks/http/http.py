@@ -11,8 +11,8 @@ from touchstone.lib.mocks.mock import Mock
 
 
 class Http(Mock):
-    def __init__(self, mock_config: dict):
-        super().__init__(mock_config)
+    def __init__(self):
+        super().__init__()
         self.setup: HttpSetup = HttpSetup(self.default_url())
         self.verify: HttpVerify = HttpVerify(self.default_url())
         self.__container_name: str = None

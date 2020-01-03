@@ -3,7 +3,7 @@ import time
 
 import yaml
 
-from touchstone.lib import exceptions
+from touchstone.lib import exceptions, common
 from touchstone.lib.configs.touchstone_config import TouchstoneConfig
 from touchstone.lib.mocks.http.http import Http
 from touchstone.lib.mocks.mongodb.mongodb import Mongodb
@@ -60,19 +60,23 @@ class Mocks(object):
 
     def __parse_mocks(self) -> list:
         mocks = []
-        for mock_config in TouchstoneConfig.instance().config['mocks']:
-            if Http.name() == mock_config:
-                self.http = Http(mock_config)
+        for mock in TouchstoneConfig.instance().config['mocks']:
+            user_config = TouchstoneConfig.instance().config['mocks'][mock]
+            if Http.name() == mock:
+                self.http = Http()
+                self.http.config = common.dict_merge(self.http.default_config(), user_config)
                 mocks.append(self.http)
-            elif Rabbitmq.name() == mock_config:
-                self.rabbitmq = Rabbitmq(mock_config)
+            elif Rabbitmq.name() == mock:
+                self.rabbitmq = Rabbitmq()
+                self.rabbitmq.config = common.dict_merge(self.http.default_config(), user_config)
                 mocks.append(self.rabbitmq)
-            elif Mongodb.name() == mock_config:
-                self.mongodb = Mongodb(mock_config)
+            elif Mongodb.name() == mock:
+                self.mongodb = Mongodb()
+                self.mongodb.config = common.dict_merge(self.http.default_config(), user_config)
                 mocks.append(self.mongodb)
             else:
                 raise exceptions.MockNotSupportedException(
-                    f'{mock_config} is not a supported mock. Please check your touchstone.yml file.')
+                    f'{mock} is not a supported mock. Please check your touchstone.yml file.')
         return mocks
 
     def __wait_for_healthy_mocks(self):

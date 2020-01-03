@@ -13,11 +13,13 @@ class MongodbSetup(object):
             database_name = database['name']
             mongo_database = self.__mongo_client.get_database(database_name)
             self.__mongo_context.add_database(database_name)
-            for collection in database['collections']:
-                mongo_collection = mongo_database.get_collection(collection['name'])
-                self.__mongo_context.add_collection(database_name, collection['name'])
-                for document in collection['documents']:
-                    mongo_collection.insert_one(document)
+            if 'collections' in database:
+                for collection in database['collections']:
+                    mongo_collection = mongo_database.get_collection(collection['name'])
+                    self.__mongo_context.add_collection(database_name, collection['name'])
+                    if 'documents' in collection:
+                        for document in collection['documents']:
+                            mongo_collection.insert_one(document)
 
     def reset(self):
         for database in self.__mongo_context.databases():

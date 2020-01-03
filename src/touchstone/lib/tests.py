@@ -42,7 +42,6 @@ class Tests(object):
                 print(f'{test.name} :: RUNNING')
 
                 did_pass = False
-                result = None
                 try:
                     did_pass = test.run()
                 except Exception:
@@ -50,7 +49,7 @@ class Tests(object):
                     tests_passed = False
 
                 if not did_pass:
-                    print(f'{test.name} :: FAILED. Actual result: "{result}"\n')
+                    print(f'{test.name} :: FAILED\n')
                     tests_passed = False
                 else:
                     print(f'{test.name} :: PASSED\n')

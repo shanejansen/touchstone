@@ -1,3 +1,4 @@
+from touchstone.lib import common
 from touchstone.lib.configs.touchstone_config import TouchstoneConfig
 
 
@@ -15,7 +16,7 @@ class ServiceConfig(object):
         self.__build_url()
 
     def merge(self, other: dict):
-        self.config = dict(list(self.config.items()) + list(other.items()))
+        self.config = common.dict_merge(self.config, other)
         self.__build_url()
 
     def __build_url(self):

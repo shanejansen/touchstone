@@ -1,0 +1,8 @@
+---
+requests:
+  - request:
+      method: GET
+      url: "/john-smith/email"
+    response:
+      status: 200
+      body: johnsmith007@example.com

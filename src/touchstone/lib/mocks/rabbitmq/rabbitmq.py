@@ -13,8 +13,8 @@ from touchstone.lib.mocks.rabbitmq.rmq_context import RmqContext
 
 
 class Rabbitmq(Mock):
-    def __init__(self, mock_config: dict):
-        super().__init__(mock_config)
+    def __init__(self):
+        super().__init__()
         self.setup: RabbitmqSetup = None
         self.verify: RabbitmqVerify = None
         self.__container_name: str = None
@@ -26,6 +26,11 @@ class Rabbitmq(Mock):
     @staticmethod
     def pretty_name() -> str:
         return 'Rabbit MQ'
+
+    def default_config(self) -> dict:
+        return {
+            'durable': False
+        }
 
     def default_port(self) -> int:
         return 5672
@@ -55,7 +60,7 @@ class Rabbitmq(Mock):
         connection = pika.BlockingConnection(connection_params)
         rmq_context = RmqContext()
         channel = connection.channel()
-        self.setup = RabbitmqSetup(channel, connection_params, rmq_context)
+        self.setup = RabbitmqSetup(channel, connection_params, rmq_context, self.config['durable'])
         self.verify = RabbitmqVerify(channel, rmq_context)
 
     def stop(self):

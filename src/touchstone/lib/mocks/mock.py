@@ -6,8 +6,8 @@ from touchstone.lib.configs.touchstone_config import TouchstoneConfig
 class Mock(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, mock_config: dict):
-        self.mock_config: dict = mock_config
+    def __init__(self):
+        self.config: dict = None
 
     @staticmethod
     @abc.abstractmethod
@@ -18,6 +18,11 @@ class Mock(object):
     @abc.abstractmethod
     def pretty_name() -> str:
         """A pretty, display name for this mock."""
+
+    def default_config(self) -> dict:
+        """Optional: A dictionary of configuration values with defaults for this mock. This will be available via
+        'self.config'."""
+        return {}
 
     def default_host(self) -> str:
         """The default host where this mock will be exposed."""
