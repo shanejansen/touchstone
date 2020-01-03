@@ -16,15 +16,15 @@ class TouchstoneTest(object):
         return 0.0
 
     @abc.abstractmethod
-    def given(self):
+    def given(self) -> object:
         """GIVEN this data and/or state. Set the state of the system here."""
 
     @abc.abstractmethod
-    def when(self):
+    def when(self, given) -> object:
         """WHEN we run this test. Your custom test code goes here. Return the result of the test to be verified."""
         return None
 
     @abc.abstractmethod
-    def then(self, test_result) -> bool:
+    def then(self, given, result) -> bool:
         """THEN check that the result is correct. Return True/False for a passed/failed test respectively."""
         return False

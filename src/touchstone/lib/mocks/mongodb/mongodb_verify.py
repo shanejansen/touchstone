@@ -1,6 +1,5 @@
 from pymongo import MongoClient
 
-from touchstone.lib.mocks import validation
 from touchstone.lib.mocks.mongodb.mongo_context import MongoContext
 
 
@@ -14,7 +13,13 @@ class MongodbVerify(object):
         any number of documents will be considered passing."""
         if not self.__mongo_context.collection_exists(database, collection):
             return False
+
         num_documents = self.__mongo_client.get_database(database).get_collection(collection).count_documents(needle)
         if not num_expected and num_documents != 0:
             return True
-        return validation.expected_matches_actual(num_expected, num_documents)
+
+        if num_expected == num_documents:
+            return True
+        print(f'Document: "{needle}" in collection: "{collection}" was found {num_documents} time(s) but expected '
+              f'{num_expected if num_expected else "any"} time(s).')
+        return False

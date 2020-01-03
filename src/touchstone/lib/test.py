@@ -9,8 +9,8 @@ class Test(object):
         self.__touchstone_test = touchstone_test
 
     def run(self) -> bool:
-        self.__touchstone_test.given()
-        result = self.__touchstone_test.when()
+        given = self.__touchstone_test.given()
+        result = self.__touchstone_test.when(given)
         time.sleep(self.__touchstone_test.processing_period())
-        did_pass = self.__touchstone_test.then(result)
+        did_pass = self.__touchstone_test.then(given, result)
         return did_pass

@@ -68,11 +68,11 @@ class Mocks(object):
                 mocks.append(self.http)
             elif Rabbitmq.name() == mock:
                 self.rabbitmq = Rabbitmq()
-                self.rabbitmq.config = common.dict_merge(self.http.default_config(), user_config)
+                self.rabbitmq.config = common.dict_merge(self.rabbitmq.default_config(), user_config)
                 mocks.append(self.rabbitmq)
             elif Mongodb.name() == mock:
                 self.mongodb = Mongodb()
-                self.mongodb.config = common.dict_merge(self.http.default_config(), user_config)
+                self.mongodb.config = common.dict_merge(self.mongodb.default_config(), user_config)
                 mocks.append(self.mongodb)
             else:
                 raise exceptions.MockNotSupportedException(

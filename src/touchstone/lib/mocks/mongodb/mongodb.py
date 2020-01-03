@@ -30,9 +30,12 @@ class Mongodb(Mock):
         return 27018
 
     def is_healthy(self) -> bool:
-        client = pymongo.MongoClient(self.default_host(), self.default_port())
-        status = client.admin.command('serverStatus')['ok']
-        return status == 1.0
+        try:
+            client = pymongo.MongoClient(self.default_host(), self.default_port())
+            status = client.admin.command('serverStatus')['ok']
+            return status == 1.0
+        except Exception:
+            return False
 
     def start(self):
         self.__container_name = DockerManager.instance().run_image('mongo:4.0.14', [(self.default_port(), 27017)])
