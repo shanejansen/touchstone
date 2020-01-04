@@ -1,13 +1,12 @@
 import abc
 
-from touchstone.lib.configs.touchstone_config import TouchstoneConfig
-
 
 class Mock(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self):
-        self.config: dict = None
+    def __init__(self, default_host: str):
+        self.config: dict = {}
+        self.__default_host = default_host
 
     @staticmethod
     @abc.abstractmethod
@@ -26,7 +25,7 @@ class Mock(object):
 
     def default_host(self) -> str:
         """The default host where this mock will be exposed."""
-        return TouchstoneConfig.instance().config['host']
+        return self.__default_host
 
     @abc.abstractmethod
     def default_port(self) -> int:

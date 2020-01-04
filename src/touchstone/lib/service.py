@@ -7,60 +7,61 @@ import urllib.parse
 import urllib.request
 from typing import Optional
 
-from touchstone.lib.configs.service_config import ServiceConfig
-from touchstone.lib.configs.touchstone_config import TouchstoneConfig
+from touchstone.lib import exceptions
 from touchstone.lib.docker_manager import DockerManager
 from touchstone.lib.tests import Tests
 
 
 class Service(object):
-    def __init__(self, service_config: ServiceConfig, tests: Tests):
-        self.__service_config = service_config
+    def __init__(self, root: str, name: str, tests: Tests, dockerfile: str, host: str, port: str,
+                 availability_endpoint: str, num_retries: int, seconds_between_retries: int,
+                 docker_manager: DockerManager):
+        self.name = name
+        self.__root = root
         self.__tests = tests
+        self.__dockerfile = dockerfile
+        self.__host = host
+        self.__port = port
+        self.__availability_endpoint = availability_endpoint
+        self.__num_retries = num_retries
+        self.__seconds_between_retries = seconds_between_retries
+        self.__docker_manager = docker_manager
         self.__container_name: Optional[str] = None
 
-    def name(self):
-        return self.__service_config.config['name']
-
     def start(self):
-        if self.__service_config.config['dockerfile'] is not None:
+        if self.__dockerfile is not None:
             self.__log('Building and running Dockerfile...')
-            dockerfile_path = os.path.abspath(
-                os.path.join(TouchstoneConfig.instance().config['root'], self.__service_config.config['dockerfile']))
-            tag = DockerManager.instance().build_dockerfile(dockerfile_path)
-            service_port = self.__service_config.config['port']
-            self.__container_name = DockerManager.instance().run_image(tag, [(service_port, service_port)])
+            dockerfile_path = os.path.abspath(os.path.join(self.__root, self.__dockerfile))
+            tag = self.__docker_manager.build_dockerfile(dockerfile_path)
+            self.__container_name = self.__docker_manager.run_image(tag, [(self.__port, self.__port)])
 
     def stop(self):
         if self.__container_name:
-            DockerManager.instance().stop_container(self.__container_name)
+            self.__docker_manager.stop_container(self.__container_name)
             self.__container_name = None
 
-    def run_tests(self) -> bool:
-        if self.__wait_for_availability() is False:
-            self.__log('Could not connect to service\'s availability endpoint.\n')
-            return False
+    def url(self):
+        return f'http://{self.__host}:{self.__port}'
 
-        self.__log('Available. Running tests\n')
+    def wait_for_availability(self):
+        full_endpoint = self.url() + self.__availability_endpoint
+        self.__log(f'Attempting to connect to availability endpoint {full_endpoint}')
+        for retry_num in range(self.__num_retries):
+            try:
+                urllib.request.urlopen(full_endpoint).read()
+                self.__log('Available\n')
+                return
+            except (urllib.error.URLError, http.client.RemoteDisconnected):
+                self.__log(f'Not available. Retry {retry_num + 1} of {self.__num_retries}')
+                time.sleep(self.__seconds_between_retries)
+        raise exceptions.ServiceException('Could not connect to service\'s availability endpoint.')
+
+    def run_tests(self) -> bool:
+        self.__tests.service_url = self.url()
         return self.__tests.run()
 
     def is_running(self) -> bool:
         return self.__container_name is not None
 
-    def __wait_for_availability(self) -> bool:
-        full_endpoint = self.__service_config.config['url'] + self.__service_config.config['availability_endpoint']
-        self.__log(f'Attempting to connect to availability endpoint {full_endpoint}')
-        try:
-            for retry_num in range(self.__service_config.config['num_retries']):
-                try:
-                    urllib.request.urlopen(full_endpoint).read()
-                    return True
-                except (urllib.error.URLError, http.client.RemoteDisconnected):
-                    self.__log(f'Not available. Retry {retry_num + 1} of {self.__service_config.config["num_retries"]}')
-                    time.sleep(self.__service_config.config['seconds_between_retries'])
-        except KeyboardInterrupt:
-            return False
-        return False
-
     def __log(self, message: str):
-        print(f'{self.__service_config.config["name"]} :: {message}')
+        print(f'{self.name} :: {message}')

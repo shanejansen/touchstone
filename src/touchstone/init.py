@@ -11,7 +11,6 @@ def execute():
         data = """---
 services:
   - name: My App
-    tests: "./tests"
     port: 8080
 mocks:
 """

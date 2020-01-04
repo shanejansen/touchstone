@@ -2,6 +2,7 @@ import http
 import http.client
 import urllib.error
 import urllib.request
+from typing import Optional
 
 import pika
 
@@ -13,11 +14,12 @@ from touchstone.lib.mocks.rabbitmq.rmq_context import RmqContext
 
 
 class Rabbitmq(Mock):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, default_host: str, docker_manager: DockerManager):
+        super().__init__(default_host)
         self.setup: RabbitmqSetup = None
         self.verify: RabbitmqVerify = None
-        self.__container_name: str = None
+        self.__docker_manager = docker_manager
+        self.__container_name: Optional[str] = None
 
     @staticmethod
     def name() -> str:
@@ -46,9 +48,9 @@ class Rabbitmq(Mock):
             return False
 
     def start(self):
-        self.__container_name = DockerManager.instance().run_image('rabbitmq:3.7.22-management-alpine',
-                                                                   [(self.default_port(), 5672),
-                                                                    (self.ui_port(), 15672)])
+        self.__container_name = self.__docker_manager.run_image('rabbitmq:3.7.22-management-alpine',
+                                                                [(self.default_port(), 5672),
+                                                                 (self.ui_port(), 15672)])
 
     def initialize(self):
         connection_params = pika.ConnectionParameters(
@@ -64,8 +66,9 @@ class Rabbitmq(Mock):
         self.verify = RabbitmqVerify(channel, rmq_context)
 
     def stop(self):
-        self.setup.stop_listening()
-        DockerManager.instance().stop_container(self.__container_name)
+        if self.__container_name:
+            self.setup.stop_listening()
+            self.__docker_manager.stop_container(self.__container_name)
 
     def load_defaults(self, defaults: dict):
         self.setup.load_defaults(defaults)

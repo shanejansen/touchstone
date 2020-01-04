@@ -3,19 +3,19 @@ import time
 
 import yaml
 
-from touchstone.lib import exceptions, common
-from touchstone.lib.configs.touchstone_config import TouchstoneConfig
+from touchstone.lib import exceptions
 from touchstone.lib.mocks.http.http import Http
 from touchstone.lib.mocks.mongodb.mongodb import Mongodb
 from touchstone.lib.mocks.rabbitmq.rabbitmq import Rabbitmq
 
 
 class Mocks(object):
-    def __init__(self):
-        self.http: Http = None
-        self.rabbitmq: Rabbitmq = None
-        self.mongodb: Mongodb = None
-        self.__mocks: list = self.__parse_mocks()
+    def __init__(self, root: str, http: Http, rabbitmq: Rabbitmq, mongodb: Mongodb):
+        self.http: Http = http
+        self.rabbitmq: Rabbitmq = rabbitmq
+        self.mongodb: Mongodb = mongodb
+        self.__root = root
+        self.__mocks = [http, rabbitmq, mongodb]
         self.__mocks_running = False
 
     def start(self):
@@ -43,8 +43,7 @@ class Mocks(object):
     def load_defaults(self):
         for mock in self.__mocks:
             try:
-                with open(os.path.join(TouchstoneConfig.instance().config['root'], f'defaults/{mock.name()}.yml'),
-                          'r') as file:
+                with open(os.path.join(self.__root, f'defaults/{mock.name()}.yml'), 'r') as file:
                     defaults = yaml.safe_load(file)
                     mock.load_defaults(defaults)
             except FileNotFoundError:
@@ -57,27 +56,6 @@ class Mocks(object):
     def print_available_mocks(self):
         for mock in self.__mocks:
             print(f'Mock {mock.pretty_name()} UI running at: {mock.ui_url()}')
-
-    def __parse_mocks(self) -> list:
-        mocks = []
-        for mock in TouchstoneConfig.instance().config['mocks']:
-            user_config = TouchstoneConfig.instance().config['mocks'][mock]
-            if Http.name() == mock:
-                self.http = Http()
-                self.http.config = common.dict_merge(self.http.default_config(), user_config)
-                mocks.append(self.http)
-            elif Rabbitmq.name() == mock:
-                self.rabbitmq = Rabbitmq()
-                self.rabbitmq.config = common.dict_merge(self.rabbitmq.default_config(), user_config)
-                mocks.append(self.rabbitmq)
-            elif Mongodb.name() == mock:
-                self.mongodb = Mongodb()
-                self.mongodb.config = common.dict_merge(self.mongodb.default_config(), user_config)
-                mocks.append(self.mongodb)
-            else:
-                raise exceptions.MockNotSupportedException(
-                    f'{mock} is not a supported mock. Please check your touchstone.yml file.')
-        return mocks
 
     def __wait_for_healthy_mocks(self):
         for mock in self.__mocks:

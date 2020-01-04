@@ -8,16 +8,7 @@ from touchstone.lib import exceptions
 
 
 class DockerManager(object):
-    __instance: 'DockerManager' = None
-
-    @staticmethod
-    def instance() -> 'DockerManager':
-        if DockerManager.__instance is None:
-            DockerManager()
-        return DockerManager.__instance
-
     def __init__(self):
-        DockerManager.__instance = self
         self.__images: list = []
         self.__containers: list = []
 

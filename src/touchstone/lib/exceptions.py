@@ -6,6 +6,10 @@ class ServiceException(Exception):
     pass
 
 
+class TestException(Exception):
+    pass
+
+
 class MockException(Exception):
     pass
 

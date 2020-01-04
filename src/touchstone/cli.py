@@ -1,5 +1,4 @@
 import logging
-import os
 
 import click
 
@@ -8,13 +7,11 @@ from touchstone import develop
 from touchstone import init
 from touchstone import run
 from touchstone.lib import exceptions
-from touchstone.lib.configs.touchstone_config import TouchstoneConfig
 
 
 @click.group()
 @click.option('--log', default='WARNING', help='Sets the log level.')
 def cli(log):
-    TouchstoneConfig.instance().set_root(os.getcwd())
     numeric_level = getattr(logging, log.upper(), None)
     if not isinstance(numeric_level, int):
         raise exceptions.TouchstoneException(f'Invalid log level: {log}')

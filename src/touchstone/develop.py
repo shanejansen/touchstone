@@ -1,24 +1,18 @@
 from pyfiglet import figlet_format
 
-from touchstone import common
-from touchstone.lib.configs.touchstone_config import TouchstoneConfig
-from touchstone.lib.docker_manager import DockerManager
-from touchstone.lib.mocks.mocks import Mocks
-from touchstone.lib.services import Services
+from touchstone.bootstrap import Bootstrap
 
 
 def execute():
+    bootstrap = Bootstrap()
+    bootstrap.touchstone_config.set_dev()
+    bootstrap.runner.prep_run()
+    print(figlet_format('Touchstone', font='larry3d'))
+
     try:
-        common.prep_run()
-        print(figlet_format('Touchstone', font='larry3d'))
-        TouchstoneConfig.instance().set_dev()
-
-        mocks = Mocks()
-        mocks.start()
-        mocks.load_defaults()
-        mocks.print_available_mocks()
-
-        services = Services(mocks)
+        bootstrap.mocks.start()
+        bootstrap.mocks.load_defaults()
+        bootstrap.mocks.print_available_mocks()
 
         __print_help()
         while True:
@@ -26,25 +20,25 @@ def execute():
             if command == 'help':
                 __print_help()
             elif command == 'run':
-                __run_tests(mocks, services)
+                __run_tests(bootstrap)
             elif command == 'services start':
-                services.start()
+                bootstrap.services.start()
             elif command == 'services stop':
-                services.stop()
+                bootstrap.services.stop()
             elif command == 'mocks print':
-                mocks.print_available_mocks()
+                bootstrap.mocks.print_available_mocks()
             elif command == 'mocks reset':
-                mocks.reset()
-                mocks.load_defaults()
+                bootstrap.mocks.reset()
+                bootstrap.mocks.load_defaults()
             elif command == 'exit':
-                services.stop()
-                mocks.stop()
-                common.exit_touchstone(True)
+                bootstrap.services.stop()
+                bootstrap.mocks.stop()
+                bootstrap.runner.exit_touchstone(True)
             else:
                 print(f'Unknown command "{command}"')
     except (Exception, KeyboardInterrupt) as e:
         print('\nTouchstone was interrupted. Cleaning up...')
-        DockerManager.instance().cleanup()
+        bootstrap.runner.cleanup()
         raise e
 
 
@@ -59,14 +53,13 @@ def __print_help():
           'exit - Exit Touchstone.\n')
 
 
-def __run_tests(mocks, services):
-    mocks.reset()
-    mocks.load_defaults()
-    common.load_config()
-    tests_did_pass = services.run_tests()
+def __run_tests(bootstrap):
+    bootstrap.mocks.reset()
+    bootstrap.mocks.load_defaults()
+    tests_did_pass = bootstrap.services.run_tests()
     if tests_did_pass:
         print('All Touchstone tests passed successfully!')
     else:
         print('One or more Touchstone tests failed.')
-    mocks.reset()
-    mocks.load_defaults()
+    bootstrap.mocks.reset()
+    bootstrap.mocks.load_defaults()

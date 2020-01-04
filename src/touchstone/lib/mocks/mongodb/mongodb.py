@@ -1,3 +1,5 @@
+from typing import Optional
+
 import pymongo
 
 from touchstone.lib.docker_manager import DockerManager
@@ -8,12 +10,13 @@ from touchstone.lib.mocks.mongodb.mongodb_verify import MongodbVerify
 
 
 class Mongodb(Mock):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, default_host: str, docker_manager: DockerManager):
+        super().__init__(default_host)
         self.setup: MongodbSetup = None
         self.verify: MongodbVerify = None
-        self.__container_name: str = None
-        self.__ui_container_name: str = None
+        self.__docker_manager = docker_manager
+        self.__container_name: Optional[str] = None
+        self.__ui_container_name: Optional[str] = None
 
     @staticmethod
     def name() -> str:
@@ -38,12 +41,12 @@ class Mongodb(Mock):
             return False
 
     def start(self):
-        self.__container_name = DockerManager.instance().run_image('mongo:4.0.14', [(self.default_port(), 27017)])
+        self.__container_name = self.__docker_manager.run_image('mongo:4.0.14', [(self.default_port(), 27017)])
         environment_vars = [('ME_CONFIG_MONGODB_PORT', self.default_port()),
                             ('ME_CONFIG_MONGODB_SERVER', self.default_host())]
-        self.__ui_container_name = DockerManager.instance().run_image('mongo-express:0.49.0',
-                                                                      [(self.ui_port(), 8081)],
-                                                                      environment_vars=environment_vars)
+        self.__ui_container_name = self.__docker_manager.run_image('mongo-express:0.49.0',
+                                                                   [(self.ui_port(), 8081)],
+                                                                   environment_vars=environment_vars)
 
     def initialize(self):
         mongo_client = pymongo.MongoClient(self.default_host(), self.default_port())
@@ -52,8 +55,10 @@ class Mongodb(Mock):
         self.verify = MongodbVerify(mongo_client, mongo_context)
 
     def stop(self):
-        DockerManager.instance().stop_container(self.__container_name)
-        DockerManager.instance().stop_container(self.__ui_container_name)
+        if self.__container_name:
+            self.__docker_manager.stop_container(self.__container_name)
+        if self.__ui_container_name:
+            self.__docker_manager.stop_container(self.__ui_container_name)
 
     def load_defaults(self, defaults: dict):
         self.setup.load_defaults(defaults)

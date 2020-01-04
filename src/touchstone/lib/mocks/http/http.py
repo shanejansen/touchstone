@@ -3,6 +3,7 @@ import http.client
 import urllib.error
 import urllib.parse
 import urllib.request
+from typing import Optional
 
 from touchstone.lib.docker_manager import DockerManager
 from touchstone.lib.mocks.http.http_setup import HttpSetup
@@ -11,11 +12,12 @@ from touchstone.lib.mocks.mock import Mock
 
 
 class Http(Mock):
-    def __init__(self):
-        super().__init__()
+    def __init__(self, default_host: str, docker_manager: DockerManager):
+        super().__init__(default_host)
         self.setup: HttpSetup = HttpSetup(self.default_url())
         self.verify: HttpVerify = HttpVerify(self.default_url())
-        self.__container_name: str = None
+        self.__docker_manager = docker_manager
+        self.__container_name: Optional[str] = None
 
     @staticmethod
     def name() -> str:
@@ -42,11 +44,12 @@ class Http(Mock):
             return False
 
     def start(self):
-        self.__container_name = DockerManager.instance().run_image('rodolpheche/wiremock:2.25.1-alpine',
-                                                                   [(self.default_port(), 8080)])
+        self.__container_name = self.__docker_manager.run_image('rodolpheche/wiremock:2.25.1-alpine',
+                                                                [(self.default_port(), 8080)])
 
     def stop(self):
-        DockerManager.instance().stop_container(self.__container_name)
+        if self.__container_name:
+            self.__docker_manager.stop_container(self.__container_name)
 
     def load_defaults(self, defaults: dict):
         self.setup.load_defaults(defaults)

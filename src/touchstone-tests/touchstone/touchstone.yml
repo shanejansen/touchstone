@@ -1,7 +1,6 @@
 ---
 services:
   - name: My App
-    tests: "./tests"
     port: 8080
     dockerfile: "../Dockerfile"
 mocks:

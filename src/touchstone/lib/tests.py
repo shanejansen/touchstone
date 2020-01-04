@@ -2,15 +2,17 @@ import glob
 import importlib.util
 import inspect
 import traceback
+from typing import Optional
 
+from touchstone.lib import exceptions
 from touchstone.lib.mocks.mocks import Mocks
 from touchstone.lib.test import Test
 from touchstone.lib.touchstone_test import TouchstoneTest
 
 
 class Tests(object):
-    def __init__(self, service_url: str, mocks: Mocks, tests_path: str):
-        self.__service_url = service_url
+    def __init__(self, mocks: Mocks, tests_path: str):
+        self.service_url: Optional[str] = None
         self.__mocks = mocks
         self.__tests_path = tests_path
 
@@ -28,6 +30,9 @@ class Tests(object):
             self.clazz = clazz
 
     def run(self) -> bool:
+        if not self.service_url:
+            raise exceptions.TestException('service_url must be set before running tests.')
+
         all_test_containers = self.__load_test_classes()
         if len(all_test_containers) == 0:
             print(f'No tests found at {self.__tests_path}')
@@ -37,7 +42,7 @@ class Tests(object):
         for test_container in all_test_containers:
             print(test_container.file)
             for test_class in test_container.test_classes:
-                class_instance: TouchstoneTest = test_class.clazz(self.__service_url, self.__mocks)
+                class_instance: TouchstoneTest = test_class.clazz(self.service_url, self.__mocks)
                 test = Test(test_class.name, class_instance)
                 print(f'{test.name} :: RUNNING')
 
