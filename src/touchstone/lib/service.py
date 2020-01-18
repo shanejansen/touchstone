@@ -13,7 +13,7 @@ from touchstone.lib.tests import Tests
 
 
 class Service(object):
-    def __init__(self, root: str, name: str, tests: Tests, dockerfile: str, host: str, port: str,
+    def __init__(self, root: str, name: str, tests: Tests, dockerfile: str, host: str, port: int,
                  availability_endpoint: str, num_retries: int, seconds_between_retries: int,
                  docker_manager: DockerManager):
         self.name = name
@@ -26,19 +26,21 @@ class Service(object):
         self.__num_retries = num_retries
         self.__seconds_between_retries = seconds_between_retries
         self.__docker_manager = docker_manager
-        self.__container_name: Optional[str] = None
+        self.__container_id: Optional[str] = None
 
     def start(self):
         if self.__dockerfile is not None:
             self.__log('Building and running Dockerfile...')
             dockerfile_path = os.path.abspath(os.path.join(self.__root, self.__dockerfile))
             tag = self.__docker_manager.build_dockerfile(dockerfile_path)
-            self.__container_name = self.__docker_manager.run_image(tag, [(self.__port, self.__port)])
+            run_result = self.__docker_manager.run_image(tag, (self.__port, self.__port))
+            self.__container_id = run_result.container_id
+            self.__port = run_result.port
 
     def stop(self):
-        if self.__container_name:
-            self.__docker_manager.stop_container(self.__container_name)
-            self.__container_name = None
+        if self.__container_id:
+            self.__docker_manager.stop_container(self.__container_id)
+            self.__container_id = None
 
     def url(self):
         return f'http://{self.__host}:{self.__port}'
@@ -61,7 +63,7 @@ class Service(object):
         return self.__tests.run()
 
     def is_running(self) -> bool:
-        return self.__container_name is not None
+        return self.__container_id is not None
 
     def __log(self, message: str):
         print(f'{self.name} :: {message}')

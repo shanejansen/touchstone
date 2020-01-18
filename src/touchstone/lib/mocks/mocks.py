@@ -55,7 +55,7 @@ class Mocks(object):
 
     def print_available_mocks(self):
         for mock in self.__mocks:
-            print(f'Mock {mock.pretty_name()} UI running at: {mock.ui_url()}')
+            print(f'Mock {mock.pretty_name()} UI running at: {mock.run_context.ui_url()}')
 
     def __wait_for_healthy_mocks(self):
         for mock in self.__mocks:

@@ -18,9 +18,10 @@ from touchstone.runner import Runner
 
 
 class Bootstrap(object):
-    def __init__(self):
-        docker_manager = DockerManager()
+    def __init__(self, is_dev_mode=False):
+        self.is_dev_mode = is_dev_mode
 
+        docker_manager = DockerManager(should_auto_discover=not self.is_dev_mode)
         self.touchstone_config = self.__build_touchstone_config(os.getcwd())
         self.runner = Runner(self.touchstone_config, docker_manager)
         self.mocks = self.__build_mocks(self.touchstone_config.config['root'], self.touchstone_config,
@@ -34,20 +35,20 @@ class Bootstrap(object):
             config.merge(yaml.safe_load(file))
         return config
 
-    def __build_mocks(self, root, touchstone_config, default_host, docker_manager) -> Mocks:
+    def __build_mocks(self, root, touchstone_config, host, docker_manager) -> Mocks:
         http = None
         rabbitmq = None
         mongodb = None
         for mock in touchstone_config.config['mocks']:
             user_config = touchstone_config.config['mocks'][mock]
             if Http.name() == mock:
-                http = Http(default_host, docker_manager)
+                http = Http(host, self.is_dev_mode, docker_manager)
                 http.config = common.dict_merge(http.default_config(), user_config)
             elif Rabbitmq.name() == mock:
-                rabbitmq = Rabbitmq(default_host, docker_manager)
+                rabbitmq = Rabbitmq(host, self.is_dev_mode, docker_manager)
                 rabbitmq.config = common.dict_merge(rabbitmq.default_config(), user_config)
             elif Mongodb.name() == mock:
-                mongodb = Mongodb(default_host, docker_manager)
+                mongodb = Mongodb(host, self.is_dev_mode, docker_manager)
                 mongodb.config = common.dict_merge(mongodb.default_config(), user_config)
             else:
                 raise exceptions.MockNotSupportedException(

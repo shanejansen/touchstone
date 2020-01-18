@@ -8,7 +8,7 @@ from touchstone.lib.docker_manager import DockerManager
 
 class TestDockerManager(TestCase):
     def setUp(self) -> None:
-        self.docker_manager = DockerManager()
+        self.docker_manager = DockerManager(should_auto_discover=False)
 
     @mock.patch('touchstone.lib.docker_manager.subprocess')
     def test_buildDockerfile_CommandReturnsNon0_imageNotCreated(self, mock_subprocess: Mock):
@@ -26,7 +26,7 @@ class TestDockerManager(TestCase):
     def test_runImage_commandReturnsNon0_exceptionRaised(self, mock_subprocess: Mock):
         # Given
         image = 'some-image'
-        ports = [(80, 80)]
+        ports = (80, 80)
         mock_subprocess.run.return_value = Mock(**{'returncode': 1})
 
         # Then
@@ -39,8 +39,8 @@ class TestDockerManager(TestCase):
         mock_subprocess.run.return_value = Mock(**{'returncode': 0})
 
         # When
-        self.docker_manager.run_image('some-container', [])
-        self.docker_manager.run_image('some-container1', [])
+        self.docker_manager.run_image('some-container', (0, 0))
+        self.docker_manager.run_image('some-container1', (0, 0))
         self.docker_manager.cleanup()
 
         # Then

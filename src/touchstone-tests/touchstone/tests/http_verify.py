@@ -9,7 +9,7 @@ class GetCalled(TouchstoneTest):
         return None
 
     def when(self, given) -> object:
-        urllib.request.urlopen(f'{self.mocks.http.default_url()}/some-endpoint')
+        urllib.request.urlopen(f'{self.mocks.http.run_context.url()}/some-endpoint')
         return None
 
     def then(self, given, result) -> bool:
@@ -22,9 +22,9 @@ class GetCalledWithTimes(TouchstoneTest):
         return None
 
     def when(self, given) -> object:
-        urllib.request.urlopen(f'{self.mocks.http.default_url()}/some-endpoint')
-        urllib.request.urlopen(f'{self.mocks.http.default_url()}/some-endpoint')
-        urllib.request.urlopen(f'{self.mocks.http.default_url()}/some-endpoint')
+        urllib.request.urlopen(f'{self.mocks.http.run_context.url()}/some-endpoint')
+        urllib.request.urlopen(f'{self.mocks.http.run_context.url()}/some-endpoint')
+        urllib.request.urlopen(f'{self.mocks.http.run_context.url()}/some-endpoint')
         return None
 
     def then(self, given, result) -> bool:
@@ -38,7 +38,7 @@ class PostCalled(TouchstoneTest):
         return None
 
     def when(self, given) -> object:
-        urllib.request.urlopen(f'{self.mocks.http.default_url()}/some-endpoint', data=bytes())
+        urllib.request.urlopen(f'{self.mocks.http.run_context.url()}/some-endpoint', data=bytes())
         return None
 
     def then(self, given, result) -> bool:
@@ -51,7 +51,7 @@ class PutCalled(TouchstoneTest):
         return None
 
     def when(self, given) -> object:
-        request = urllib.request.Request(f'{self.mocks.http.default_url()}/some-endpoint', method='PUT')
+        request = urllib.request.Request(f'{self.mocks.http.run_context.url()}/some-endpoint', method='PUT')
         urllib.request.urlopen(request)
         return None
 
@@ -65,7 +65,7 @@ class DeleteCalled(TouchstoneTest):
         return None
 
     def when(self, given) -> object:
-        request = urllib.request.Request(f'{self.mocks.http.default_url()}/some-endpoint', method='DELETE')
+        request = urllib.request.Request(f'{self.mocks.http.run_context.url()}/some-endpoint', method='DELETE')
         urllib.request.urlopen(request)
         return None
 
@@ -80,7 +80,7 @@ class PostContained(TouchstoneTest):
 
     def when(self, given) -> object:
         body = 'foo'.encode('utf8')
-        request = urllib.request.Request(f'{self.mocks.http.default_url()}/some-endpoint', method='POST', data=body)
+        request = urllib.request.Request(f'{self.mocks.http.run_context.url()}/some-endpoint', method='POST', data=body)
         urllib.request.urlopen(request)
         return None
 
@@ -96,7 +96,7 @@ class PutContained(TouchstoneTest):
 
     def when(self, given) -> object:
         body = 'foo'.encode('utf8')
-        request = urllib.request.Request(f'{self.mocks.http.default_url()}/some-endpoint', method='PUT', data=body)
+        request = urllib.request.Request(f'{self.mocks.http.run_context.url()}/some-endpoint', method='PUT', data=body)
         urllib.request.urlopen(request)
         return None
 
@@ -112,7 +112,8 @@ class DeleteContained(TouchstoneTest):
 
     def when(self, given) -> object:
         body = 'foo'.encode('utf8')
-        request = urllib.request.Request(f'{self.mocks.http.default_url()}/some-endpoint', method='DELETE', data=body)
+        request = urllib.request.Request(f'{self.mocks.http.run_context.url()}/some-endpoint', method='DELETE',
+                                         data=body)
         urllib.request.urlopen(request)
         return None
 

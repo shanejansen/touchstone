@@ -4,8 +4,7 @@ from touchstone.bootstrap import Bootstrap
 
 
 def execute():
-    bootstrap = Bootstrap()
-    bootstrap.touchstone_config.set_dev()
+    bootstrap = Bootstrap(is_dev_mode=True)
     bootstrap.runner.prep_run()
     print(figlet_format('Touchstone', font='larry3d'))
 

@@ -1,12 +1,24 @@
 import abc
+from typing import Optional
+
+from touchstone.lib import exceptions
+from touchstone.lib.mocks.run_context import RunContext
 
 
 class Mock(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, default_host: str):
+    def __init__(self, host: str, is_dev_mode: bool):
         self.config: dict = {}
-        self.__default_host = default_host
+        self._host = host
+        self._is_dev_mode = is_dev_mode
+        self.__run_context: Optional[RunContext] = None
+
+    @property
+    def run_context(self) -> RunContext:
+        if not self.__run_context:
+            raise exceptions.MockException('The mock must be started before its run context can be retrieved.')
+        return self.__run_context
 
     @staticmethod
     @abc.abstractmethod
@@ -23,55 +35,29 @@ class Mock(object):
         'self.config'."""
         return {}
 
-    def default_host(self) -> str:
-        """The default host where this mock will be exposed."""
-        return self.__default_host
+    def start(self):
+        """Starts this mock."""
+        self.__run_context = self.run()
 
     @abc.abstractmethod
-    def default_port(self) -> int:
-        """The default port where this mock will be exposed."""
+    def run(self) -> RunContext:
+        """Runs all containers and dependencies needed to run this mock."""
 
-    def default_endpoint(self) -> str:
-        """The default endpoint where this mock will be exposed. This will simply appended to the default URL."""
-        return ''
-
-    def default_url(self) -> str:
-        return f'{self.default_host()}:{self.default_port()}{self.default_endpoint()}'
-
-    def ui_port(self) -> int:
-        """Optional: The port where this mock's UI is available."""
-        return self.default_port()
-
-    def ui_endpoint(self) -> str:
-        """Optional: The endpoint where this mock's UI is available."""
-        return ''
-
-    def ui_url(self):
-        return f'http://{self.default_host()}:{self.ui_port()}{self.ui_endpoint()}'
+    def initialize(self):
+        """Called when this mock becomes healthy."""
 
     @abc.abstractmethod
     def is_healthy(self) -> bool:
         """Returns True when this mock is in a healthy state and ready to use."""
 
     @abc.abstractmethod
-    def start(self):
-        """Starts this mock."""
-
-    def initialize(self):
-        """Called when this mock becomes healthy."""
-        pass
-
-    @abc.abstractmethod
     def stop(self):
         """Stops this mock."""
-        pass
 
     @abc.abstractmethod
     def load_defaults(self, defaults: dict):
-        """Loads defaults for this mock provided by the user for dev purposes."""
-        pass
+        """Loads defaults for this mock provided by the user."""
 
     @abc.abstractmethod
     def reset(self):
         """Returns this mock to its original state."""
-        pass
