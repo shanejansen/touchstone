@@ -1,12 +1,16 @@
 import unittest
 from unittest import TestCase
+from unittest.mock import Mock
 
 from touchstone.lib.mocks.mocks import Mocks
 
 
 class TestMocks(TestCase):
     def setUp(self) -> None:
-        self.mocks = Mocks()
+        self.mock_http = Mock()
+        self.mock_rabbitmq = Mock()
+        self.mock_mongodb = Mock()
+        self.mocks = Mocks('', self.mock_http, self.mock_rabbitmq, self.mock_mongodb)
 
     def test_start_mocksNotRunning_mocksAreRunning(self):
         # When

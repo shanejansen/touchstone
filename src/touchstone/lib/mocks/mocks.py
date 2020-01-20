@@ -31,6 +31,10 @@ class Mocks(object):
             self.__mocks_running = True
             print('Finished starting mocks.\n')
 
+    def run_contexts(self):
+        # TODO
+        pass
+
     def stop(self):
         print('Stopping mocks...')
         for mock in self.__mocks:
