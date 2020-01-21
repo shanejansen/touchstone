@@ -9,6 +9,12 @@ class MongodbSetup(object):
         self.__mongo_context = mongo_context
 
     def load_defaults(self, defaults: dict):
+        for database in self.__mongo_context.databases():
+            mongo_database = self.__mongo_client.get_database(database)
+            for collection in self.__mongo_context.collections(database):
+                mongo_database.drop_collection(collection)
+        self.__mongo_context.clear()
+
         for database in defaults['databases']:
             database_name = database['name']
             mongo_database = self.__mongo_client.get_database(database_name)
@@ -20,12 +26,6 @@ class MongodbSetup(object):
                     if 'documents' in collection:
                         for document in collection['documents']:
                             mongo_collection.insert_one(document)
-
-    def reset(self):
-        for database in self.__mongo_context.databases():
-            mongo_database = self.__mongo_client.get_database(database)
-            for collection in self.__mongo_context.collections(database):
-                mongo_database.drop_collection(collection)
 
     def command(self, database: str, command: dict):
         """Execute an arbitrary command on the database."""

@@ -14,24 +14,18 @@ class HttpSetup(object):
         self.mock_ids: list = []
 
     def load_defaults(self, defaults: dict):
-        for request in defaults['requests']:
-            self.__submit_mock(request)
-
-    def reset(self):
         # Remove all mocked endpoints
         for mock_id in self.mock_ids:
-            request = urllib.request.Request(
-                f'{self.url}/__admin/mappings/'
-                f'{mock_id}',
-                method='DELETE')
+            request = urllib.request.Request(f'{self.url}/__admin/mappings/{mock_id}', method='DELETE')
             urllib.request.urlopen(request)
         self.mock_ids = []
 
         # Reset requests journal
-        request = urllib.request.Request(
-            f'{self.url}/__admin/requests',
-            method='DELETE')
+        request = urllib.request.Request(f'{self.url}/__admin/requests', method='DELETE')
         urllib.request.urlopen(request)
+
+        for request in defaults['requests']:
+            self.__submit_mock(request)
 
     def get(self, endpoint: str, response: str, response_status: int = 200,
             response_headers: dict = {'Content-Type': 'application/json'}):
@@ -108,8 +102,6 @@ class HttpSetup(object):
     def __submit_mock(self, mock: dict):
         data = json.dumps(mock).encode('utf8')
         request = urllib.request.Request(
-            f'{self.url}/__admin/mappings',
-            data=data,
-            headers={'Content-Type': 'application/json'})
+            f'{self.url}/__admin/mappings', data=data, headers={'Content-Type': 'application/json'})
         response = urllib.request.urlopen(request).read()
         self.mock_ids.append(json.loads(response)['id'])

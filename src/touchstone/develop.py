@@ -1,15 +1,16 @@
 from pyfiglet import figlet_format
 
+from touchstone import common
 from touchstone.bootstrap import Bootstrap
 
 
 def execute():
+    common.prep_run()
     bootstrap = Bootstrap(is_dev_mode=True)
-    bootstrap.runner.prep_run()
     print(figlet_format('Touchstone', font='larry3d'))
 
     try:
-        bootstrap.mocks.start()
+        run_contexts = bootstrap.mocks.start()
         bootstrap.mocks.load_defaults()
         bootstrap.mocks.print_available_mocks()
 
@@ -21,13 +22,12 @@ def execute():
             elif command == 'run':
                 __run_tests(bootstrap)
             elif command == 'services start':
-                bootstrap.services.start()
+                bootstrap.services.start(run_contexts)
             elif command == 'services stop':
                 bootstrap.services.stop()
             elif command == 'mocks print':
                 bootstrap.mocks.print_available_mocks()
             elif command == 'mocks reset':
-                bootstrap.mocks.reset()
                 bootstrap.mocks.load_defaults()
             elif command == 'exit':
                 bootstrap.services.stop()
@@ -53,12 +53,8 @@ def __print_help():
 
 
 def __run_tests(bootstrap):
-    bootstrap.mocks.reset()
-    bootstrap.mocks.load_defaults()
     tests_did_pass = bootstrap.services.run_tests()
     if tests_did_pass:
         print('All Touchstone tests passed successfully!')
     else:
         print('One or more Touchstone tests failed.')
-    bootstrap.mocks.reset()
-    bootstrap.mocks.load_defaults()

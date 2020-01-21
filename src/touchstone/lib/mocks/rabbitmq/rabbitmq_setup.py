@@ -43,6 +43,10 @@ class RabbitmqSetup(object):
         self.__queues: list = []
 
     def load_defaults(self, defaults: dict):
+        for queue in self.__queues:
+            self.__channel.queue_purge(queue)
+        self.__rmq_context.clear()
+
         for exchange in defaults['exchanges']:
             self.__create_exchange(exchange['name'], exchange['type'])
             for queue in exchange['queues']:
@@ -50,11 +54,6 @@ class RabbitmqSetup(object):
                 self.__create_queue(queue['name'], exchange['name'], routing_key)
         if not self.__message_consumer.is_alive():
             self.__message_consumer.start()
-
-    def reset(self):
-        self.__rmq_context.reset()
-        for queue in self.__queues:
-            self.__channel.queue_purge(queue)
 
     def stop_listening(self):
         def callback():

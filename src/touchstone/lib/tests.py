@@ -45,6 +45,7 @@ class Tests(object):
                 class_instance: TouchstoneTest = test_class.clazz(self.service_url, self.__mocks)
                 test = Test(test_class.name, class_instance)
                 print(f'{test.name} :: RUNNING')
+                self.__mocks.load_defaults()
 
                 did_pass = False
                 try:
@@ -58,7 +59,8 @@ class Tests(object):
                     tests_passed = False
                 else:
                     print(f'{test.name} :: PASSED\n')
-                self.__mocks.reset()
+
+        self.__mocks.load_defaults()
         return tests_passed
 
     def __load_test_classes(self):

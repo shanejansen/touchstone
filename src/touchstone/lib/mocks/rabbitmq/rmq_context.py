@@ -32,7 +32,7 @@ class RmqContext(object):
     def payloads_published(self, exchange: str, routing_key: str) -> list:
         return self.__exchanges[exchange][routing_key]['payloads']
 
-    def reset(self):
+    def clear(self):
         for exchange in self.__exchanges:
             for routing_key in self.__exchanges[exchange]:
                 self.__exchanges[exchange][routing_key]['times'] = 0

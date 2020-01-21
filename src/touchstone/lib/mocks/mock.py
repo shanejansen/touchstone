@@ -2,6 +2,7 @@ import abc
 from typing import Optional
 
 from touchstone.lib import exceptions
+from touchstone.lib.mocks.network import Network
 from touchstone.lib.mocks.run_context import RunContext
 
 
@@ -12,13 +13,13 @@ class Mock(object):
         self.config: dict = {}
         self._host = host
         self._is_dev_mode = is_dev_mode
-        self.__run_context: Optional[RunContext] = None
+        self.__network: Optional[Network] = None
 
     @property
-    def run_context(self) -> RunContext:
-        if not self.__run_context:
-            raise exceptions.MockException('The mock must be started before its run context can be retrieved.')
-        return self.__run_context
+    def network(self) -> Network:
+        if not self.__network:
+            raise exceptions.MockException('The mock must be started before its network info can be retrieved.')
+        return self.__network
 
     @staticmethod
     @abc.abstractmethod
@@ -35,29 +36,26 @@ class Mock(object):
         'self.config'."""
         return {}
 
-    def start(self):
+    def start(self) -> RunContext:
         """Starts this mock."""
-        self.__run_context = self.run()
+        self.__network = self.run()
+        return RunContext(self.name(), self.__network)
 
     @abc.abstractmethod
-    def run(self) -> RunContext:
+    def run(self) -> Network:
         """Runs all containers and dependencies needed to run this mock."""
-
-    def initialize(self):
-        """Called when this mock becomes healthy."""
 
     @abc.abstractmethod
     def is_healthy(self) -> bool:
         """Returns True when this mock is in a healthy state and ready to use."""
 
-    @abc.abstractmethod
-    def stop(self):
-        """Stops this mock."""
+    def initialize(self):
+        """Called when this mock becomes healthy."""
 
     @abc.abstractmethod
     def load_defaults(self, defaults: dict):
         """Loads defaults for this mock provided by the user."""
 
     @abc.abstractmethod
-    def reset(self):
-        """Returns this mock to its original state."""
+    def stop(self):
+        """Stops this mock."""

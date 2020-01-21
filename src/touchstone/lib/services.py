@@ -1,5 +1,6 @@
 from typing import List
 
+from touchstone.lib.mocks.run_context import RunContext
 from touchstone.lib.service import Service
 
 
@@ -8,13 +9,13 @@ class Services(object):
         self.__services = services
         self.__services_running = False
 
-    def start(self):
+    def start(self, run_contexts: List[RunContext]):
         if self.__services_running:
             print('Services have already been started. They cannot be started again.')
         else:
             print(f'Starting services {[_.name for _ in self.__services]}...')
             for service in self.__services:
-                service.start()
+                service.start(run_contexts)
             self.__services_running = True
             print('Finished starting services.\n')
 

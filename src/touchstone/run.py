@@ -1,18 +1,18 @@
 from pyfiglet import figlet_format
 
+from touchstone import common
 from touchstone.bootstrap import Bootstrap
 
 
 def execute():
+    common.prep_run()
     bootstrap = Bootstrap()
-    bootstrap.runner.prep_run()
     print(figlet_format('Touchstone', font='larry3d'))
 
     try:
-        bootstrap.mocks.start()
-        bootstrap.mocks.load_defaults()
+        run_contexts = bootstrap.mocks.start()
 
-        bootstrap.services.start()
+        bootstrap.services.start(run_contexts)
         tests_did_pass = bootstrap.services.run_tests()
         if tests_did_pass:
             print('All Touchstone tests passed successfully!')

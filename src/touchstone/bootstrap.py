@@ -10,6 +10,7 @@ from touchstone.lib.docker_manager import DockerManager
 from touchstone.lib.mocks.http.http import Http
 from touchstone.lib.mocks.mocks import Mocks
 from touchstone.lib.mocks.mongodb.mongodb import Mongodb
+from touchstone.lib.mocks.mysql.mysql import Mysql
 from touchstone.lib.mocks.rabbitmq.rabbitmq import Rabbitmq
 from touchstone.lib.service import Service
 from touchstone.lib.services import Services
@@ -39,6 +40,7 @@ class Bootstrap(object):
         http = None
         rabbitmq = None
         mongodb = None
+        mysql = None
         for mock in touchstone_config.config['mocks']:
             user_config = touchstone_config.config['mocks'][mock]
             if Http.name() == mock:
@@ -50,10 +52,13 @@ class Bootstrap(object):
             elif Mongodb.name() == mock:
                 mongodb = Mongodb(host, self.is_dev_mode, docker_manager)
                 mongodb.config = common.dict_merge(mongodb.default_config(), user_config)
+            elif Mysql.name() == mock:
+                mysql = Mysql(host, self.is_dev_mode, docker_manager)
+                mysql.config = common.dict_merge(mysql.default_config(), user_config)
             else:
                 raise exceptions.MockNotSupportedException(
                     f'{mock} is not a supported mock. Please check your touchstone.yml file.')
-        return Mocks(root, http, rabbitmq, mongodb)
+        return Mocks(root, http, rabbitmq, mongodb, mysql)
 
     def __build_services(self, touchstone_config, docker_manager, mocks) -> Services:
         services = []

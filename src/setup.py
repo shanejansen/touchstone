@@ -9,7 +9,7 @@ setup(
     author_email='shanejjansen@gmail.com',
     license='MIT',
     packages=['touchstone'],
-    install_requires=['pyfiglet', 'click', 'pika', 'pyyaml', 'pymongo'],
+    install_requires=['pyfiglet', 'click', 'pika', 'pyyaml', 'pymongo', 'pymysql'],
     entry_points={
         'console_scripts': [
             'touchstone = touchstone.cli:cli'

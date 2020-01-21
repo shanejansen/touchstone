@@ -2,7 +2,7 @@ import os
 import re
 import subprocess
 import uuid
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 
 from touchstone import common
 from touchstone.lib import exceptions
@@ -34,7 +34,7 @@ class DockerManager(object):
         return tag
 
     def run_image(self, image: str, port_mapping: Tuple[int, int], ui_port_mapping: Tuple[int, int] = None,
-                  environment_vars: list = None) -> RunResult:
+                  environment_vars: List[Tuple[str, str]] = None) -> RunResult:
         if environment_vars is None:
             environment_vars = []
         additional_params = ''

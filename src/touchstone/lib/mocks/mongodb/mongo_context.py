@@ -32,6 +32,5 @@ class MongoContext(object):
                   f'defaults.')
         return False
 
-    def clear_collections(self):
-        for database in self.__databases:
-            self.__databases[database] = []
+    def clear(self):
+        self.__databases = {}

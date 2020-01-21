@@ -8,10 +8,10 @@ import pika
 
 from touchstone.lib.docker_manager import DockerManager
 from touchstone.lib.mocks.mock import Mock
+from touchstone.lib.mocks.network import Network
 from touchstone.lib.mocks.rabbitmq.rabbitmq_setup import RabbitmqSetup
 from touchstone.lib.mocks.rabbitmq.rabbitmq_verify import RabbitmqVerify
 from touchstone.lib.mocks.rabbitmq.rmq_context import RmqContext
-from touchstone.lib.mocks.run_context import RunContext
 
 
 class Rabbitmq(Mock):
@@ -35,23 +35,23 @@ class Rabbitmq(Mock):
             'durable': False
         }
 
+    def run(self) -> Network:
+        run_result = self.__docker_manager.run_image('rabbitmq:3.7.22-management-alpine', (5672, 5672),
+                                                     ui_port_mapping=(15672, 15672))
+        self.__container_id = run_result.container_id
+        return Network(self._host, run_result.port, ui_port=run_result.ui_port)
+
     def is_healthy(self) -> bool:
         try:
-            response = urllib.request.urlopen(f'{self.run_context.ui_url()}').read()
+            response = urllib.request.urlopen(f'{self.network.ui_url()}').read()
             return response is not None
         except (urllib.error.URLError, http.client.RemoteDisconnected):
             return False
 
-    def run(self) -> RunContext:
-        run_result = self.__docker_manager.run_image('rabbitmq:3.7.22-management-alpine', (5672, 5672),
-                                                     ui_port_mapping=(15672, 15672))
-        self.__container_id = run_result.container_id
-        return RunContext(self._host, run_result.port, ui_port=run_result.ui_port)
-
     def initialize(self):
         connection_params = pika.ConnectionParameters(
             host=self._host,
-            port=self.run_context.port,
+            port=self.network.port,
             credentials=pika.PlainCredentials('guest', 'guest'),
             heartbeat=0
         )
@@ -61,13 +61,10 @@ class Rabbitmq(Mock):
         self.setup = RabbitmqSetup(channel, connection_params, rmq_context, self.config['durable'])
         self.verify = RabbitmqVerify(channel, rmq_context)
 
+    def load_defaults(self, defaults: dict):
+        self.setup.load_defaults(defaults)
+
     def stop(self):
         if self.__container_id:
             self.setup.stop_listening()
             self.__docker_manager.stop_container(self.__container_id)
-
-    def load_defaults(self, defaults: dict):
-        self.setup.load_defaults(defaults)
-
-    def reset(self):
-        self.setup.reset()
