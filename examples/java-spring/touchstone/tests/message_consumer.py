@@ -22,4 +22,4 @@ class Order(TouchstoneTest):
         return None
 
     def then(self, given, result) -> bool:
-        return self.mocks.mongodb.verify.document_exists(mongo_database, mongo_collection, given, num_expected=1)
+        return self.mocks.mongodb.verify.document_exists(mongo_database, mongo_collection, given)

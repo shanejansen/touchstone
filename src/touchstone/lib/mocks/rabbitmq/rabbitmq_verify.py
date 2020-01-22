@@ -10,9 +10,9 @@ class RabbitmqVerify(object):
         self.__channel: BlockingChannel = channel
         self.__rmq_context = rmq_context
 
-    def messages_published(self, exchange: str, num_expected: int = None, routing_key: str = '') -> bool:
-        """Returns True if a messages has been published the given number of times to the given exchange and
-        routing-key. If num_expected is not supplied, any number of messages will be considered passing."""
+    def messages_published(self, exchange: str, num_expected: int = 1, routing_key: str = '') -> bool:
+        """Returns True if messages have been published the given number of times to the given exchange and
+        routing-key. If num_expected is set to None, any number of messages will be considered passing."""
         if not self.__rmq_context.exchange_is_tracked(exchange, routing_key):
             return False
         num_messages = self.__rmq_context.messages_published(exchange, routing_key)

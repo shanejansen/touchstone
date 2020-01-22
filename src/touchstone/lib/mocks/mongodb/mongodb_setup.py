@@ -1,3 +1,5 @@
+from typing import List
+
 from pymongo import MongoClient
 
 from touchstone.lib.mocks.mongodb.mongo_context import MongoContext
@@ -38,7 +40,7 @@ class MongodbSetup(object):
                 .get_database(database) \
                 .get_collection(collection).insert_one(document)
 
-    def insert_documents(self, database: str, collection: str, documents: list):
+    def insert_documents(self, database: str, collection: str, documents: List[dict]):
         if self.__mongo_context.collection_exists(database, collection):
             self.__mongo_client \
                 .get_database(database) \

@@ -9,24 +9,24 @@ class HttpVerify(object):
         super().__init__()
         self.url = url
 
-    def get_called(self, endpoint: str, times: int = None) -> bool:
+    def get_called(self, endpoint: str, times: int = 1) -> bool:
         """Returns True if the given endpoint has been called with a GET request the given number of times.
-        If times is not supplied, the endpoint can be called any number of times."""
+        If times is set to None, the endpoint can be called any number of times."""
         return self.__count_verification(endpoint, 'GET', times)
 
-    def post_called(self, endpoint: str, times: int = None) -> bool:
+    def post_called(self, endpoint: str, times: int = 1) -> bool:
         """Returns True if the given endpoint has been called with a POST request the given number of times.
-        If times is not supplied, the endpoint can be called any number of times."""
+        If times is set to None, the endpoint can be called any number of times."""
         return self.__count_verification(endpoint, 'POST', times)
 
-    def put_called(self, endpoint: str, times: int = None) -> bool:
+    def put_called(self, endpoint: str, times: int = 1) -> bool:
         """Returns True if the given endpoint has been called with a PUT request the given number of times.
-        If times is not supplied, the endpoint can be called any number of times."""
+        If times is set to None, the endpoint can be called any number of times."""
         return self.__count_verification(endpoint, 'PUT', times)
 
-    def delete_called(self, endpoint: str, times: int = None) -> bool:
+    def delete_called(self, endpoint: str, times: int = 1) -> bool:
         """Returns True if the given endpoint has been called with a DELETE request the given number of times.
-        If times is not supplied, the endpoint can be called any number of times."""
+        If times is set to None, the endpoint can be called any number of times."""
         return self.__count_verification(endpoint, 'DELETE', times)
 
     def post_contained(self, endpoint: str, expected_body: str) -> bool:

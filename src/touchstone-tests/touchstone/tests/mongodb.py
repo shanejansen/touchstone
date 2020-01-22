@@ -48,6 +48,5 @@ class DocumentsInserted(TouchstoneTest):
         expected_baz = {
             'firstName': 'Baz'
         }
-        return self.mocks.mongodb.verify.document_exists(mongo_database, mongo_collection, expected_foo,
-                                                         num_expected=2) and \
-               self.mocks.mongodb.verify.document_exists(mongo_database, mongo_collection, expected_baz)
+        return self.mocks.mongodb.verify.document_exists(mongo_database, mongo_collection, expected_foo, num_expected=2) \
+               and self.mocks.mongodb.verify.document_exists(mongo_database, mongo_collection, expected_baz)
