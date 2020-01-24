@@ -2,6 +2,6 @@
 databases:
   - name: myapp
     statements:
-      - "CREATE TABLE users (first_name varchar(255), last_name varchar(255))"
+      - "CREATE TABLE users (first_name VARCHAR(255), last_name VARCHAR(255))"
       - "INSERT INTO users VALUES ('John', 'Smith')"
       - "INSERT INTO users VALUES ('Jane', 'Brown')"

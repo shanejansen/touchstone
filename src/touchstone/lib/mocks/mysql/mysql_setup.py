@@ -7,9 +7,10 @@ from touchstone.lib.mocks.mysql.mysql_context import MysqlContext
 
 
 class MysqlSetup(object):
-    def __init__(self, cursor: Cursor, mysql_context: MysqlContext):
+    def __init__(self, cursor: Cursor, mysql_context: MysqlContext, convert_camel_to_snake: bool):
         self.__cursor = cursor
         self.__mysql_context = mysql_context
+        self.__convert_camel_to_snake = convert_camel_to_snake
 
     def load_defaults(self, defaults: dict):
         for database in self.__mysql_context.databases:
@@ -31,29 +32,37 @@ class MysqlSetup(object):
 
     def insert_row(self, database: str, table: str, data: dict):
         if self.__mysql_context.database_exists(database):
-            sql = self.__build_insert_sql_from_dict(table, data)
+            if self.__convert_camel_to_snake:
+                data = common.to_snake(data)
+            values = self.__sql_values_from_dict(data)
+            sql = self.__build_insert_sql(table, data, values)
             common.logger.debug(f'Executing: {sql}')
             self.__cursor.execute(f'USE {database}')
             self.__cursor.execute(sql)
 
     def insert_rows(self, database: str, table: str, data: List[dict]):
-        sql = ''
         if self.__mysql_context.database_exists(database):
-            for datum in data:
-                sql += self.__build_insert_sql_from_dict(table, datum) + '; '
-        common.logger.debug(f'Executing: {sql}')
-        self.__cursor.execute(f'USE {database}')
-        self.__cursor.execute(sql)
-        # INSERT INTO tbl_name
-        #     (a,b,c)
-        # VALUES
-        # (1,2,3),
-        # (4,5,6),
-        # (7,8,9);
+            if self.__convert_camel_to_snake:
+                data = common.to_snake(data)
+            values = self.__sql_values_from_list(data)
+            sql = self.__build_insert_sql(table, data[0], values)
+            common.logger.debug(f'Executing: {sql}')
+            self.__cursor.execute(f'USE {database}')
+            self.__cursor.execute(sql)
 
-    def __build_insert_sql_from_dict(self, table: str, data: dict) -> str:
-        col_names = ', '.join(data.keys())
+    def __sql_values_from_dict(self, data: dict) -> str:
         col_values = []
         for value in data.values():
             col_values.append(f"'{value}'")
-        return f"INSERT INTO {table} ({col_names}) VALUES ({', '.join(col_values)})"
+        col_values = ', '.join(col_values)
+        return '(' + col_values + ')'
+
+    def __sql_values_from_list(self, data: List[dict]) -> str:
+        values = []
+        for datum in data:
+            values.append(self.__sql_values_from_dict(datum))
+        return ', '.join(values)
+
+    def __build_insert_sql(self, table: str, cols: dict, values: str) -> str:
+        col_names = ', '.join(cols.keys())
+        return f"INSERT INTO {table} ({col_names}) VALUES {values}"

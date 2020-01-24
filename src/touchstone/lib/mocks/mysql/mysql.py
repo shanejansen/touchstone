@@ -27,6 +27,11 @@ class Mysql(Mock):
     def pretty_name() -> str:
         return 'MySQL'
 
+    def default_config(self) -> dict:
+        return {
+            'convertCamelToSnakeCase': True
+        }
+
     def run(self) -> Network:
         run_result = self.__docker_manager.run_image('mysql:5.7.29', (3306, 3306),
                                                      environment_vars=[('MYSQL_ROOT_PASSWORD', 'root')])
@@ -61,8 +66,9 @@ class Mysql(Mock):
                                      cursorclass=pymysql.cursors.DictCursor)
         cursor = connection.cursor()
         mysql_context = MysqlContext()
-        self.setup = MysqlSetup(cursor, mysql_context)
-        self.verify = MysqlVerify(cursor, mysql_context)
+        convert_camel_to_snake = self.config['convertCamelToSnakeCase']
+        self.setup = MysqlSetup(cursor, mysql_context, convert_camel_to_snake)
+        self.verify = MysqlVerify(cursor, mysql_context, convert_camel_to_snake)
 
     def load_defaults(self, defaults: dict):
         self.setup.load_defaults(defaults)

@@ -37,28 +37,33 @@ class Bootstrap(object):
         return config
 
     def __build_mocks(self, root, touchstone_config, host, docker_manager) -> Mocks:
-        http = None
-        rabbitmq = None
-        mongodb = None
-        mysql = None
+        mocks = Mocks(root)
         for mock in touchstone_config.config['mocks']:
             user_config = touchstone_config.config['mocks'][mock]
             if Http.name() == mock:
                 http = Http(host, self.is_dev_mode, docker_manager)
                 http.config = common.dict_merge(http.default_config(), user_config)
+                mocks.http = http
+                mocks.register_mock(http)
             elif Rabbitmq.name() == mock:
                 rabbitmq = Rabbitmq(host, self.is_dev_mode, docker_manager)
                 rabbitmq.config = common.dict_merge(rabbitmq.default_config(), user_config)
+                mocks.rabbitmq = rabbitmq
+                mocks.register_mock(rabbitmq)
             elif Mongodb.name() == mock:
                 mongodb = Mongodb(host, self.is_dev_mode, docker_manager)
                 mongodb.config = common.dict_merge(mongodb.default_config(), user_config)
+                mocks.mongodb = mongodb
+                mocks.register_mock(mongodb)
             elif Mysql.name() == mock:
                 mysql = Mysql(host, self.is_dev_mode, docker_manager)
                 mysql.config = common.dict_merge(mysql.default_config(), user_config)
+                mocks.mysql = mysql
+                mocks.register_mock(mysql)
             else:
                 raise exceptions.MockNotSupportedException(
                     f'{mock} is not a supported mock. Please check your touchstone.yml file.')
-        return Mocks(root, http, rabbitmq, mongodb, mysql)
+        return mocks
 
     def __build_services(self, touchstone_config, docker_manager, mocks) -> Services:
         services = []

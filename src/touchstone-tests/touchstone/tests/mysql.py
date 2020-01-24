@@ -7,8 +7,8 @@ mysql_table = 'users'
 class RowInserted(TouchstoneTest):
     def given(self) -> object:
         return {
-            'first_name': 'Foo',
-            'last_name': 'Bar'
+            'firstName': 'Foo',
+            'lastName': 'Bar'
         }
 
     def when(self, given) -> object:
@@ -23,16 +23,16 @@ class RowsInserted(TouchstoneTest):
     def given(self) -> object:
         return [
             {
-                'first_name': 'Foo',
-                'last_name': 'Bar'
+                'firstName': 'Foo',
+                'lastName': 'Bar'
             },
             {
-                'first_name': 'Foo',
-                'last_name': 'Bar'
+                'firstName': 'Foo',
+                'lastName': 'Bar'
             },
             {
-                'first_name': 'Baz',
-                'last_name': 'Qux'
+                'firstName': 'Baz',
+                'lastName': 'Qux'
             }
         ]
 
@@ -42,11 +42,11 @@ class RowsInserted(TouchstoneTest):
 
     def then(self, given, result) -> bool:
         expected_foo = {
-            'first_name': 'Foo',
-            'last_name': 'Bar'
+            'firstName': 'Foo',
+            'lastName': 'Bar'
         }
         expected_baz = {
-            'first_name': 'Baz'
+            'firstName': 'Baz'
         }
         return self.mocks.mysql.verify.row_exists(mysql_database, mysql_table, expected_foo, num_expected=2) \
                and self.mocks.mysql.verify.row_exists(mysql_database, mysql_table, expected_baz)

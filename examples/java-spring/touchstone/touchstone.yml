@@ -1,7 +1,6 @@
 ---
 services:
   - name: My App
-    port: 8080
     availability_endpoint: "/actuator/health"
     dockerfile: "../Dockerfile"
 mocks:
@@ -9,3 +8,4 @@ mocks:
   rabbitmq:
     durable: True
   mongodb:
+  mysql:

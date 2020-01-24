@@ -7,6 +7,7 @@ import yaml
 from touchstone import common
 from touchstone.lib import exceptions
 from touchstone.lib.mocks.http.http import Http
+from touchstone.lib.mocks.mock import Mock
 from touchstone.lib.mocks.mongodb.mongodb import Mongodb
 from touchstone.lib.mocks.mysql.mysql import Mysql
 from touchstone.lib.mocks.rabbitmq.rabbitmq import Rabbitmq
@@ -14,14 +15,17 @@ from touchstone.lib.mocks.run_context import RunContext
 
 
 class Mocks(object):
-    def __init__(self, root: str, http: Http, rabbitmq: Rabbitmq, mongodb: Mongodb, mysql: Mysql):
-        self.http: Http = http
-        self.rabbitmq: Rabbitmq = rabbitmq
-        self.mongodb: Mongodb = mongodb
-        self.mysql: Mysql = mysql
+    def __init__(self, root: str):
+        self.http: Http = None
+        self.rabbitmq: Rabbitmq = None
+        self.mongodb: Mongodb = None
+        self.mysql: Mysql = None
         self.__root = root
-        self.__mocks = [http, rabbitmq, mongodb, mysql]
+        self.__mocks: List[Mock] = []
         self.__mocks_running = False
+
+    def register_mock(self, mock: Mock):
+        self.__mocks.append(mock)
 
     def start(self) -> List[RunContext]:
         if self.__mocks_running:
@@ -62,16 +66,16 @@ class Mocks(object):
 
     def __wait_for_healthy_mocks(self):
         for mock in self.__mocks:
-            retries = 0
+            attempt = 0
             healthy = False
-            while not healthy and retries is not 10:
-                retries += 1
-                common.logger.debug(f'Waiting for mock: {mock.name()} to become healthy. Retry {retries} of 10.')
+            while not healthy and attempt is not 10:
+                attempt += 1
+                common.logger.debug(f'Waiting for mock: {mock.name()} to become healthy. Attempt {attempt} of 10.')
                 if mock.is_healthy():
                     healthy = True
-                    retries = 0
+                    attempt = 0
                 else:
                     time.sleep(5)
-            if retries is 10:
+            if attempt is 10:
                 raise exceptions.MockException(
                     f'Mock {mock.pretty_name()} never became healthy and timed out on initialization.')

@@ -2,18 +2,51 @@ import json
 import urllib.request
 
 from touchstone.lib.mocks import validation
-from touchstone.lib.mocks.mocks import Mocks
 from touchstone.lib.touchstone_test import TouchstoneTest
 
+mysql_database = 'myapp'
+mysql_table = 'users'
 
-class PostUser(TouchstoneTest):
-    def __init__(self, service_url: str, mocks: Mocks):
-        super().__init__(service_url, mocks)
+
+class GetUser(TouchstoneTest):
+    """
+    GIVEN a user
+        AND the user exists in the database.
+    WHEN a GET request is submitted to the '/user' endpoint with the user's id.
+    THEN the user is returned from the endpoint with the correct fields.
+    """
 
     def given(self) -> object:
         given = {
-            'first_name': 'Jane',
-            'last_name': 'Brown',
+            'id': 99,
+            'firstName': 'Jane',
+            'lastName': 'Brown',
+            'email': 'jane789@example.com'
+        }
+        self.mocks.mysql.setup.insert_row(mysql_database, mysql_table, given)
+        return given
+
+    def when(self, given) -> object:
+        response = urllib.request.urlopen(f'{self.service_url}/user/{given["id"]}').read()
+        return json.loads(response.decode('utf-8'))
+
+    def then(self, given, result) -> bool:
+        return validation.expected_matches_actual(given, result)
+
+
+class PostUser(TouchstoneTest):
+    """
+    GIVEN a user's first name, last name, and email
+        AND the email API returns the user's email.
+    WHEN a POST request is submitted to the '/user' endpoint with the user's first name and last name.
+    THEN the user is returned from the endpoint with the correct fields
+        AND the user is saved to the database.
+    """
+
+    def given(self) -> object:
+        given = {
+            'firstName': 'Jane',
+            'lastName': 'Brown',
             'email': 'jane789@example.com'
         }
         self.mocks.http.setup.get('/jane-brown/email', given['email'])
@@ -21,8 +54,8 @@ class PostUser(TouchstoneTest):
 
     def when(self, given) -> object:
         body = {
-            'firstName': given['first_name'],
-            'lastName': given['last_name']
+            'firstName': given['firstName'],
+            'lastName': given['lastName']
         }
         body = bytes(json.dumps(body), encoding='utf-8')
         request = urllib.request.Request(f'{self.service_url}/user', data=body,
@@ -31,29 +64,32 @@ class PostUser(TouchstoneTest):
         return json.loads(response.decode('utf-8'))
 
     def then(self, given, result) -> bool:
-        expected = {
-            'id': 0,
-            'firstName': given['first_name'],
-            'lastName': given['last_name'],
-            'email': given['email']
-        }
+        expected = given
+        self.mocks.mysql.verify.row_exists(mysql_database, mysql_table, expected)
         return validation.expected_matches_actual(expected, result)
 
 
 class DeleteUser(TouchstoneTest):
+    """
+    GIVEN a user's id.
+    WHEN a DELETE request is submitted to the '/user' endpoint with the user's id.
+    THEN a message is published to the 'user.exchange' with a routing key of 'user-deleted' and a payload with the
+    user's id.
+    """
+
     def processing_period(self) -> float:
         return 0.5
 
     def given(self) -> object:
         return {
-            'user_id': 1
+            'userId': 1
         }
 
     def when(self, given) -> object:
-        request = urllib.request.Request(f'{self.service_url}/user/{given["user_id"]}', method='DELETE')
+        request = urllib.request.Request(f'{self.service_url}/user/{given["userId"]}', method='DELETE')
         urllib.request.urlopen(request)
         return None
 
     def then(self, given, result) -> bool:
-        return self.mocks.rabbitmq.verify.payload_published('user.exchange', str(given['user_id']),
+        return self.mocks.rabbitmq.verify.payload_published('user.exchange', str(given['userId']),
                                                             routing_key='user-deleted')

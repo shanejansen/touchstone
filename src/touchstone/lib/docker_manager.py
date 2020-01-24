@@ -57,7 +57,7 @@ class DockerManager(object):
             additional_params += f' -e {var}="{value}"'
 
         container_id = uuid.uuid4().hex
-        command = f'docker run -d --name {container_id}{additional_params} {image}'
+        command = f'docker run --rm -d --name {container_id}{additional_params} {image}'
         common.logger.info(f'Running container with command: {command}')
         result = subprocess.run(command, shell=True, stdout=subprocess.DEVNULL)
 
@@ -84,8 +84,6 @@ class DockerManager(object):
     def stop_container(self, id):
         common.logger.info(f'Stopping container: {id}')
         subprocess.run(['docker', 'container', 'stop', id], stdout=subprocess.DEVNULL)
-        common.logger.info(f'Removing container: {id}')
-        subprocess.run(['docker', 'container', 'rm', id], stdout=subprocess.DEVNULL)
         self.__containers.remove(id)
 
     def cleanup(self):
@@ -98,8 +96,6 @@ class DockerManager(object):
             for container in self.__containers:
                 common.logger.info(f'Stopping container: {container}')
                 subprocess.run(['docker', 'container', 'stop', container], stdout=subprocess.DEVNULL)
-                common.logger.info(f'Removing container: {container}')
-                subprocess.run(['docker', 'container', 'rm', container], stdout=subprocess.DEVNULL)
         self.__containers = []
 
     def containers_running(self) -> bool:

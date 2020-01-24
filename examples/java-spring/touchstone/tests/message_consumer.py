@@ -7,6 +7,12 @@ mongo_collection = 'orders'
 
 
 class Order(TouchstoneTest):
+    """
+    GIVEN an oder.
+    WHEN the given order is submitted to the 'order-placed.exchange'.
+    THEN a mongo document should exist with that order.
+    """
+
     def processing_period(self) -> float:
         return 0.5
 
