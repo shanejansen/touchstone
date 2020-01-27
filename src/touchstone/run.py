@@ -13,7 +13,7 @@ def execute():
         run_contexts = bootstrap.mocks.start()
 
         bootstrap.services.start(run_contexts)
-        tests_did_pass = bootstrap.services.run_tests()
+        tests_did_pass = bootstrap.services.run_all_tests()
         if tests_did_pass:
             print('All Touchstone tests passed successfully!')
         else:

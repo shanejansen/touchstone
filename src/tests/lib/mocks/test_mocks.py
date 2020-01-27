@@ -10,7 +10,14 @@ class TestMocks(TestCase):
         self.mock_http = Mock()
         self.mock_rabbitmq = Mock()
         self.mock_mongodb = Mock()
-        self.mocks = Mocks('', self.mock_http, self.mock_rabbitmq, self.mock_mongodb)
+
+        self.mocks = Mocks('')
+        self.mocks.http = self.mock_http
+        self.mocks.register_mock(self.mock_http)
+        self.mocks.rabbitmq = self.mock_rabbitmq
+        self.mocks.register_mock(self.mock_rabbitmq)
+        self.mocks.mongodb = self.mock_mongodb
+        self.mocks.register_mock(self.mock_mongodb)
 
     def test_start_mocksNotRunning_mocksAreRunning(self):
         # When

@@ -18,7 +18,7 @@ class Get(TouchstoneTest):
         return response.decode('utf-8')
 
     def then(self, given, result) -> bool:
-        return validation.expected_matches_actual(json.dumps(given), result)
+        return validation.matches(json.dumps(given), result)
 
 
 class Post(TouchstoneTest):
@@ -34,7 +34,7 @@ class Post(TouchstoneTest):
         return response.decode('utf-8')
 
     def then(self, given, result) -> bool:
-        return validation.expected_matches_actual(json.dumps(given), result)
+        return validation.matches(json.dumps(given), result)
 
 
 class Put(TouchstoneTest):
@@ -51,7 +51,7 @@ class Put(TouchstoneTest):
         return response.decode('utf-8')
 
     def then(self, given, result) -> bool:
-        return validation.expected_matches_actual(json.dumps(given), result)
+        return validation.matches(json.dumps(given), result)
 
 
 class Delete(TouchstoneTest):
@@ -68,4 +68,4 @@ class Delete(TouchstoneTest):
         return response.decode('utf-8')
 
     def then(self, given, result) -> bool:
-        return validation.expected_matches_actual(json.dumps(given), result)
+        return validation.matches(json.dumps(given), result)

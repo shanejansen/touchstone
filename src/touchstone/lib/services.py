@@ -25,14 +25,29 @@ class Services(object):
             service.stop()
         self.__services_running = False
 
-    def run_tests(self) -> bool:
+    def run_test(self, service_name, file_name, test_name) -> bool:
+        found_service = None
+        for service in self.__services:
+            if service.name.replace(' ', '').lower() == service_name:
+                found_service = service
+        if not found_service:
+            print(f'No service could be found with the name "{service_name}".')
+            return False
+
         try:
-            self.__wait_for_availability()
+            self.wait_for_availability()
+        except KeyboardInterrupt:
+            return False
+        return found_service.run_test(file_name, test_name)
+
+    def run_all_tests(self) -> bool:
+        try:
+            self.wait_for_availability()
         except KeyboardInterrupt:
             return False
 
         for service in self.__services:
-            did_pass = service.run_tests()
+            did_pass = service.run_all_tests()
             if not did_pass:
                 return False
         return True
@@ -40,6 +55,6 @@ class Services(object):
     def are_running(self) -> bool:
         return self.__services_running
 
-    def __wait_for_availability(self):
+    def wait_for_availability(self):
         for service in self.__services:
             service.wait_for_availability()

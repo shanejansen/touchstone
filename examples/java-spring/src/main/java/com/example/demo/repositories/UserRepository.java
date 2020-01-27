@@ -18,6 +18,18 @@ public class UserRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    public User get(int id) {
+        String sql = "SELECT * FROM users WHERE id = :id";
+        Map<String, String> params = new HashMap<>();
+        params.put("id", String.valueOf(id));
+        return jdbcTemplate.queryForObject(sql, params, (resultSet, i) -> new User(
+                resultSet.getInt("id"),
+                resultSet.getString("first_name"),
+                resultSet.getString("last_name"),
+                resultSet.getString("email")
+        ));
+    }
+
     public User save(User user) {
         String sql = "INSERT INTO users (first_name, last_name, email) VALUES (:firstName, :lastName, :email)";
         Map<String, String> params = new HashMap<>();
@@ -31,18 +43,19 @@ public class UserRepository {
     }
 
     public void update(User user) {
-        String sql = ""
+        String sql = "UPDATE users SET first_name = :firstName, last_name = :lastName, email = :email WHERE id = :id";
+        Map<String, String> params = new HashMap<>();
+        params.put("firstName", user.getFirstName());
+        params.put("lastName", user.getLastName());
+        params.put("email", user.getEmail());
+        params.put("id", String.valueOf(user.getId()));
+        jdbcTemplate.update(sql, params);
     }
 
-    public User get(int id) {
-        String sql = "SELECT * FROM users WHERE id = :id";
+    public void delete(int id) {
+        String sql = "DELETE FROM users WHERE id = :id";
         Map<String, String> params = new HashMap<>();
         params.put("id", String.valueOf(id));
-        return jdbcTemplate.queryForObject(sql, params, (resultSet, i) -> new User(
-                resultSet.getInt("id"),
-                resultSet.getString("first_name"),
-                resultSet.getString("last_name"),
-                resultSet.getString("email")
-        ));
+        jdbcTemplate.update(sql, params);
     }
 }

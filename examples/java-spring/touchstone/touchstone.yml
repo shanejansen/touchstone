@@ -1,6 +1,6 @@
 ---
 services:
-  - name: My App
+  - name: myapp
     availability_endpoint: "/actuator/health"
     dockerfile: "../Dockerfile"
 mocks:

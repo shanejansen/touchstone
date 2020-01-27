@@ -1,3 +1,5 @@
+import re
+
 from pyfiglet import figlet_format
 
 from touchstone import common
@@ -20,7 +22,11 @@ def execute():
             if command == 'help':
                 __print_help()
             elif command == 'run':
-                __run_tests(bootstrap)
+                __run_all_tests(bootstrap)
+            elif re.search('run \\S* \\S* \\S*', command):
+                command = command.lower()
+                parts = command.split(' ')
+                bootstrap.services.run_test(parts[1], parts[2], parts[3])
             elif command == 'services start':
                 bootstrap.services.start(run_contexts)
             elif command == 'services stop':
@@ -45,6 +51,7 @@ def __print_help():
     print('\nDevelopment mode:\n'
           'help - Prints this message.\n'
           'run - Runs all Touchstone tests.\n'
+          'run {service} {test file name} {test name} - Run a single test.\n'
           'services start - Starts all services under test.\n'
           'services stop - Stops all services under test.\n'
           'mocks print - Prints mock UI URLs.\n'
@@ -52,8 +59,8 @@ def __print_help():
           'exit - Exit Touchstone.\n')
 
 
-def __run_tests(bootstrap):
-    tests_did_pass = bootstrap.services.run_tests()
+def __run_all_tests(bootstrap):
+    tests_did_pass = bootstrap.services.run_all_tests()
     if tests_did_pass:
         print('All Touchstone tests passed successfully!')
     else:

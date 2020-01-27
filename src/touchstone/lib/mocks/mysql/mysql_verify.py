@@ -11,8 +11,8 @@ class MysqlVerify(object):
         self.__convert_camel_to_snake = convert_camel_to_snake
 
     def row_exists(self, database: str, table: str, where_conditions: dict, num_expected: int = 1) -> bool:
-        """Returns True if the executed sql if found in the given database. If num_expected is set to None, any number
-        of rows will be considered passing."""
+        """Returns True if the given where conditions are found in the given database. If num_expected is set to None,
+        any number of rows will be considered passing."""
         if not self.__mysql_context.database_exists(database):
             return False
 
@@ -34,3 +34,7 @@ class MysqlVerify(object):
         print(f'SQL: "{sql}" in database: "{database}" was found {num_rows} time(s) but expected '
               f'{num_expected if num_expected else "any"} time(s).')
         return False
+
+    def row_does_not_exist(self, database: str, table: str, where_conditions: dict) -> bool:
+        """Returns True if the given where conditions are not found in the given database."""
+        return self.row_exists(database, table, where_conditions, num_expected=0)

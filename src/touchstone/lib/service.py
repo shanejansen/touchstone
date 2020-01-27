@@ -62,9 +62,13 @@ class Service(object):
                 time.sleep(self.__seconds_between_retries)
         raise exceptions.ServiceException('Could not connect to service\'s availability endpoint.')
 
-    def run_tests(self) -> bool:
+    def run_test(self, file_name, test_name) -> bool:
         self.__tests.service_url = self.url()
-        return self.__tests.run()
+        return self.__tests.run(file_name, test_name)
+
+    def run_all_tests(self) -> bool:
+        self.__tests.service_url = self.url()
+        return self.__tests.run_all()
 
     def is_running(self) -> bool:
         return self.__container_id is not None

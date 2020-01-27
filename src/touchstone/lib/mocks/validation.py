@@ -8,27 +8,29 @@ def __equals(expected, actual) -> bool:
 
 
 def __equals_dict(expected: dict, actual: dict) -> bool:
-    for k, v in d.items():
+    if len(expected) != len(actual):
+        return False
+    for k, v in expected.items():
+        if k not in actual:
+            return False
         if isinstance(v, dict):
-            __equals_dict()
-        else:
-            __equals()
+            return __equals_dict(v, actual[k])
+        if not __equals(v, actual[k]):
+            return False
+    return True
 
 
-def expected_matches_actual(expected, actual) -> bool:
-    if isinstance(expected, str) and isinstance(actual, str):
-        return __equals(expected, actual)
-    if isinstance(expected, dir) and isinstance(actual, dir):
+def matches(expected, actual) -> bool:
+    if isinstance(expected, dict) and isinstance(actual, dict):
+        result = __equals_dict(expected, actual)
+    else:
+        result = __equals(expected, actual)
+    if not result:
+        print(f'Expected "{expected}" does not match actual "{actual}".')
+    return result
 
 
-# result = False
-# if expected == actual:
-#     return True
-# print(f'Expected "{expected}" does not match actual "{actual}".')
-# return False
-
-
-def expected_in_actual(expected, actual) -> bool:
+def contains(expected, actual) -> bool:
     if expected in actual:
         return True
     print(f'Expected "{expected}" was not found in actual "{actual}".')

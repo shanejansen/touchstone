@@ -15,7 +15,7 @@ class TestService(TestCase):
         service = Service('', '', self.mock_tests, None, '', 0, '', 0, 0, self.mock_docker_manager)
 
         # When
-        service.start()
+        service.start([])
 
         # Then
         self.mock_docker_manager.run_image.assert_not_called()
@@ -24,7 +24,7 @@ class TestService(TestCase):
         service = Service('', '', self.mock_tests, '', '', 0, '', 0, 0, self.mock_docker_manager)
 
         # When
-        service.start()
+        service.start([])
         service.stop()
 
         # Then

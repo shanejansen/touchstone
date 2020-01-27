@@ -11,7 +11,7 @@ class TestServices(TestCase):
         services = Services([])
 
         # When
-        services.start()
+        services.start([])
 
         # Then
         self.assertTrue(services.are_running())
@@ -21,7 +21,7 @@ class TestServices(TestCase):
         services = Services([])
 
         # When
-        services.start()
+        services.start([])
         services.stop()
 
         # Then
@@ -30,11 +30,11 @@ class TestServices(TestCase):
     def test_runTests_allTestsPass_ReturnsTrue(self):
         # Given
         mock_service = Mock()
-        mock_service.run_tests.return_value = True
+        mock_service.run_all_tests.return_value = True
         services = Services([mock_service])
 
         # When
-        result = services.run_tests()
+        result = services.run_all_tests()
 
         # Then
         self.assertTrue(result)
@@ -42,11 +42,11 @@ class TestServices(TestCase):
     def test_runTests_testFails_ReturnsFalse(self):
         # Given
         mock_service = Mock()
-        mock_service.run_tests.return_value = False
+        mock_service.run_all_tests.return_value = False
         services = Services([mock_service])
 
         # When
-        result = services.run_tests()
+        result = services.run_all_tests()
 
         # Then
         self.assertFalse(result)

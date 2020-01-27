@@ -37,14 +37,13 @@ public class UserController {
     }
 
     @PutMapping("/user")
-    public User putUser(@RequestBody User user) {
-        // TODO: Update user in relational db
-        return null;
+    public void putUser(@RequestBody User user) {
+        userRepository.update(user);
     }
 
     @DeleteMapping("/user/{id}")
     public void deleteUser(@PathVariable int id) {
-        // TODO: Remove user from relational db
+        userRepository.delete(id);
         messageProducer.publishUserDeletedMessage(String.valueOf(id));
     }
 }
