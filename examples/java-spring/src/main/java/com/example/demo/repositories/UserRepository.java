@@ -30,6 +30,10 @@ public class UserRepository {
         return user;
     }
 
+    public void update(User user) {
+        String sql = ""
+    }
+
     public User get(int id) {
         String sql = "SELECT * FROM users WHERE id = :id";
         Map<String, String> params = new HashMap<>();
