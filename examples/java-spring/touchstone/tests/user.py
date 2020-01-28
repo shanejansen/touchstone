@@ -81,20 +81,20 @@ class PutUser(TouchstoneTest):
     """
 
     def given(self) -> object:
-        given = {
+        new_info = {
             'id': 999,
             'firstName': 'Janie',
             'lastName': 'White',
             'email': 'jane123@example.org'
         }
-        user = {
+        existing_user = {
             'id': 999,
             'firstName': 'Jane',
             'lastName': 'Brown',
             'email': 'jane789@example.com'
         }
-        self.mocks.mysql.setup.insert_row(mysql_database, mysql_table, user)
-        return given
+        self.mocks.mysql.setup.insert_row(mysql_database, mysql_table, existing_user)
+        return new_info
 
     def when(self, given) -> object:
         body = bytes(json.dumps(given), encoding='utf-8')
@@ -121,14 +121,15 @@ class DeleteUser(TouchstoneTest):
         return 0.5
 
     def given(self) -> object:
+        user_id = 999
         user = {
-            'id': 999,
+            'id': user_id,
             'firstName': 'Jane',
             'lastName': 'Brown',
             'email': 'jane789@example.com'
         }
         self.mocks.mysql.setup.insert_row(mysql_database, mysql_table, user)
-        return 999
+        return user_id
 
     def when(self, given) -> object:
         request = urllib.request.Request(f'{self.service_url}/user/{given}', method='DELETE')
