@@ -18,7 +18,7 @@ class GetUser(TouchstoneTest):
 
     def given(self) -> object:
         given = {
-            'id': 99,
+            'id': 999,
             'firstName': 'Jane',
             'lastName': 'Brown',
             'email': 'jane789@example.com'

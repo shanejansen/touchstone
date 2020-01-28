@@ -1,15 +1,23 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 setup(
-    name='touchstone',
+    name='touchstone-testingg',
     version='0.1.0',
-    description='End-to-end and exploratory testing made easy.',
+    description='Touchstone is a testing framework for your services that focuses on end-to-end and exploratory testing.',
+    long_description='See "Homepage"',
+    long_description_content_type="text/markdown",
     url='https://github.com/shane-jansen/touchstone',
     author='Shane Jansen',
     author_email='shanejjansen@gmail.com',
-    license='MIT',
-    packages=['touchstone'],
-    install_requires=['pyfiglet', 'click', 'pika', 'pyyaml', 'pymongo', 'pymysql'],
+    packages=find_packages(exclude=['tests']),
+    install_requires=[
+        'pyfiglet~=0.8',
+        'click~=7.0',
+        'pika~=1.1',
+        'pyyaml~=5.2',
+        'pymongo~=3.10',
+        'pymysql~=0.9.3'
+    ],
     entry_points={
         'console_scripts': [
             'touchstone = touchstone.cli:cli'
@@ -17,5 +25,6 @@ setup(
     },
     classifiers=[
         'Programming Language :: Python :: 3'
-    ]
+    ],
+    python_requires='>=3.6'
 )

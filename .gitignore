@@ -5,8 +5,10 @@
 *.iml
 *.pyc
 
-# Pipenv
-touchstone.egg-info
+# Python
+touchstone_testing.egg-info
+src/build
+src/dist
 
 # Maven
 examples/java-spring/target/*
