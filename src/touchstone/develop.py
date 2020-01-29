@@ -51,7 +51,7 @@ def __print_help():
     print('\nDevelopment mode:\n'
           'help - Prints this message.\n'
           'run - Runs all Touchstone tests.\n'
-          'run {service} {test file name} {test name} - Run a single test.\n'
+          'run {service} {test file name} {test name} - Run a single test. Leaves mocks in the tested state.\n'
           'services start - Starts all services under test.\n'
           'services stop - Stops all services under test.\n'
           'mocks print - Prints mock UI URLs.\n'
