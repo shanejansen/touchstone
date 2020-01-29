@@ -6,8 +6,8 @@ class TouchstoneConfig:
         self.config: dict = {
             'root': root,
             'host': 'localhost',
-            'mocks': [],
-            'services': []
+            'services': [],
+            'mocks': []
         }
 
     def merge(self, other: dict):

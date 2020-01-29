@@ -28,7 +28,7 @@ class Services(object):
     def run_test(self, service_name, file_name, test_name) -> bool:
         found_service = None
         for service in self.__services:
-            if service.name.replace(' ', '').lower() == service_name:
+            if service.name.replace(' ', '-').lower() == service_name:
                 found_service = service
         if not found_service:
             print(f'No service could be found with the name "{service_name}".')

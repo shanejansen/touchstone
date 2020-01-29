@@ -10,7 +10,7 @@ def execute():
     with open('touchstone/touchstone.yml', 'w', encoding='utf-8') as file:
         data = """---
 services:
-  - name: My App
+  - name: my-app
     port: 8080
 mocks:
 """

@@ -4,7 +4,7 @@ from touchstone import common
 class ServiceConfig(object):
     def __init__(self, host):
         self.config: dict = {
-            'name': 'Unnamed Service',
+            'name': 'unnamed-service',
             'tests': './tests',
             'host': host,
             'port': 8080,
