@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "ffb78973ed93d97d67c0bdef4a24e505785c22c6b137d3dcbc006e3d4982eeeb"
+            "sha256": "a6ac9ce34861af083fc993e83cb3bcfdd098c33c9c7cf9d9d3228029f413e155"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -124,7 +124,7 @@
             "index": "pypi",
             "version": "==5.3"
         },
-        "touchstone": {
+        "touchstone-testing": {
             "editable": true,
             "path": "."
         }

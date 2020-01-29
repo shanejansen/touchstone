@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='touchstone-testingg',
+    name='touchstone-testing',
     version='0.1.0',
     description='Touchstone is a testing framework for your services that focuses on end-to-end and exploratory testing.',
     long_description='See "Homepage"',
