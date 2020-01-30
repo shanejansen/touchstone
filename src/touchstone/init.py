@@ -16,4 +16,4 @@ mocks:
 """
         file.writelines(data)
     open('touchstone/defaults/.gitkeep', 'a').close()
-    print('Touchstone has been initialized.')
+    print('Touchstone has been initialized in the current directory.')

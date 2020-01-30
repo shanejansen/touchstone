@@ -19,9 +19,9 @@ Let's say we are building a microservice that is responsible for managing users.
  * `DELETE /user/{id}` - A user is deleted from a relational database. A message is also published to a broker on the exchange: 'user.exchange' with a routing key of: 'user-deleted' and a payload containing the user's id.
  * The service is also listening for messages published to the exchange: 'order-placed.exchange'. When a message is received, the order payload is saved to a NoSQL database.
 
-With Touchstone, it is possible to write end-to-end tests for all of the above requirements independent of the language/framework used. For example, we can write an end-to-end test for the `DELETE /user/{id}` endpoint that will ensure the user record is removed from the database and a message is published to the correct exchange with the correct payload. When ran, Touchstone will monitor mock instances of the service's dependencies to ensure the requirements are met. Touchstone also makes it easy to perform exploratory testing locally during development by starting dependencies and populating them with data via a single command.
+With Touchstone, it is possible to write end-to-end tests for all of the above requirements independent of the language/framework used. For example, we can write an end-to-end test for the `DELETE /user/{id}` endpoint that will ensure the user record is removed from the database and a message is published to the correct exchange with the correct payload. When ran, Touchstone will monitor mock instances of the service's dependencies to ensure the requirements are met. Touchstone also makes it easy to perform exploratory testing locally during development by starting dependencies and populating them with data in a single command.
 
-An example of the above requirements are implemented in a Java/Spring service in this repo. Touchstone tests have been written to test the [user endpoint requirements](./examples/java-spring/touchstone/tests/user.py) and [order messaging requirements](./examples/java-spring/touchstone/tests/order.py).
+An example of the above requirements is implemented in a Java/Spring service in this repo. Touchstone tests have been written to test the [user endpoint requirements](./examples/java-spring/touchstone/tests/user.py) and [order messaging requirements](./examples/java-spring/touchstone/tests/order.py).
 
 
 ## Installation
@@ -36,8 +36,8 @@ Requirements:
 After installation, Touchstone will be available via `touchstone` in your terminal.  
 Touchstone has three basic commands:
  * `touchstone init` - Initialize Touchstone in the current directory. Used for new projects.
- * `touchstone run` - Run all Touchstone tests and exit. This is typically how you'd run your end-to-end tests on a build server. Ports will be auto-discovered in this mode to avoid collisions in case multiple runs occur on the same host. See [mocks docs](#mocks) for more information on how to hook into auto-discovered ports.
- * `touchstone develop` - Start a development session of Touchstone. You'd typically use this to develop/debug a service locally. This will keep service dependencies running while you make changes to your end-to-end tests or the services themselves. This will also provide a web interface to each dependency for additional debugging. 
+ * `touchstone run` - Run all Touchstone tests and exit. This is typically how you wouldd run your end-to-end tests on a build server. Ports will be auto-discovered in this mode to avoid collisions in case multiple runs occur on the same host. See [mocks docs](#mocks) for more information on how to hook into auto-discovered ports.
+ * `touchstone develop` - Start a development session of Touchstone. You would typically use this to develop/debug a service locally. This will keep service dependencies running while you make changes to your end-to-end tests or the services themselves. This will also provide a web interface to each dependency for additional debugging. 
  
 After running `touchstone init`, a new directory will be created with the following contents:
 
@@ -48,7 +48,7 @@ Your services and their monitored dependencies are defined here. Default values 
  * `services:` - Each service included in your end-to-end tests is defined here.
    * `name:` - Default: unnamed-service. The name of the service.
    * `tests:` - Default: ./tests. The path to Touchstone tests for this service.
-   * `host:` - Default: parent host. Fine grained host control per service.
+   * `host:` - Default: parent host. Fine-grained host control per service.
    * `port:` - Default: 8080. The port used for this service.
    * `dockerfile:` - Default: N/A. Used to containerize the service during `touchstone run`. If you are only running Touchstone locally, this can be omitted.
    * `availability_endpoint:` - Default: N/A. Used to determine when the service is healthy so tests can be executed. A `200` must be returned from the endpoint to be considered healthy.
@@ -66,14 +66,14 @@ This directory contains YAML files where default values for mocked dependencies 
 ### `tests`
 [Example](./examples/java-spring/touchstone/tests)  
 This directory is the default location for your end-to-end tests. This can optionally be configured for each service in `touchstone.yml`.  
-Touchstone follows a _given_, _when_, _then_ testing pattern. Each test is declared in a Python file as a class that extends `TouchstoneTest`. By extending this class, you can access Touchstone mocked dependencies to setup and then verify your test requirements. For example, we can insert a document into a Mongo DB collection and then verify it exists using the following code:
+Touchstone follows a _given_, _when_, _then_ testing pattern. Each test is declared in a Python file as a class that extends `TouchstoneTest`. By extending this class, you can access Touchstone mocked dependencies to setup and then verify your requirements. For example, we can insert a document into a Mongo DB collection and then verify it exists using the following code:
 ```python
 self.mocks.mongodb.setup.insert_document('my_db', 'my_collection', {'foo': 'bar'})
 result: bool = self.mocks.mongodb.verify.document_exists('my_db', 'my_collection', {'foo': 'bar'})
 ```
 Important APIs:
  * `self.mocks` - Hook into Touchstone managed mock dependencies.
- * `self.service_url` - The service under test's URL. Useful for calling REST endpoints on the service under test.
+ * `self.service_url` - The service under test's URL. Useful for calling RESTful endpoints on the service under test.
  * `touchstone.lib.mocks.validation` - Contains methods for validating test results. `validation.ANY` can be used to accept any value which is useful in some circumstances.
 
 ## Mocks

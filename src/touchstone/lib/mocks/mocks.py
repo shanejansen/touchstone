@@ -3,7 +3,6 @@ import time
 from typing import List
 
 import yaml
-
 from touchstone import common
 from touchstone.lib import exceptions
 from touchstone.lib.mocks.http.http import Http
@@ -21,22 +20,22 @@ class Mocks(object):
         self.mongodb: Mongodb = None
         self.mysql: Mysql = None
         self.__root = root
-        self.__mocks: List[Mock] = []
+        self.__registered_mocks: List[Mock] = []
         self.__mocks_running = False
 
     def register_mock(self, mock: Mock):
-        self.__mocks.append(mock)
+        self.__registered_mocks.append(mock)
 
     def start(self) -> List[RunContext]:
         if self.__mocks_running:
             print('Mocks have already been started. They cannot be started again.')
         else:
-            print(f'Starting mocks {[_.pretty_name() for _ in self.__mocks]}...')
+            print(f'Starting mocks {[_.pretty_name() for _ in self.__registered_mocks]}...')
             run_contexts = []
-            for mock in self.__mocks:
+            for mock in self.__registered_mocks:
                 run_contexts.append(mock.start())
             self.__wait_for_healthy_mocks()
-            for mock in self.__mocks:
+            for mock in self.__registered_mocks:
                 mock.initialize()
             self.__mocks_running = True
             print('Finished starting mocks.\n')
@@ -44,7 +43,7 @@ class Mocks(object):
 
     def stop(self):
         print('Stopping mocks...')
-        for mock in self.__mocks:
+        for mock in self.__registered_mocks:
             mock.stop()
         self.__mocks_running = False
 
@@ -52,7 +51,7 @@ class Mocks(object):
         return self.__mocks_running
 
     def load_defaults(self):
-        for mock in self.__mocks:
+        for mock in self.__registered_mocks:
             try:
                 with open(os.path.join(self.__root, f'defaults/{mock.name()}.yml'), 'r') as file:
                     defaults = yaml.safe_load(file)
@@ -61,11 +60,11 @@ class Mocks(object):
                 pass
 
     def print_available_mocks(self):
-        for mock in self.__mocks:
+        for mock in self.__registered_mocks:
             print(f'Mock {mock.pretty_name()} UI running at: {mock.network.ui_url()}')
 
     def __wait_for_healthy_mocks(self):
-        for mock in self.__mocks:
+        for mock in self.__registered_mocks:
             attempt = 0
             healthy = False
             while not healthy and attempt is not 10:

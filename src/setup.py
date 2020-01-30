@@ -1,10 +1,13 @@
 from setuptools import setup, find_packages
 
+with open("../README.md", "r") as fh:
+    long_description = fh.read()
+
 setup(
     name='touchstone-testing',
     version='0.1.0',
     description='Touchstone is a testing framework for your services that focuses on end-to-end and exploratory testing.',
-    long_description='See "Homepage"',
+    long_description=long_description,
     long_description_content_type="text/markdown",
     url='https://github.com/shane-jansen/touchstone',
     author='Shane Jansen',

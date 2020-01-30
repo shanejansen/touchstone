@@ -30,6 +30,6 @@ databases:
 # Insert a document into a collection
 self.mocks.mongodb.setup.insert_document('my_db', 'my_collection', {'foo': 'bar'})
 
-# Verify that a document was inserted into a collection
+# Verify that a document exists in a collection
 result: bool = self.mocks.mongodb.verify.document_exists('my_db', 'my_collection', {'foo': 'bar'})
 ```
