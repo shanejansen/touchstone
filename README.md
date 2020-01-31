@@ -1,5 +1,7 @@
 Touchstone
 ======
+![Unit Tests](https://github.com/shane-jansen/touchstone/workflows/Unit%20Tests/badge.svg?branch=develop)
+
 Touchstone is a testing framework for your services that focuses on [end-to-end](https://www.martinfowler.com/bliki/BroadStackTest.html) and [exploratory](https://martinfowler.com/bliki/ExploratoryTesting.html) testing.  
 **Touchstone is currently in alpha and APIs may change without warning.**
 
