@@ -1,5 +1,3 @@
-import http
-import http.client
 import os
 import time
 import urllib.error

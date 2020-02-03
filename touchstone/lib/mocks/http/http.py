@@ -1,5 +1,3 @@
-import http
-import http.client
 import urllib.error
 import urllib.parse
 import urllib.request
@@ -37,7 +35,7 @@ class Http(Mock):
         try:
             response = urllib.request.urlopen(self.network.ui_url()).read()
             return False if response is None else True
-        except (urllib.error.URLError, http.client.RemoteDisconnected):
+        except (urllib.error.URLError, ConnectionResetError):
             return False
 
     def initialize(self):

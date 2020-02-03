@@ -1,5 +1,3 @@
-import http
-import http.client
 import urllib.error
 import urllib.request
 from typing import Optional
@@ -45,7 +43,7 @@ class Rabbitmq(Mock):
         try:
             response = urllib.request.urlopen(f'{self.network.ui_url()}').read()
             return response is not None
-        except (urllib.error.URLError, http.client.RemoteDisconnected):
+        except (urllib.error.URLError, ConnectionResetError):
             return False
 
     def initialize(self):
