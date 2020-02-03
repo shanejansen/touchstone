@@ -15,17 +15,14 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: 3.8
-      - name: Install pipenv
-        uses: dschep/install-pipenv-action@v1
       - name: Install dependencies
-        working-directory: ./src
         run: |
-          pipenv install --dev
-      - name: Install Touchstone
-        working-directory: ./src
-        run: |
-          pipenv install -e .
+          pip install .
       - name: Run Touchstone Tests
-        working-directory: ./src/touchstone-tests/touchstone
+        working-directory: ./touchstone-tests/touchstone
         run: |
-          pipenv run touchstone run
+          touchstone run
+      - name: Run Java example Touchstone Tests
+        working-directory: ./examples/java-spring/touchstone
+        run: |
+          touchstone run

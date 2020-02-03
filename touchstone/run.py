@@ -11,6 +11,7 @@ def execute():
 
     try:
         run_contexts = bootstrap.mocks.start()
+        bootstrap.mocks.load_defaults()
 
         bootstrap.services.start(run_contexts)
         tests_did_pass = bootstrap.services.run_all_tests()
