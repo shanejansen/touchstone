@@ -57,7 +57,7 @@ class Service(object):
                 urllib.request.urlopen(full_endpoint).read()
                 self.__log('Available\n')
                 return
-            except (urllib.error.URLError, http.client.RemoteDisconnected):
+            except (urllib.error.URLError, ConnectionResetError):
                 self.__log(f'Not available. Retry {retry_num + 1} of {self.__num_retries}')
                 time.sleep(self.__seconds_between_retries)
         raise exceptions.ServiceException('Could not connect to service\'s availability endpoint.')

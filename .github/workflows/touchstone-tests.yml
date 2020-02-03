@@ -1,6 +1,10 @@
-name: Unit Tests
+name: Touchstone Tests
 
-on: [push]
+on:
+  push:
+    branches:
+      - 'develop'
+      - 'release/**'
 
 jobs:
   build:
@@ -17,8 +21,11 @@ jobs:
         working-directory: ./src
         run: |
           pipenv install --dev
-      - name: Test with pytest
+      - name: Install Touchstone
         working-directory: ./src
         run: |
-          pipenv install pytest
-          pipenv run pytest
+          pipenv install -e .
+      - name: Run Touchstone Tests
+        working-directory: ./src/touchstone-tests/touchstone
+        run: |
+          pipenv run touchstone run

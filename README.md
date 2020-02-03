@@ -1,6 +1,7 @@
 Touchstone
 ======
 ![Unit Tests](https://github.com/shane-jansen/touchstone/workflows/Unit%20Tests/badge.svg?branch=develop)
+![Touchstone Tests](https://github.com/shane-jansen/touchstone/workflows/Touchstone%20Tests/badge.svg?branch=develop)
 
 Touchstone is a testing framework for your services that focuses on [end-to-end](https://www.martinfowler.com/bliki/BroadStackTest.html) and [exploratory](https://martinfowler.com/bliki/ExploratoryTesting.html) testing.  
 **Touchstone is currently in alpha and APIs may change without warning.**
@@ -38,7 +39,7 @@ Requirements:
 After installation, Touchstone will be available via `touchstone` in your terminal.  
 Touchstone has three basic commands:
  * `touchstone init` - Initialize Touchstone in the current directory. Used for new projects.
- * `touchstone run` - Run all Touchstone tests and exit. This is typically how you wouldd run your end-to-end tests on a build server. Ports will be auto-discovered in this mode to avoid collisions in case multiple runs occur on the same host. See [mocks docs](#mocks) for more information on how to hook into auto-discovered ports.
+ * `touchstone run` - Run all Touchstone tests and exit. This is typically how you would run your end-to-end tests on a build server. Ports will be auto-discovered in this mode to avoid collisions in case multiple runs occur on the same host. See [mocks docs](#mocks) for more information on how to hook into auto-discovered ports.
  * `touchstone develop` - Start a development session of Touchstone. You would typically use this to develop/debug a service locally. This will keep service dependencies running while you make changes to your end-to-end tests or the services themselves. This will also provide a web interface to each dependency for additional debugging. 
  
 After running `touchstone init`, a new directory will be created with the following contents:
@@ -85,7 +86,7 @@ Important APIs:
  * [Rabbit MQ](./docs/mocks/rabbitmq.md)
  * [Add one!](./docs/under-construction.md)
  
-When running touchstone via `touchstone run`, ports are automatically discovered and available to your service containers via the following environment variables:
+When running via `touchstone develop`, dev ports for each mock are used. When running touchstone via `touchstone run`, ports are automatically discovered and available to your service containers via the following environment variables:
  * `TS_{MOCK_NAME}_HOST` - Host where the mock is running.
  * `TS_{MOCK_NAME}_PORT` - Port where the mock is running.
  * `TS_{MOCK_NAME}_URL` - Complete URL where the mock is running.
