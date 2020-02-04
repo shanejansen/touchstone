@@ -5,7 +5,6 @@ import urllib.parse
 import urllib.request
 from typing import Optional, List, Tuple
 
-from touchstone import common
 from touchstone.lib import exceptions
 from touchstone.lib.docker_manager import DockerManager
 from touchstone.lib.mocks.run_context import RunContext
@@ -34,8 +33,7 @@ class Service(object):
             dockerfile_path = os.path.abspath(os.path.join(self.__root, self.__dockerfile))
             tag = self.__docker_manager.build_dockerfile(dockerfile_path)
             environment_vars = self.__environment_vars_from_run_contexts(run_contexts)
-            run_result = self.__docker_manager.run_image(tag, (self.__port, self.__port),
-                                                         environment_vars=environment_vars)
+            run_result = self.__docker_manager.run_image(tag, self.__port, environment_vars=environment_vars)
             self.__container_id = run_result.container_id
             self.__port = run_result.port
 
@@ -78,7 +76,7 @@ class Service(object):
         envs = []
         for run_context in run_contexts:
             name = run_context.name.upper()
-            envs.append((f'TS_{name}_HOST', common.replace_host_with_docker_equivalent(run_context.network.host)))
-            envs.append((f'TS_{name}_PORT', run_context.network.port))
-            envs.append((f'TS_{name}_URL', run_context.network.url()))
+            envs.append((f'TS_{name}_HOST', run_context.network.network_host))
+            envs.append((f'TS_{name}_PORT', run_context.network.network_port))
+            envs.append((f'TS_{name}_URL', run_context.network.network_url()))
         return envs

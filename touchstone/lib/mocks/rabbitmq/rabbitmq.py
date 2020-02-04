@@ -13,8 +13,8 @@ from touchstone.lib.mocks.rabbitmq.rmq_context import RmqContext
 
 
 class Rabbitmq(Mock):
-    def __init__(self, host: str, is_dev_mode: bool, docker_manager: DockerManager):
-        super().__init__(host, is_dev_mode)
+    def __init__(self, host: str, docker_manager: DockerManager):
+        super().__init__(host)
         self.setup: RabbitmqSetup = None
         self.verify: RabbitmqVerify = None
         self.__docker_manager = docker_manager
@@ -34,10 +34,13 @@ class Rabbitmq(Mock):
         }
 
     def run(self) -> Network:
-        run_result = self.__docker_manager.run_image('rabbitmq:3.7.22-management-alpine', (5672, 5672),
+        run_result = self.__docker_manager.run_image('rabbitmq:3.7.22-management-alpine', port=5672,
                                                      ui_port_mapping=(15672, 15672))
         self.__container_id = run_result.container_id
-        return Network(self._host, run_result.port, ui_port=run_result.ui_port)
+        return Network(network_host=run_result.container_id,
+                       port=run_result.port,
+                       network_port=run_result.network_port,
+                       ui_port=run_result.ui_port)
 
     def is_healthy(self) -> bool:
         try:
@@ -48,7 +51,7 @@ class Rabbitmq(Mock):
 
     def initialize(self):
         connection_params = pika.ConnectionParameters(
-            host=self._host,
+            host=self.network.host,
             port=self.network.port,
             credentials=pika.PlainCredentials('guest', 'guest'),
             heartbeat=0

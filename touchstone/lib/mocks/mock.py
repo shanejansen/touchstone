@@ -9,10 +9,9 @@ from touchstone.lib.mocks.run_context import RunContext
 class Mock(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, host: str, is_dev_mode: bool):
+    def __init__(self, host: str):
         self.config: dict = {}
         self._host = host
-        self._is_dev_mode = is_dev_mode
         self.__network: Optional[Network] = None
 
     @property
@@ -39,6 +38,8 @@ class Mock(object):
     def start(self) -> RunContext:
         """Starts this mock."""
         self.__network = self.run()
+        if not self.network.host:
+            self.__network.host = self._host
         return RunContext(self.name(), self.__network)
 
     @abc.abstractmethod

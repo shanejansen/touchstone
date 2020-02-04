@@ -11,8 +11,8 @@ from touchstone.lib.mocks.network import Network
 
 
 class Http(Mock):
-    def __init__(self, host: str, is_dev_mode: bool, docker_manager: DockerManager):
-        super().__init__(host, is_dev_mode)
+    def __init__(self, host: str, docker_manager: DockerManager):
+        super().__init__(host)
         self.setup: HttpSetup = None
         self.verify: HttpVerify = None
         self.__docker_manager = docker_manager
@@ -27,9 +27,13 @@ class Http(Mock):
         return 'HTTP'
 
     def run(self) -> Network:
-        run_result = self.__docker_manager.run_image('rodolpheche/wiremock:2.25.1-alpine', (8081, 8080))
+        run_result = self.__docker_manager.run_image('rodolpheche/wiremock:2.25.1-alpine', port=8080, exposed_port=8081)
         self.__container_id = run_result.container_id
-        return Network(self._host, run_result.port, prefix='http://', ui_endpoint='/__admin')
+        return Network(network_host=run_result.container_id,
+                       port=run_result.port,
+                       network_port=run_result.network_port,
+                       prefix='http://',
+                       ui_endpoint='/__admin')
 
     def is_healthy(self) -> bool:
         try:

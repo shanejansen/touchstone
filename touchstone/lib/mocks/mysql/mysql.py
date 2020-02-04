@@ -12,9 +12,10 @@ from touchstone.lib.mocks.network import Network
 
 class Mysql(Mock):
     def __init__(self, host: str, is_dev_mode: bool, docker_manager: DockerManager):
-        super().__init__(host, is_dev_mode)
+        super().__init__(host)
         self.setup: MysqlSetup = None
         self.verify: MysqlVerify = None
+        self.__is_dev_mode = is_dev_mode
         self.__docker_manager = docker_manager
         self.__container_id: Optional[str] = None
         self.__ui_container_id: Optional[str] = None
@@ -33,18 +34,22 @@ class Mysql(Mock):
         }
 
     def run(self) -> Network:
-        run_result = self.__docker_manager.run_image('mysql:5.7.29', (3306, 3306),
+        run_result = self.__docker_manager.run_image('mysql:5.7.29', port=3306,
                                                      environment_vars=[('MYSQL_ROOT_PASSWORD', 'root')])
         self.__container_id = run_result.container_id
 
         ui_port = None
-        if self._is_dev_mode:
-            ui_run_result = self.__docker_manager.run_image('adminer:4.7.5-standalone', (3307, 8080),
-                                                            environment_vars=[('ADMINER_DEFAULT_SERVER', self._host)])
+        if self.__is_dev_mode:
+            ui_run_result = self.__docker_manager.run_image('adminer:4.7.5-standalone', ui_port_mapping=(3307, 8080),
+                                                            environment_vars=[
+                                                                ('ADMINER_DEFAULT_SERVER', self.__container_id)])
             self.__ui_container_id = ui_run_result.container_id
-            ui_port = ui_run_result.port
+            ui_port = ui_run_result.ui_port
 
-        return Network(self._host, run_result.port, ui_port=ui_port)
+        return Network(network_host=run_result.container_id,
+                       port=run_result.port,
+                       network_port=run_result.network_port,
+                       ui_port=ui_port)
 
     def is_healthy(self) -> bool:
         try:

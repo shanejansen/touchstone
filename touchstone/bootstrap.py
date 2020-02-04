@@ -1,6 +1,7 @@
 import os
 
 import yaml
+
 from touchstone import common
 from touchstone.lib import exceptions
 from touchstone.lib.configs.service_config import ServiceConfig
@@ -37,8 +38,8 @@ class Bootstrap(object):
 
     def __build_mocks(self, root, touchstone_config, host, docker_manager) -> Mocks:
         mocks = Mocks(root)
-        mocks.http = Http(host, self.is_dev_mode, docker_manager)
-        mocks.rabbitmq = Rabbitmq(host, self.is_dev_mode, docker_manager)
+        mocks.http = Http(host, docker_manager)
+        mocks.rabbitmq = Rabbitmq(host, docker_manager)
         mocks.mongodb = Mongodb(host, self.is_dev_mode, docker_manager)
         mocks.mysql = Mysql(host, self.is_dev_mode, docker_manager)
         potential_mocks = [mocks.http, mocks.rabbitmq, mocks.mongodb, mocks.mysql]

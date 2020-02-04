@@ -28,13 +28,6 @@ def dict_merge(base: dict, override: dict) -> dict:
     return dict(list(base.items()) + list(override.items()))
 
 
-def replace_host_with_docker_equivalent(host: str) -> str:
-    replace = ['localhost', '127.0.0.1', '0.0.0.0']
-    for replacement in replace:
-        host = host.replace(replacement, 'host.docker.internal')
-    return host
-
-
 def __camel_to_snake(input: str) -> str:
     return __camel_to_snake_pattern.sub('_', input).lower()
 

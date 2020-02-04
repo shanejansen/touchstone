@@ -12,10 +12,11 @@ from touchstone.lib.mocks.network import Network
 
 class Mongodb(Mock):
     def __init__(self, host: str, is_dev_mode: bool, docker_manager: DockerManager):
-        super().__init__(host, is_dev_mode)
+        super().__init__(host)
         self.setup: MongodbSetup = None
         self.verify: MongodbVerify = None
         self.__docker_manager = docker_manager
+        self.__is_dev_mode = is_dev_mode
         self.__container_id: Optional[str] = None
         self.__ui_container_id: Optional[str] = None
 
@@ -28,19 +29,22 @@ class Mongodb(Mock):
         return 'Mongo DB'
 
     def run(self) -> Network:
-        run_result = self.__docker_manager.run_image('mongo:4.0.14', (27017, 27017))
+        run_result = self.__docker_manager.run_image('mongo:4.0.14', port=27017)
         self.__container_id = run_result.container_id
 
         ui_port = None
-        if self._is_dev_mode:
-            ui_run_result = self.__docker_manager.run_image('mongo-express:0.49.0', (27018, 8081),
+        if self.__is_dev_mode:
+            ui_run_result = self.__docker_manager.run_image('mongo-express:0.49.0', ui_port_mapping=(27018, 8081),
                                                             environment_vars=[
                                                                 ('ME_CONFIG_MONGODB_PORT', run_result.port),
-                                                                ('ME_CONFIG_MONGODB_SERVER', self._host)])
+                                                                ('ME_CONFIG_MONGODB_SERVER', self.__container_id)])
             self.__ui_container_id = ui_run_result.container_id
-            ui_port = ui_run_result.port
+            ui_port = ui_run_result.ui_port
 
-        return Network(self._host, run_result.port, ui_port=ui_port)
+        return Network(network_host=run_result.container_id,
+                       port=run_result.port,
+                       network_port=run_result.network_port,
+                       ui_port=ui_port)
 
     def is_healthy(self) -> bool:
         try:
