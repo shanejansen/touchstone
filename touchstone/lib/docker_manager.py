@@ -9,10 +9,10 @@ from touchstone.lib import exceptions
 
 
 class RunResult(object):
-    def __init__(self, container_id, port, network_port, ui_port=None):
+    def __init__(self, container_id, internal_port, external_port, ui_port=None):
         self.container_id = container_id
-        self.port = port
-        self.network_port = network_port
+        self.internal_port = internal_port
+        self.external_port = external_port
         self.ui_port = ui_port
 
 
@@ -35,7 +35,7 @@ class DockerManager(object):
         self.__images.append(tag)
         return tag
 
-    def run_image(self, image: str, port: int = None, exposed_port: int = None, ui_port_mapping: Tuple[int, int] = None,
+    def run_image(self, image: str, port: int = None, exposed_port: int = None, ui_port: int = None,
                   environment_vars: List[Tuple[str, str]] = []) -> RunResult:
         exposed_port = port if not exposed_port else exposed_port
 
@@ -53,8 +53,8 @@ class DockerManager(object):
             else:
                 additional_params += f' -p {exposed_port}:{port}'
             additional_params += f' --expose {port}'
-        if ui_port_mapping:
-            additional_params += f' -p {ui_port_mapping[0]}:{ui_port_mapping[1]}'
+        if ui_port:
+            additional_params += f' -p :{ui_port}'
 
         # Environment variables setup
         for var, value in environment_vars:
@@ -67,22 +67,22 @@ class DockerManager(object):
         result = subprocess.run(command, shell=True, stdout=subprocess.DEVNULL)
         if result.returncode is not 0:
             raise exceptions.ContainerException(
-                f'Container image {image} could not be started. Ensure Docker is running and app port: '
-                f'"{port}" and UI port: "{ui_port_mapping[0] if ui_port_mapping else "N/A"}" '
-                f'are not already in use.')
+                f'Container image {image} could not be started. Ensure Docker is running and port: "{exposed_port}" is '
+                f'not already in use.')
 
         # Extract the auto-discovered ports
-        if self.__should_auto_discover:
-            result = str(subprocess.run(['docker', 'port', container_id], stdout=subprocess.PIPE).stdout,
-                         encoding='utf-8')
-            for line in result.splitlines():
-                container_port = int(re.search('.+?(?=/)', line).group())
-                new_port = int(re.search('(?<=0.0.0.0:)\\d*', line).group())
-                if container_port == port:
-                    exposed_port = new_port
+        result = str(subprocess.run(['docker', 'port', container_id], stdout=subprocess.PIPE).stdout,
+                     encoding='utf-8')
+        for line in result.splitlines():
+            given_port = int(re.search('.+?(?=/)', line).group())
+            discovered_port = int(re.search('(?<=0.0.0.0:)\\d*', line).group())
+            if given_port == port:
+                exposed_port = discovered_port
+            elif given_port == ui_port:
+                ui_port = discovered_port
 
         self.__containers.append(container_id)
-        return RunResult(container_id, exposed_port, port, ui_port_mapping[0] if ui_port_mapping else None)
+        return RunResult(container_id, port, exposed_port, ui_port)
 
     def stop_container(self, id):
         common.logger.info(f'Stopping container: {id}')

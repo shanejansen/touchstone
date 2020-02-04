@@ -34,28 +34,29 @@ class Mongodb(Mock):
 
         ui_port = None
         if self.__is_dev_mode:
-            ui_run_result = self.__docker_manager.run_image('mongo-express:0.49.0', ui_port_mapping=(27018, 8081),
+            ui_run_result = self.__docker_manager.run_image('mongo-express:0.49.0',
+                                                            ui_port=8081,
                                                             environment_vars=[
-                                                                ('ME_CONFIG_MONGODB_PORT', run_result.port),
-                                                                ('ME_CONFIG_MONGODB_SERVER', self.__container_id)])
+                                                                ('ME_CONFIG_MONGODB_PORT', run_result.internal_port),
+                                                                ('ME_CONFIG_MONGODB_SERVER', run_result.container_id)])
             self.__ui_container_id = ui_run_result.container_id
             ui_port = ui_run_result.ui_port
 
-        return Network(network_host=run_result.container_id,
-                       port=run_result.port,
-                       network_port=run_result.network_port,
+        return Network(internal_host=run_result.container_id,
+                       internal_port=run_result.internal_port,
+                       external_port=run_result.external_port,
                        ui_port=ui_port)
 
     def is_healthy(self) -> bool:
         try:
-            client = pymongo.MongoClient(self.network.host, self.network.port)
+            client = pymongo.MongoClient(self.network.external_host, self.network.external_port)
             status = client.admin.command('serverStatus')['ok']
             return status == 1.0
         except Exception:
             return False
 
     def initialize(self):
-        mongo_client = pymongo.MongoClient(self.network.host, self.network.port)
+        mongo_client = pymongo.MongoClient(self.network.external_host, self.network.external_port)
         mongo_context = MongoContext()
         self.setup = MongodbSetup(mongo_client, mongo_context)
         self.verify = MongodbVerify(mongo_client, mongo_context)

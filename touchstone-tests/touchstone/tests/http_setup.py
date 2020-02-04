@@ -14,7 +14,7 @@ class Get(TouchstoneTest):
         return given
 
     def when(self, given) -> object:
-        response = urllib.request.urlopen(f'{self.mocks.http.network.url()}/get-endpoint').read()
+        response = urllib.request.urlopen(f'{self.mocks.http.network.external_url()}/get-endpoint').read()
         return response.decode('utf-8')
 
     def then(self, given, result) -> bool:
@@ -30,7 +30,8 @@ class Post(TouchstoneTest):
         return given
 
     def when(self, given) -> object:
-        response = urllib.request.urlopen(f'{self.mocks.http.network.url()}/post-endpoint', data=bytes()).read()
+        response = urllib.request.urlopen(f'{self.mocks.http.network.external_url()}/post-endpoint',
+                                          data=bytes()).read()
         return response.decode('utf-8')
 
     def then(self, given, result) -> bool:
@@ -46,7 +47,7 @@ class Put(TouchstoneTest):
         return given
 
     def when(self, given) -> object:
-        request = urllib.request.Request(f'{self.mocks.http.network.url()}/put-endpoint', method='PUT')
+        request = urllib.request.Request(f'{self.mocks.http.network.external_url()}/put-endpoint', method='PUT')
         response = urllib.request.urlopen(request).read()
         return response.decode('utf-8')
 
@@ -63,7 +64,7 @@ class Delete(TouchstoneTest):
         return given
 
     def when(self, given) -> object:
-        request = urllib.request.Request(f'{self.mocks.http.network.url()}/delete-endpoint', method='DELETE')
+        request = urllib.request.Request(f'{self.mocks.http.network.external_url()}/delete-endpoint', method='DELETE')
         response = urllib.request.urlopen(request).read()
         return response.decode('utf-8')
 

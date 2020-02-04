@@ -35,7 +35,7 @@ class Service(object):
             environment_vars = self.__environment_vars_from_run_contexts(run_contexts)
             run_result = self.__docker_manager.run_image(tag, self.__port, environment_vars=environment_vars)
             self.__container_id = run_result.container_id
-            self.__port = run_result.port
+            self.__port = run_result.external_port
 
     def stop(self):
         if self.__container_id:
@@ -76,7 +76,7 @@ class Service(object):
         envs = []
         for run_context in run_contexts:
             name = run_context.name.upper()
-            envs.append((f'TS_{name}_HOST', run_context.network.network_host))
-            envs.append((f'TS_{name}_PORT', run_context.network.network_port))
-            envs.append((f'TS_{name}_URL', run_context.network.network_url()))
+            envs.append((f'TS_{name}_HOST', run_context.network.internal_host))
+            envs.append((f'TS_{name}_PORT', run_context.network.internal_port))
+            envs.append((f'TS_{name}_URL', run_context.network.internal_url()))
         return envs

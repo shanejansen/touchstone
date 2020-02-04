@@ -38,8 +38,8 @@ class Mock(object):
     def start(self) -> RunContext:
         """Starts this mock."""
         self.__network = self.run()
-        if not self.network.host:
-            self.__network.host = self._host
+        if not self.network.external_host:
+            self.__network.external_host = self._host
         return RunContext(self.name(), self.__network)
 
     @abc.abstractmethod

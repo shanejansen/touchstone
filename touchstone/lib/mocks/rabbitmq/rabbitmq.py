@@ -34,12 +34,11 @@ class Rabbitmq(Mock):
         }
 
     def run(self) -> Network:
-        run_result = self.__docker_manager.run_image('rabbitmq:3.7.22-management-alpine', port=5672,
-                                                     ui_port_mapping=(15672, 15672))
+        run_result = self.__docker_manager.run_image('rabbitmq:3.7.22-management-alpine', port=5672, ui_port=15672)
         self.__container_id = run_result.container_id
-        return Network(network_host=run_result.container_id,
-                       port=run_result.port,
-                       network_port=run_result.network_port,
+        return Network(internal_host=run_result.container_id,
+                       internal_port=run_result.internal_port,
+                       external_port=run_result.external_port,
                        ui_port=run_result.ui_port)
 
     def is_healthy(self) -> bool:
@@ -51,8 +50,8 @@ class Rabbitmq(Mock):
 
     def initialize(self):
         connection_params = pika.ConnectionParameters(
-            host=self.network.host,
-            port=self.network.port,
+            host=self.network.external_host,
+            port=self.network.external_port,
             credentials=pika.PlainCredentials('guest', 'guest'),
             heartbeat=0
         )

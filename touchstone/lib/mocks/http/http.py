@@ -27,13 +27,14 @@ class Http(Mock):
         return 'HTTP'
 
     def run(self) -> Network:
-        run_result = self.__docker_manager.run_image('rodolpheche/wiremock:2.25.1-alpine', port=8080, exposed_port=8081)
+        run_result = self.__docker_manager.run_image('rodolpheche/wiremock:2.25.1-alpine', port=8080, exposed_port=9090)
         self.__container_id = run_result.container_id
-        return Network(network_host=run_result.container_id,
-                       port=run_result.port,
-                       network_port=run_result.network_port,
-                       prefix='http://',
-                       ui_endpoint='/__admin')
+        return Network(internal_host=run_result.container_id,
+                       internal_port=run_result.internal_port,
+                       external_port=run_result.external_port,
+                       ui_port=run_result.ui_port,
+                       ui_endpoint='/__admin',
+                       prefix='http://')
 
     def is_healthy(self) -> bool:
         try:
@@ -43,8 +44,8 @@ class Http(Mock):
             return False
 
     def initialize(self):
-        self.setup: HttpSetup = HttpSetup(self.network.url())
-        self.verify: HttpVerify = HttpVerify(self.network.url())
+        self.setup: HttpSetup = HttpSetup(self.network.external_url())
+        self.verify: HttpVerify = HttpVerify(self.network.external_url())
 
     def load_defaults(self, defaults: dict):
         self.setup.load_defaults(defaults)
