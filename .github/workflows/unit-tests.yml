@@ -11,14 +11,10 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: 3.8
-      - name: Install pipenv
-        uses: dschep/install-pipenv-action@v1
       - name: Install dependencies
-        working-directory: ./src
         run: |
-          pipenv install --dev
-      - name: Test with pytest
-        working-directory: ./src
+          pip install .
+      - name: Run unit tests
         run: |
-          pipenv install pytest
-          pipenv run pytest
+          pip install pytest
+          pytest
