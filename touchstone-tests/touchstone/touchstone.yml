@@ -1,0 +1,10 @@
+---
+services:
+  - name: my-app
+    port: 8080
+    dockerfile: "../Dockerfile"
+mocks:
+  http:
+  rabbitmq:
+  mongodb:
+  mysql:
