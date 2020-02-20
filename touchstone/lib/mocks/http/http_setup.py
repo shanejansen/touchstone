@@ -13,7 +13,7 @@ class HttpSetup(object):
         self.url = url
         self.mock_ids: list = []
 
-    def load_defaults(self, defaults: dict):
+    def init(self, defaults: dict):
         # Remove all mocked endpoints
         for mock_id in self.mock_ids:
             request = urllib.request.Request(f'{self.url}/__admin/mappings/{mock_id}', method='DELETE')

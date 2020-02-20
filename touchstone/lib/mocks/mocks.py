@@ -1,8 +1,6 @@
-import os
 import time
 from typing import List
 
-import yaml
 from touchstone import common
 from touchstone.lib import exceptions
 from touchstone.lib.mocks.http.http import Http
@@ -14,12 +12,11 @@ from touchstone.lib.mocks.run_context import RunContext
 
 
 class Mocks(object):
-    def __init__(self, root: str):
+    def __init__(self):
         self.http: Http = None
         self.rabbitmq: Rabbitmq = None
         self.mongodb: Mongodb = None
         self.mysql: Mysql = None
-        self.__root = root
         self.__registered_mocks: List[Mock] = []
         self.__mocks_running = False
 
@@ -50,14 +47,13 @@ class Mocks(object):
     def are_running(self):
         return self.__mocks_running
 
-    def load_defaults(self):
+    def services_became_available(self):
         for mock in self.__registered_mocks:
-            try:
-                with open(os.path.join(self.__root, f'defaults/{mock.name()}.yml'), 'r') as file:
-                    defaults = yaml.safe_load(file)
-                    mock.load_defaults(defaults)
-            except FileNotFoundError:
-                pass
+            mock.services_available()
+
+    def reset(self):
+        for mock in self.__registered_mocks:
+            mock.reset()
 
     def print_available_mocks(self):
         for mock in self.__registered_mocks:

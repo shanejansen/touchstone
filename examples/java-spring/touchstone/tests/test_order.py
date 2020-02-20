@@ -2,8 +2,7 @@ import json
 
 from touchstone.lib.touchstone_test import TouchstoneTest
 
-mongo_database = 'myapp'
-mongo_collection = 'orders'
+from tests import creds
 
 
 class OrderMessageReceived(TouchstoneTest):
@@ -28,4 +27,4 @@ class OrderMessageReceived(TouchstoneTest):
         return None
 
     def then(self, given, result) -> bool:
-        return self.mocks.mongodb.verify.document_exists(mongo_database, mongo_collection, given)
+        return self.mocks.mongodb.verify.document_exists(creds.MONGO_DATABASE, creds.MONGO_COLLECTION, given)

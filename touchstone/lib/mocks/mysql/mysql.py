@@ -4,6 +4,7 @@ import pymysql
 
 from touchstone.lib.docker_manager import DockerManager
 from touchstone.lib.mocks.mock import Mock
+from touchstone.lib.mocks.mock_defaults import MockDefaults
 from touchstone.lib.mocks.mysql.mysql_context import MysqlContext
 from touchstone.lib.mocks.mysql.mysql_setup import MysqlSetup
 from touchstone.lib.mocks.mysql.mysql_verify import MysqlVerify
@@ -11,8 +12,8 @@ from touchstone.lib.mocks.network import Network
 
 
 class Mysql(Mock):
-    def __init__(self, host: str, is_dev_mode: bool, docker_manager: DockerManager):
-        super().__init__(host)
+    def __init__(self, host: str, mock_defaults: MockDefaults, is_dev_mode: bool, docker_manager: DockerManager):
+        super().__init__(host, mock_defaults)
         self.setup: MysqlSetup = None
         self.verify: MysqlVerify = None
         self.__is_dev_mode = is_dev_mode
@@ -75,9 +76,10 @@ class Mysql(Mock):
         convert_camel_to_snake = self.config['convertCamelToSnakeCase']
         self.setup = MysqlSetup(cursor, mysql_context, convert_camel_to_snake)
         self.verify = MysqlVerify(cursor, mysql_context, convert_camel_to_snake)
+        self.setup.init(self._mock_defaults.get(self.name()))
 
-    def load_defaults(self, defaults: dict):
-        self.setup.load_defaults(defaults)
+    def reset(self):
+        self.setup.init(self._mock_defaults.get(self.name()))
 
     def stop(self):
         if self.__container_id:

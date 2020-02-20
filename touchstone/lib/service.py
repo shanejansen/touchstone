@@ -50,8 +50,11 @@ class Service(object):
         self.__log(f'Attempting to connect to availability endpoint {full_endpoint}')
         for retry_num in range(self.__num_retries):
             try:
-                urllib.request.urlopen(full_endpoint).read()
-                self.__log('Available\n')
+                code = urllib.request.urlopen(full_endpoint).getcode()
+                if code % 200 < 100:
+                    self.__log('Available\n')
+                else:
+                    self.__log(f'Availability endpoint returned non-2xx: "{code}"\n')
                 return
             except (urllib.error.URLError, ConnectionResetError):
                 self.__log(f'Not available. Retry {retry_num + 1} of {self.__num_retries}')

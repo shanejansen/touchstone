@@ -69,7 +69,7 @@ This directory contains YAML files where default values for mocked dependencies 
 ### `tests`
 [Example](./examples/java-spring/touchstone/tests)  
 This directory is the default location for your end-to-end tests. This can optionally be configured for each service in `touchstone.yml`.  
-Touchstone follows a _given_, _when_, _then_ testing pattern. Each test is declared in a Python file as a class that extends `TouchstoneTest`. By extending this class, you can access Touchstone mocked dependencies to setup and then verify your requirements. For example, we can insert a document into a Mongo DB collection and then verify it exists using the following code:
+Touchstone follows a _given_, _when_, _then_ testing pattern. Each test is declared in a Python file prefixed with `test_` containing classes that extend `TouchstoneTest`. By extending this class, you can access Touchstone mocked dependencies to setup and then verify your requirements. For example, we can insert a document into a Mongo DB collection and then verify it exists using the following code:
 ```python
 self.mocks.mongodb.setup.insert_document('my_db', 'my_collection', {'foo': 'bar'})
 result: bool = self.mocks.mongodb.verify.document_exists('my_db', 'my_collection', {'foo': 'bar'})

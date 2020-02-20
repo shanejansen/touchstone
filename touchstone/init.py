@@ -7,6 +7,7 @@ def execute():
         exit(1)
     os.makedirs('touchstone/defaults')
     os.makedirs('touchstone/tests')
+    open('touchstone/tests/__init__.py', 'a').close()
     with open('touchstone/touchstone.yml', 'w', encoding='utf-8') as file:
         data = """---
 services:

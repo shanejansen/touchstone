@@ -11,7 +11,7 @@ class TestMocks(TestCase):
         self.mock_rabbitmq = Mock()
         self.mock_mongodb = Mock()
 
-        self.mocks = Mocks('')
+        self.mocks = Mocks()
         self.mocks.http = self.mock_http
         self.mocks.register_mock(self.mock_http)
         self.mocks.rabbitmq = self.mock_rabbitmq

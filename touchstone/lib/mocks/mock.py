@@ -2,6 +2,7 @@ import abc
 from typing import Optional
 
 from touchstone.lib import exceptions
+from touchstone.lib.mocks.mock_defaults import MockDefaults
 from touchstone.lib.mocks.network import Network
 from touchstone.lib.mocks.run_context import RunContext
 
@@ -9,9 +10,10 @@ from touchstone.lib.mocks.run_context import RunContext
 class Mock(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, host: str):
+    def __init__(self, host: str, mock_defaults: MockDefaults):
         self.config: dict = {}
         self._host = host
+        self._mock_defaults = mock_defaults
         self.__network: Optional[Network] = None
 
     @property
@@ -53,9 +55,12 @@ class Mock(object):
     def initialize(self):
         """Called when this mock becomes healthy."""
 
+    def services_available(self):
+        """Called when all services become available."""
+
     @abc.abstractmethod
-    def load_defaults(self, defaults: dict):
-        """Loads defaults for this mock provided by the user."""
+    def reset(self):
+        """Reset this mock to its default state."""
 
     @abc.abstractmethod
     def stop(self):

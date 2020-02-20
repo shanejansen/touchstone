@@ -7,12 +7,13 @@ from touchstone.lib.docker_manager import DockerManager
 from touchstone.lib.mocks.http.http_setup import HttpSetup
 from touchstone.lib.mocks.http.http_verify import HttpVerify
 from touchstone.lib.mocks.mock import Mock
+from touchstone.lib.mocks.mock_defaults import MockDefaults
 from touchstone.lib.mocks.network import Network
 
 
 class Http(Mock):
-    def __init__(self, host: str, docker_manager: DockerManager):
-        super().__init__(host)
+    def __init__(self, host: str, mock_defaults: MockDefaults, docker_manager: DockerManager):
+        super().__init__(host, mock_defaults)
         self.setup: HttpSetup = None
         self.verify: HttpVerify = None
         self.__docker_manager = docker_manager
@@ -46,9 +47,10 @@ class Http(Mock):
     def initialize(self):
         self.setup: HttpSetup = HttpSetup(self.network.external_url())
         self.verify: HttpVerify = HttpVerify(self.network.external_url())
+        self.setup.init(self._mock_defaults.get(self.name()))
 
-    def load_defaults(self, defaults: dict):
-        self.setup.load_defaults(defaults)
+    def reset(self):
+        self.setup.init(self._mock_defaults.get(self.name()))
 
     def stop(self):
         if self.__container_id:

@@ -10,10 +10,9 @@ def execute():
     print(figlet_format('Touchstone', font='larry3d'))
 
     try:
-        run_contexts = bootstrap.mocks.start()
-        bootstrap.mocks.load_defaults()
-
-        bootstrap.services.start(run_contexts)
+        mock_run_contexts = bootstrap.mocks.start()
+        bootstrap.services.start(mock_run_contexts)
+        bootstrap.mocks.services_became_available()
         tests_did_pass = bootstrap.services.run_all_tests()
         if tests_did_pass:
             print('All Touchstone tests passed successfully!')

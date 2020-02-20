@@ -17,6 +17,8 @@ class Services(object):
             for service in self.__services:
                 service.start(run_contexts)
             self.__services_running = True
+            for service in self.__services:
+                service.wait_for_availability()
             print('Finished starting services.\n')
 
     def stop(self):
@@ -34,18 +36,9 @@ class Services(object):
             print(f'No service could be found with the name "{service_name}".')
             return False
 
-        try:
-            self.wait_for_availability()
-        except KeyboardInterrupt:
-            return False
         return found_service.run_test(file_name, test_name)
 
     def run_all_tests(self) -> bool:
-        try:
-            self.wait_for_availability()
-        except KeyboardInterrupt:
-            return False
-
         for service in self.__services:
             did_pass = service.run_all_tests()
             if not did_pass:
@@ -54,7 +47,3 @@ class Services(object):
 
     def are_running(self) -> bool:
         return self.__services_running
-
-    def wait_for_availability(self):
-        for service in self.__services:
-            service.wait_for_availability()

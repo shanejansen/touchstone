@@ -6,6 +6,7 @@ import pika
 
 from touchstone.lib.docker_manager import DockerManager
 from touchstone.lib.mocks.mock import Mock
+from touchstone.lib.mocks.mock_defaults import MockDefaults
 from touchstone.lib.mocks.network import Network
 from touchstone.lib.mocks.rabbitmq.rabbitmq_setup import RabbitmqSetup
 from touchstone.lib.mocks.rabbitmq.rabbitmq_verify import RabbitmqVerify
@@ -13,8 +14,8 @@ from touchstone.lib.mocks.rabbitmq.rmq_context import RmqContext
 
 
 class Rabbitmq(Mock):
-    def __init__(self, host: str, docker_manager: DockerManager):
-        super().__init__(host)
+    def __init__(self, host: str, mock_defaults: MockDefaults, docker_manager: DockerManager):
+        super().__init__(host, mock_defaults)
         self.setup: RabbitmqSetup = None
         self.verify: RabbitmqVerify = None
         self.__docker_manager = docker_manager
@@ -30,7 +31,7 @@ class Rabbitmq(Mock):
 
     def default_config(self) -> dict:
         return {
-            'durable': False
+            'autoCreate': True
         }
 
     def run(self) -> Network:
@@ -58,11 +59,17 @@ class Rabbitmq(Mock):
         connection = pika.BlockingConnection(connection_params)
         rmq_context = RmqContext()
         channel = connection.channel()
-        self.setup = RabbitmqSetup(channel, connection_params, rmq_context, self.config['durable'])
+        self.setup = RabbitmqSetup(channel, connection_params, rmq_context)
         self.verify = RabbitmqVerify(channel, rmq_context)
+        if self.config['autoCreate']:
+            self.setup.create_all(self._mock_defaults.get(self.name()))
 
-    def load_defaults(self, defaults: dict):
-        self.setup.load_defaults(defaults)
+    def services_available(self):
+        if not self.config['autoCreate']:
+            self.setup.create_shadow_queues(self._mock_defaults.get(self.name()))
+
+    def reset(self):
+        self.setup.purge_queues()
 
     def stop(self):
         if self.__container_id:

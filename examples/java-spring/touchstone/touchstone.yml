@@ -6,6 +6,6 @@ services:
 mocks:
   http:
   rabbitmq:
-    durable: True
+    autoCreate: False
   mongodb:
   mysql:

@@ -12,7 +12,7 @@ class MysqlSetup(object):
         self.__mysql_context = mysql_context
         self.__convert_camel_to_snake = convert_camel_to_snake
 
-    def load_defaults(self, defaults: dict):
+    def init(self, defaults: dict):
         for database in self.__mysql_context.databases:
             self.__cursor.execute(f'DROP DATABASE {database}')
         self.__mysql_context.clear()

@@ -4,6 +4,7 @@ import pymongo
 
 from touchstone.lib.docker_manager import DockerManager
 from touchstone.lib.mocks.mock import Mock
+from touchstone.lib.mocks.mock_defaults import MockDefaults
 from touchstone.lib.mocks.mongodb.mongo_context import MongoContext
 from touchstone.lib.mocks.mongodb.mongodb_setup import MongodbSetup
 from touchstone.lib.mocks.mongodb.mongodb_verify import MongodbVerify
@@ -11,8 +12,8 @@ from touchstone.lib.mocks.network import Network
 
 
 class Mongodb(Mock):
-    def __init__(self, host: str, is_dev_mode: bool, docker_manager: DockerManager):
-        super().__init__(host)
+    def __init__(self, host: str, mock_defaults: MockDefaults, is_dev_mode: bool, docker_manager: DockerManager):
+        super().__init__(host, mock_defaults)
         self.setup: MongodbSetup = None
         self.verify: MongodbVerify = None
         self.__docker_manager = docker_manager
@@ -60,9 +61,10 @@ class Mongodb(Mock):
         mongo_context = MongoContext()
         self.setup = MongodbSetup(mongo_client, mongo_context)
         self.verify = MongodbVerify(mongo_client, mongo_context)
+        self.setup.init(self._mock_defaults.get(self.name()))
 
-    def load_defaults(self, defaults: dict):
-        self.setup.load_defaults(defaults)
+    def reset(self):
+        self.setup.init(self._mock_defaults.get(self.name()))
 
     def stop(self):
         if self.__container_id:

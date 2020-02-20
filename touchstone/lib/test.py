@@ -26,7 +26,7 @@ class TestContainer(object):
             class_instance: TouchstoneTest = test_class.clazz(service_url, mocks)
             test = Test(test_class.name, class_instance)
             print(f'{test.name} :: RUNNING')
-            mocks.load_defaults()
+            mocks.reset()
 
             did_pass = False
             try:

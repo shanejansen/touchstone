@@ -10,7 +10,7 @@ class MongodbSetup(object):
         self.__mongo_client = mongo_client
         self.__mongo_context = mongo_context
 
-    def load_defaults(self, defaults: dict):
+    def init(self, defaults: dict):
         for database in self.__mongo_context.databases():
             mongo_database = self.__mongo_client.get_database(database)
             for collection in self.__mongo_context.collections(database):

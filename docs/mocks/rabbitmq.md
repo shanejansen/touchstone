@@ -11,7 +11,7 @@ Used to mock a Rabbit MQ dependency.
  
  
 ## Configuration
- * `durable` - Default: False. If set to True, queues and exchanges will be created with the durable property.
+ * `autoCreate` - Default: True. If set to False, queues and exchanges will not be created by Touchstone and should be created by the service instead.
 
 
 ## Defaults Example
