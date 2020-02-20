@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='touchstone-testing',
-    version='0.1.1',
+    version='0.1.2',
     description='Touchstone is a testing framework for your services that focuses on end-to-end and exploratory testing.',
     long_description=long_description,
     long_description_content_type="text/markdown",

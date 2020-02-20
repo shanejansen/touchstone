@@ -24,7 +24,7 @@ Let's say we are building a microservice that is responsible for managing users.
 
 With Touchstone, it is possible to write end-to-end tests for all of the above requirements independent of the language/framework used. For example, we can write an end-to-end test for the `DELETE /user/{id}` endpoint that will ensure the user record is removed from the database and a message is published to the correct exchange with the correct payload. When ran, Touchstone will monitor mock instances of the service's dependencies to ensure the requirements are met. Touchstone also makes it easy to perform exploratory testing locally during development by starting dependencies and populating them with data in a single command.
 
-An example of the above requirements is implemented in a Java/Spring service in this repo. Touchstone tests have been written to test the [user endpoint requirements](./examples/java-spring/touchstone/tests/user.py) and [order messaging requirements](./examples/java-spring/touchstone/tests/order.py).
+An example of the above requirements is implemented in a Java/Spring service in this repo. Touchstone tests have been written to test the [user endpoint requirements](./examples/java-spring/touchstone/tests/test_user.py) and [order messaging requirements](./examples/java-spring/touchstone/tests/test_order.py).
 
 
 ## Installation
