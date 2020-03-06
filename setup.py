@@ -19,7 +19,8 @@ setup(
         'pika~=1.1',
         'pyyaml~=5.2',
         'pymongo~=3.10',
-        'pymysql~=0.9.3'
+        'pymysql~=0.9.3',
+        'minio=~=5.0.7'
     ],
     entry_points={
         'console_scripts': [
