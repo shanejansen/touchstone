@@ -9,6 +9,7 @@ from touchstone.lib.mocks.mongodb.mongodb import Mongodb
 from touchstone.lib.mocks.mysql.mysql import Mysql
 from touchstone.lib.mocks.rabbitmq.rabbitmq import Rabbitmq
 from touchstone.lib.mocks.run_context import RunContext
+from touchstone.lib.mocks.s3.s3 import S3
 
 
 class Mocks(object):
@@ -17,6 +18,7 @@ class Mocks(object):
         self.rabbitmq: Rabbitmq = None
         self.mongodb: Mongodb = None
         self.mysql: Mysql = None
+        self.s3: S3 = None
         self.__registered_mocks: List[Mock] = []
         self.__mocks_running = False
 
@@ -57,7 +59,10 @@ class Mocks(object):
 
     def print_available_mocks(self):
         for mock in self.__registered_mocks:
-            print(f'Mock {mock.pretty_name()} UI running at: {mock.network.ui_url()}')
+            message = f'Mock {mock.pretty_name()} UI running at: {mock.network.ui_url()}'
+            if mock.network.username:
+                message += f' Username: "{mock.network.username}", Password: "{mock.network.password}"'
+            print(message)
 
     def __wait_for_healthy_mocks(self):
         for mock in self.__registered_mocks:

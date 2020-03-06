@@ -20,7 +20,7 @@ class TestDockerManager(TestCase):
         result = self.docker_manager.build_dockerfile(dockerfile_path)
 
         # Then
-        self.assertEqual(None, result)
+        self.assertIsNone(result)
 
     @mock.patch('touchstone.lib.docker_manager.subprocess')
     def test_runImage_commandReturnsNon0_exceptionRaised(self, mock_subprocess: Mock):

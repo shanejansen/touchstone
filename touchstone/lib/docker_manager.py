@@ -28,7 +28,7 @@ class DockerManager(object):
         build_context = os.path.dirname(dockerfile_path)
         tag = uuid.uuid4().hex
         command = f'docker build -t {tag} -f {dockerfile_path} {build_context}'
-        common.logger.info(f'Building Dockerfile with command: {command}')
+        common.logger.debug(f'Building Dockerfile with command: {command}')
         result = subprocess.run(command, shell=True, stdout=subprocess.DEVNULL)
         if result.returncode is not 0:
             return None
@@ -42,7 +42,7 @@ class DockerManager(object):
         # Create network
         if not self.__network:
             self.__network = uuid.uuid4().hex
-            common.logger.info(f'Creating network: {self.__network}')
+            common.logger.debug(f'Creating network: {self.__network}')
             subprocess.run(['docker', 'network', 'create', self.__network], stdout=subprocess.DEVNULL)
 
         # Port setup
@@ -63,7 +63,7 @@ class DockerManager(object):
         # Run the container
         container_id = uuid.uuid4().hex
         command = f'docker run --rm -d --network {self.__network} --name {container_id}{additional_params} {image}'
-        common.logger.info(f'Running container with command: {command}')
+        common.logger.debug(f'Running container with command: {command}')
         result = subprocess.run(command, shell=True, stdout=subprocess.DEVNULL)
         if result.returncode is not 0:
             raise exceptions.ContainerException(
@@ -85,19 +85,19 @@ class DockerManager(object):
         return RunResult(container_id, port, exposed_port, ui_port)
 
     def stop_container(self, id):
-        common.logger.info(f'Stopping container: {id}')
+        common.logger.debug(f'Stopping container: {id}')
         subprocess.run(['docker', 'container', 'stop', id], stdout=subprocess.DEVNULL)
         self.__containers.remove(id)
 
     def cleanup(self):
         if self.__images:
             for image in self.__images:
-                common.logger.info(f'Removing image: {image}')
+                common.logger.debug(f'Removing image: {image}')
                 subprocess.run(['docker', 'image', 'rm', image], stdout=subprocess.DEVNULL)
         self.__images = []
         if self.__containers:
             for container in self.__containers:
-                common.logger.info(f'Stopping container: {container}')
+                common.logger.debug(f'Stopping container: {container}')
                 subprocess.run(['docker', 'container', 'stop', container], stdout=subprocess.DEVNULL)
         self.__containers = []
         if self.__network:

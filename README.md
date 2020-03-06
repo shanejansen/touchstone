@@ -3,7 +3,7 @@ Touchstone
 ![Unit Tests](https://github.com/shane-jansen/touchstone/workflows/Unit%20Tests/badge.svg?branch=develop)
 ![Touchstone Tests](https://github.com/shane-jansen/touchstone/workflows/Touchstone%20Tests/badge.svg?branch=develop)
 
-Touchstone is a testing framework for your services that focuses on [end-to-end](https://www.martinfowler.com/bliki/BroadStackTest.html) and [exploratory](https://martinfowler.com/bliki/ExploratoryTesting.html) testing.  
+Touchstone is a testing framework for your services that focuses on [component](https://martinfowler.com/articles/microservice-testing/#testing-component-out-of-process-diagram), [end-to-end](https://martinfowler.com/articles/microservice-testing/#testing-end-to-end-introduction), and [exploratory](https://martinfowler.com/bliki/ExploratoryTesting.html) testing.  
 **Touchstone is currently in alpha and APIs may change without warning.**
 
 
@@ -11,7 +11,7 @@ Touchstone is a testing framework for your services that focuses on [end-to-end]
 ![Testing Pyramid](./docs/images/testing-pyramid.png)  
 [Image Credit](https://martinfowler.com/articles/microservice-testing/#conclusion-test-pyramid)
 
-Touchstone aims to simplify these two pieces of the testing pyramid by providing mock implementations of common service dependencies and exposing them via an easy to use testing framework. Whether your app is written in Java, Python, Go, C#, [Fortran](https://www.fortran.io/), or any other language, Touchstone handles its dependencies while you focus on writing tests. Not a single line of end-to-end testing code needs to change should you decide to refactor or rewrite your service.
+Touchstone aims to simplify the top three pieces of the testing pyramid by providing mock implementations of common service dependencies and exposing them via an easy to use testing framework. Whether your app is written in Java, Python, Go, C#, [Fortran](https://www.fortran.io/), or any other language, Touchstone handles its dependencies while you focus on writing tests. Not a single line of end-to-end testing code needs to change should you decide to refactor or rewrite your service.
 
 
 ## Use Case
@@ -44,7 +44,7 @@ Touchstone has three basic commands:
  
 After running `touchstone init`, a new directory will be created with the following contents:
 
-### `touchstone.yml`
+### `/touchstone.yml`
 [Example](./examples/java-spring/touchstone/touchstone.yml)  
 Your services and their monitored dependencies are defined here. Default values should be enough in most cases.
  * `host:` - Default: localhost. The host where your services are running.
@@ -61,12 +61,12 @@ Your services and their monitored dependencies are defined here. Default values 
    * This is how Touchstone determines which mocked dependencies should be started.
    * View each [mock's docs](#mocks) for values and additional configuration.
 
-### `defaults`
+### `/defaults`
 [Example](./examples/java-spring/touchstone/defaults/mysql.yml)  
 This directory contains YAML files where default values for mocked dependencies are defined. Defaults make it easy to test your service(s) locally by setting up your mock dependencies with sensible defaults. The name of each YAML file should match the name of a mock. For instance, with the MySQL mock, a `mysql.yml` file would contain default databases and tables to be created as well as statements to insert initial data. View each [mock's docs](#mocks) for allowable values.
 
 
-### `tests`
+### `/tests`
 [Example](./examples/java-spring/touchstone/tests)  
 This directory is the default location for your end-to-end tests. This can optionally be configured for each service in `touchstone.yml`.  
 Touchstone follows a _given_, _when_, _then_ testing pattern. Each test is declared in a Python file prefixed with `test_` containing classes that extend `TouchstoneTest`. By extending this class, you can access Touchstone mocked dependencies to setup and then verify your requirements. For example, we can insert a document into a Mongo DB collection and then verify it exists using the following code:

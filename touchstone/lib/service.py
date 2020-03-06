@@ -66,8 +66,11 @@ class Service(object):
         return self.__tests.run(file_name, test_name)
 
     def run_all_tests(self) -> bool:
+        self.__log('Running all tests...')
         self.__tests.service_url = self.url()
-        return self.__tests.run_all()
+        did_pass = self.__tests.run_all()
+        self.__log('Finished running all tests.\n')
+        return did_pass
 
     def is_running(self) -> bool:
         return self.__container_id is not None

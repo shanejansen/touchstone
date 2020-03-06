@@ -1,6 +1,7 @@
 from threading import Thread
 
 import pika
+import pika.exceptions
 from pika import spec
 from pika.adapters.blocking_connection import BlockingChannel
 
@@ -18,7 +19,10 @@ class MessageConsumer(Thread):
 
     def run(self) -> None:
         super().run()
-        self.channel.start_consuming()
+        try:
+            self.channel.start_consuming()
+        except pika.exceptions.ConnectionClosedByBroker:
+            pass
 
     def consume(self, exchange: str, routing_key: str, queue: str):
         def message_received(channel: BlockingChannel, method: spec.Basic.Deliver, properties: spec.BasicProperties,
