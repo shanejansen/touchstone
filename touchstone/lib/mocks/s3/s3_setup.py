@@ -1,4 +1,5 @@
 import os
+from io import BytesIO
 
 from minio import Minio
 
@@ -34,5 +35,6 @@ class S3Setup(object):
 
     def put_object(self, bucket_name: str, object_name: str, data: bytes,
                    content_type: str = 'application/octet-stream'):
-        length = os.stat(data).st_size
+        length = len(data)
+        data = BytesIO(data)
         self.__s3_client.put_object(bucket_name, object_name, data, length, content_type)
