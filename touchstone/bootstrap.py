@@ -13,6 +13,7 @@ from touchstone.lib.mocks.mocks import Mocks
 from touchstone.lib.mocks.mongodb.mongodb import Mongodb
 from touchstone.lib.mocks.mysql.mysql import Mysql
 from touchstone.lib.mocks.rabbitmq.rabbitmq import Rabbitmq
+from touchstone.lib.mocks.s3.s3 import S3
 from touchstone.lib.service import Service
 from touchstone.lib.services import Services
 from touchstone.lib.tests import Tests
@@ -44,7 +45,8 @@ class Bootstrap(object):
         mocks.rabbitmq = Rabbitmq(host, mock_defaults, docker_manager)
         mocks.mongodb = Mongodb(host, mock_defaults, self.is_dev_mode, docker_manager)
         mocks.mysql = Mysql(host, mock_defaults, self.is_dev_mode, docker_manager)
-        potential_mocks = [mocks.http, mocks.rabbitmq, mocks.mongodb, mocks.mysql]
+        mocks.s3 = S3(host, mock_defaults, docker_manager)
+        potential_mocks = [mocks.http, mocks.rabbitmq, mocks.mongodb, mocks.mysql, mocks.s3]
 
         if not touchstone_config.config['mocks']:
             return mocks

@@ -8,3 +8,4 @@ mocks:
   rabbitmq:
   mongodb:
   mysql:
+  s3:

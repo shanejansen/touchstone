@@ -2,7 +2,7 @@ import logging
 
 import click
 
-from touchstone import common
+from touchstone import common, __version__
 from touchstone import develop
 from touchstone import init
 from touchstone import run
@@ -17,6 +17,11 @@ def cli(log):
         raise exceptions.TouchstoneException(f'Invalid log level: {log}')
     logging.basicConfig()
     common.logger.setLevel(numeric_level)
+
+
+@cli.command('version', help='Prints the Touchstone version number.')
+def cli_version():
+    print(__version__)
 
 
 @cli.command(name='init', help='Initialize Touchstone in the current directory.')

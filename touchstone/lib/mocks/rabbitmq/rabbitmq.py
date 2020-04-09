@@ -14,6 +14,9 @@ from touchstone.lib.mocks.rabbitmq.rmq_context import RmqContext
 
 
 class Rabbitmq(Mock):
+    __USERNAME = 'guest'
+    __PASSWORD = 'guest'
+
     def __init__(self, host: str, mock_defaults: MockDefaults, docker_manager: DockerManager):
         super().__init__(host, mock_defaults)
         self.setup: RabbitmqSetup = None
@@ -40,7 +43,9 @@ class Rabbitmq(Mock):
         return Network(internal_host=run_result.container_id,
                        internal_port=run_result.internal_port,
                        external_port=run_result.external_port,
-                       ui_port=run_result.ui_port)
+                       ui_port=run_result.ui_port,
+                       username=self.__USERNAME,
+                       password=self.__PASSWORD)
 
     def is_healthy(self) -> bool:
         try:
@@ -53,7 +58,7 @@ class Rabbitmq(Mock):
         connection_params = pika.ConnectionParameters(
             host=self.network.external_host,
             port=self.network.external_port,
-            credentials=pika.PlainCredentials('guest', 'guest'),
+            credentials=pika.PlainCredentials(self.__USERNAME, self.__PASSWORD),
             heartbeat=0
         )
         connection = pika.BlockingConnection(connection_params)

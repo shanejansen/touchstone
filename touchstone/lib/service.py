@@ -66,8 +66,11 @@ class Service(object):
         return self.__tests.run(file_name, test_name)
 
     def run_all_tests(self) -> bool:
+        self.__log('Running all tests...')
         self.__tests.service_url = self.url()
-        return self.__tests.run_all()
+        did_pass = self.__tests.run_all()
+        self.__log('Finished running all tests.\n')
+        return did_pass
 
     def is_running(self) -> bool:
         return self.__container_id is not None
@@ -82,4 +85,6 @@ class Service(object):
             envs.append((f'TS_{name}_HOST', run_context.network.internal_host))
             envs.append((f'TS_{name}_PORT', run_context.network.internal_port))
             envs.append((f'TS_{name}_URL', run_context.network.internal_url()))
+            envs.append((f'TS_{name}_USERNAME', run_context.network.username))
+            envs.append((f'TS_{name}_PASSWORD', run_context.network.password))
         return envs
