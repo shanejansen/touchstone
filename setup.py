@@ -1,11 +1,13 @@
 from setuptools import setup, find_packages
 
+from touchstone import __version__
+
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setup(
     name='touchstone-testing',
-    version='0.1.2',
+    version=__version__,
     description='Touchstone is a testing framework for your services that focuses on end-to-end and exploratory testing.',
     long_description=long_description,
     long_description_content_type="text/markdown",
