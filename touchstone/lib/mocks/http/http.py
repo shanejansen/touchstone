@@ -28,13 +28,13 @@ class Http(Mock):
         return 'HTTP'
 
     def run(self) -> Network:
-        run_result = self.__docker_manager.run_image('rodolpheche/wiremock:2.25.1-alpine', port=8080, exposed_port=9090)
+        run_result = self.__docker_manager.run_image('holomekc/wiremock-gui:2.25.1', port=8080, exposed_port=9090)
         self.__container_id = run_result.container_id
         return Network(internal_host=run_result.container_id,
                        internal_port=run_result.internal_port,
                        external_port=run_result.external_port,
                        ui_port=run_result.ui_port,
-                       ui_endpoint='/__admin',
+                       ui_endpoint='/__admin/webapp',
                        prefix='http://')
 
     def is_healthy(self) -> bool:

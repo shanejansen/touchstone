@@ -1,0 +1,10 @@
+---
+buckets:
+  - name: mybucket
+    objects:
+      - name: foo.csv
+        content-type: text/csv
+        path: ./s3-objects/foo.csv
+      - name: test/bar.png
+        content-type: image/png
+        path: ./s3-objects/bar.png

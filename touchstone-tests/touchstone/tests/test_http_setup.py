@@ -7,10 +7,8 @@ from touchstone.lib.touchstone_test import TouchstoneTest
 
 class Get(TouchstoneTest):
     def given(self) -> object:
-        given = {
-            'foo': 'get'
-        }
-        self.mocks.http.setup.get('/get-endpoint', json.dumps(given))
+        given = json.dumps({'foo': 'get'})
+        self.mocks.http.setup.get('/get-endpoint', given)
         return given
 
     def when(self, given) -> object:
@@ -18,15 +16,13 @@ class Get(TouchstoneTest):
         return response.decode('utf-8')
 
     def then(self, given, result) -> bool:
-        return validation.matches(json.dumps(given), result)
+        return validation.matches(given, result)
 
 
 class Post(TouchstoneTest):
     def given(self) -> object:
-        given = {
-            'foo': 'post'
-        }
-        self.mocks.http.setup.post('/post-endpoint', json.dumps(given))
+        given = json.dumps({'foo': 'post'})
+        self.mocks.http.setup.post('/post-endpoint', given)
         return given
 
     def when(self, given) -> object:
@@ -35,15 +31,13 @@ class Post(TouchstoneTest):
         return response.decode('utf-8')
 
     def then(self, given, result) -> bool:
-        return validation.matches(json.dumps(given), result)
+        return validation.matches(given, result)
 
 
 class Put(TouchstoneTest):
     def given(self) -> object:
-        given = {
-            'foo': 'put'
-        }
-        self.mocks.http.setup.put('/put-endpoint', json.dumps(given))
+        given = json.dumps({'foo': 'put'})
+        self.mocks.http.setup.put('/put-endpoint', given)
         return given
 
     def when(self, given) -> object:
@@ -52,15 +46,13 @@ class Put(TouchstoneTest):
         return response.decode('utf-8')
 
     def then(self, given, result) -> bool:
-        return validation.matches(json.dumps(given), result)
+        return validation.matches(given, result)
 
 
 class Delete(TouchstoneTest):
     def given(self) -> object:
-        given = {
-            'foo': 'delete'
-        }
-        self.mocks.http.setup.delete('/delete-endpoint', json.dumps(given))
+        given = json.dumps({'foo': 'delete'})
+        self.mocks.http.setup.delete('/delete-endpoint', given)
         return given
 
     def when(self, given) -> object:
@@ -69,4 +61,4 @@ class Delete(TouchstoneTest):
         return response.decode('utf-8')
 
     def then(self, given, result) -> bool:
-        return validation.matches(json.dumps(given), result)
+        return validation.matches(given, result)

@@ -12,6 +12,9 @@ from touchstone.lib.mocks.network import Network
 
 
 class Mysql(Mock):
+    __USERNAME = 'root'
+    __PASSWORD = 'root'
+
     def __init__(self, host: str, mock_defaults: MockDefaults, is_dev_mode: bool, docker_manager: DockerManager):
         super().__init__(host, mock_defaults)
         self.setup: MysqlSetup = None
@@ -36,7 +39,7 @@ class Mysql(Mock):
 
     def run(self) -> Network:
         run_result = self.__docker_manager.run_image('mysql:5.7.29', port=3306,
-                                                     environment_vars=[('MYSQL_ROOT_PASSWORD', 'root')])
+                                                     environment_vars=[('MYSQL_ROOT_PASSWORD', self.__USERNAME)])
         self.__container_id = run_result.container_id
 
         ui_port = None
@@ -51,14 +54,16 @@ class Mysql(Mock):
         return Network(internal_host=run_result.container_id,
                        internal_port=run_result.internal_port,
                        external_port=run_result.external_port,
-                       ui_port=ui_port)
+                       ui_port=ui_port,
+                       username=self.__USERNAME,
+                       password=self.__PASSWORD)
 
     def is_healthy(self) -> bool:
         try:
             pymysql.connect(host=self.network.external_host,
                             port=self.network.external_port,
-                            user='root',
-                            password='root')
+                            user=self.__USERNAME,
+                            password=self.__PASSWORD)
             return True
         except Exception:
             return False
@@ -66,8 +71,8 @@ class Mysql(Mock):
     def initialize(self):
         connection = pymysql.connect(host=self.network.external_host,
                                      port=self.network.external_port,
-                                     user='root',
-                                     password='root',
+                                     user=self.__USERNAME,
+                                     password=self.__PASSWORD,
                                      charset='utf8mb4',
                                      autocommit=True,
                                      cursorclass=pymysql.cursors.DictCursor)
