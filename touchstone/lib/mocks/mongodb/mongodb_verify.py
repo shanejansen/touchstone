@@ -8,7 +8,7 @@ class MongodbVerify(object):
         self.__mongo_client = mongo_client
         self.__mongo_context = mongo_context
 
-    def document_exists(self, database: str, collection: str, document: dict, num_expected: int = 1):
+    def document_exists(self, database: str, collection: str, document: dict, num_expected: int = 1) -> bool:
         """Returns True if a document exists in the given database and collection. If num_expected is set to None,
         any number of documents will be considered passing."""
         if not self.__mongo_context.collection_exists(database, collection):

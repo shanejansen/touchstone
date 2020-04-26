@@ -4,7 +4,6 @@ Touchstone
 ![Touchstone Tests](https://github.com/shane-jansen/touchstone/workflows/Touchstone%20Tests/badge.svg?branch=develop)
 
 Touchstone is a testing framework for your services that focuses on [component](https://martinfowler.com/articles/microservice-testing/#testing-component-out-of-process-diagram), [end-to-end](https://martinfowler.com/articles/microservice-testing/#testing-end-to-end-introduction), and [exploratory](https://martinfowler.com/bliki/ExploratoryTesting.html) testing.  
-**Touchstone is currently in alpha and APIs may change without warning.**
 
 
 ## Introduction
@@ -54,7 +53,7 @@ Your services and their monitored dependencies are defined here. Default values 
    * `host:` - Default: parent host. Fine-grained host control per service.
    * `port:` - Default: 8080. The port used for this service.
    * `dockerfile:` - Default: N/A. Used to containerize the service during `touchstone run`. If you are only running Touchstone locally, this can be omitted.
-   * `availability_endpoint:` - Default: N/A. Used to determine when the service is healthy so tests can be executed. A `200` must be returned from the endpoint to be considered healthy.
+   * `availability_endpoint:` - Default: N/A. Used to determine when the service is healthy so tests can be executed. A HTTP status `2xx` must be returned from the endpoint to be considered healthy.
    * `num_retries:` - Default: 20. The number of times Touchstone will try to successfully call the `availability_endpoint`.
    * `seconds_between_retries:` - Default: 5. The number of seconds between each retry.
  * `mocks:` - Each mock dependency your service(s) are being tested against.
@@ -85,7 +84,9 @@ Important APIs:
  * [MySQL](./docs/mocks/mysql.md)
  * [Rabbit MQ](./docs/mocks/rabbitmq.md)
  * [S3](./docs/mocks/s3.md)
- * [Add one!](./docs/under-construction.md)
+ * [Add one!](./docs/add-mock.md)
+ 
+If a specific mock is not supported, consider building your service independent of the implementation layer. For example, if have a dependency on PostgreSQL, use the MySQL mock as your database implementation during testing.
  
 When running via `touchstone develop`, dev ports for each mock are used. When running touchstone via `touchstone run`, ports are automatically discovered and available to your service containers via the following environment variables:
  * `TS_{MOCK_NAME}_HOST` - Host where the mock is running.
