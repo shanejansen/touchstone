@@ -12,7 +12,7 @@ def execute():
     print(figlet_format('Touchstone', font='larry3d'))
 
     try:
-        mock_run_contexts = bootstrap.mocks.start()
+        bootstrap.mocks.start()
         bootstrap.mocks.print_available_mocks()
 
         __print_help()
@@ -34,7 +34,7 @@ def execute():
                 bootstrap.services.run_test(parts[1], parts[2], parts[3])
             elif command == 'services start':
                 try:
-                    bootstrap.services.start(mock_run_contexts)
+                    bootstrap.services.start(bootstrap.mocks)
                     bootstrap.mocks.services_became_available()
                 except KeyboardInterrupt:
                     bootstrap.services.stop()

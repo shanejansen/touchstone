@@ -10,8 +10,8 @@ def execute():
     print(figlet_format('Touchstone', font='larry3d'))
 
     try:
-        mock_run_contexts = bootstrap.mocks.start()
-        bootstrap.services.start(mock_run_contexts)
+        bootstrap.mocks.start()
+        bootstrap.services.start(bootstrap.mocks)
         bootstrap.mocks.services_became_available()
         tests_did_pass = bootstrap.services.run_all_tests()
         if tests_did_pass:

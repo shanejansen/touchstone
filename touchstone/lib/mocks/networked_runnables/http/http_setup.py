@@ -27,7 +27,7 @@ class HttpSetup(object):
         request = urllib.request.Request(f'{self.url}/__admin/requests', method='DELETE')
         urllib.request.urlopen(request)
 
-        for request in defaults['requests']:
+        for request in defaults.get('requests', []):
             self.__submit_mock(request)
 
     def get(self, endpoint: str, response: str, response_status: int = 200,

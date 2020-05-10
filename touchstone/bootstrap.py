@@ -1,19 +1,12 @@
+import glob
 import os
 
 import yaml
 
-from touchstone import common
-from touchstone.lib import exceptions
 from touchstone.lib.configs.service_config import ServiceConfig
 from touchstone.lib.configs.touchstone_config import TouchstoneConfig
 from touchstone.lib.docker_manager import DockerManager
-from touchstone.lib.mocks.http.http import Http
-from touchstone.lib.mocks.mock_defaults import MockDefaults
 from touchstone.lib.mocks.mocks import Mocks
-from touchstone.lib.mocks.mongodb.mongodb import Mongodb
-from touchstone.lib.mocks.mysql.mysql import Mysql
-from touchstone.lib.mocks.rabbitmq.rabbitmq import Rabbitmq
-from touchstone.lib.mocks.s3.s3 import S3
 from touchstone.lib.service import Service
 from touchstone.lib.services import Services
 from touchstone.lib.tests import Tests
@@ -39,29 +32,14 @@ class Bootstrap(object):
         return config
 
     def __build_mocks(self, root, touchstone_config, host, docker_manager) -> Mocks:
-        mock_defaults = MockDefaults(os.path.join(root, 'defaults'))
+        defaults = {}
+        default_files = glob.glob(os.path.join(root, 'defaults') + '/*.yml')
+        for default_file in default_files:
+            with open(default_file, 'r') as file:
+                defaults[file.name] = yaml.safe_load(file)
+
         mocks = Mocks()
-        mocks.http = Http(host, mock_defaults, docker_manager)
-        mocks.rabbitmq = Rabbitmq(host, mock_defaults, docker_manager)
-        mocks.mongodb = Mongodb(host, mock_defaults, self.is_dev_mode, docker_manager)
-        mocks.mysql = Mysql(host, mock_defaults, self.is_dev_mode, docker_manager)
-        mocks.s3 = S3(host, mock_defaults, docker_manager)
-        potential_mocks = [mocks.http, mocks.rabbitmq, mocks.mongodb, mocks.mysql, mocks.s3]
-
-        if not touchstone_config.config['mocks']:
-            return mocks
-
-        for mock in touchstone_config.config['mocks']:
-            user_config = touchstone_config.config['mocks'][mock]
-            found_mock = False
-            for potential_mock in potential_mocks:
-                if potential_mock.name() == mock:
-                    found_mock = True
-                    potential_mock.config = common.dict_merge(potential_mock.default_config(), user_config)
-                    mocks.register_mock(potential_mock)
-            if not found_mock:
-                raise exceptions.MockNotSupportedException(
-                    f'"{mock}" is not a supported mock. Please check your touchstone.yml file.')
+        mocks.register_mocks(touchstone_config.config['mocks'], defaults, docker_manager, host)
         return mocks
 
     def __build_services(self, touchstone_config, docker_manager, mocks) -> Services:

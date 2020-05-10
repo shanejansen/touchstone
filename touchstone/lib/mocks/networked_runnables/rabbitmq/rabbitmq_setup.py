@@ -5,7 +5,7 @@ import pika.exceptions
 from pika import spec
 from pika.adapters.blocking_connection import BlockingChannel
 
-from touchstone.lib.mocks.rabbitmq.rmq_context import RmqContext
+from touchstone.lib.mocks.networked_runnables.rabbitmq.rabbitmq_context import RmqContext
 
 
 class MessageConsumer(Thread):
