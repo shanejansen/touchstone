@@ -42,11 +42,11 @@ exchanges:
 ## Usage Example
 ```python
 # Publish a message to an exchange
-self.mocks.rabbitmq.setup.publish('default-direct.exchange', 'some payload', routing_key='foo')
+self.mocks.rabbitmq.setup().publish('default-direct.exchange', 'some payload', routing_key='foo')
 
 # Verify that a certain number of messages were published to an exchange and routing key
-result: bool = self.mocks.rabbitmq.verify.messages_published('default-direct.exchange', num_expected=3, routing_key='foo')
+result: bool = self.mocks.rabbitmq.verify().messages_published('default-direct.exchange', num_expected=3, routing_key='foo')
 
 # Verify that a payload was published to an exchange and routing key
-result: bool = self.mocks.rabbitmq.verify.payload_published('default-topic.exchange', 'some payload', routing_key='foo')
+result: bool = self.mocks.rabbitmq.verify().payload_published('default-topic.exchange', 'some payload', routing_key='foo')
 ```

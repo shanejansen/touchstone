@@ -1,47 +1,30 @@
 import time
-from typing import List
+from typing import List, Tuple
 
 from touchstone import common
 from touchstone.lib import exceptions
-from touchstone.lib.docker_manager import DockerManager
 from touchstone.lib.mocks.health_checks.i_health_checkable import IHealthCheckable
 from touchstone.lib.mocks.mockables.i_mockable import IMockable
 from touchstone.lib.mocks.mockables.networked_mock import NetworkedMock
-from touchstone.lib.mocks.networked_runnables.http.http_runnable import HttpRunnable
 from touchstone.lib.mocks.networked_runnables.http.i_http_behavior import IHttpBehavior
-from touchstone.lib.mocks.networked_runnables.i_networked_runnable import INetworkedRunnable
+from touchstone.lib.mocks.networked_runnables.mongodb.i_mongodb_behavior import IMongodbBehavior
+from touchstone.lib.mocks.networked_runnables.mysql.i_mysql_behabior import IMysqlBehavior
 from touchstone.lib.mocks.networked_runnables.rabbitmq.i_rabbitmq_behavior import IRabbitmqBehavior
-from touchstone.lib.mocks.networked_runnables.rabbitmq.rabbitmq_runnable import RabbitmqRunnable
+from touchstone.lib.mocks.networked_runnables.s3.i_s3_behavior import IS3Behavior
 
 
 class Mocks(object):
-    __HTTP = 'http'
-    __RABBITMQ = 'rabbitmq'
-
     def __init__(self):
         self.http: IHttpBehavior = None
         self.rabbitmq: IRabbitmqBehavior = None
-        # self.mongodb: Mongodb = None
-        # self.mysql: Mysql = None
-        # self.s3: S3 = None
+        self.mongodb: IMongodbBehavior = None
+        self.mysql: IMysqlBehavior = None
+        self.s3: IS3Behavior = None
         self.__registered_mocks: List[IMockable] = []
         self.__mocks_running = False
 
-    def register_mocks(self, mocks_config: dict, mocks_defaults: dict, docker_manager: DockerManager, host: str):
-        for mock_name in mocks_config:
-            mock = None
-            mock_config = mocks_config.get(mock_name, {})
-            mock_defaults = mocks_defaults.get(mock_name, {})
-            if mock_name == self.__HTTP:
-                runnable = HttpRunnable(mock_defaults, docker_manager)
-                mock = NetworkedMock(self.__HTTP, 'HTTP', host, runnable)
-                self.http = runnable
-            elif mock_name == self.__RABBITMQ:
-                runnable = RabbitmqRunnable(mock_defaults, mock_config, docker_manager)
-                mock = NetworkedMock(self.__RABBITMQ, 'Rabbit MQ', host, runnable)
-                self.rabbitmq = runnable
-            if mock:
-                self.__registered_mocks.append(mock)
+    def register_mock(self, mock: IMockable):
+        self.__registered_mocks.append(mock)
 
     def start(self):
         if self.__mocks_running:
@@ -71,10 +54,22 @@ class Mocks(object):
         for mock in self.__registered_mocks:
             mock.reset()
 
+    def environment_vars(self) -> List[Tuple[str, str]]:
+        envs = []
+        for mock in self.__registered_mocks:
+            if isinstance(mock, NetworkedMock):
+                name = mock.get_name().upper()
+                envs.append((f'TS_{name}_HOST', mock.get_network().internal_host))
+                envs.append((f'TS_{name}_PORT', mock.get_network().internal_port))
+                envs.append((f'TS_{name}_URL', mock.get_network().internal_url()))
+                envs.append((f'TS_{name}_USERNAME', mock.get_network().username))
+                envs.append((f'TS_{name}_PASSWORD', mock.get_network().password))
+        return envs
+
     def print_available_mocks(self):
         for mock in self.__registered_mocks:
             message = f'Mock {mock.get_pretty_name()} running'
-            if isinstance(mock, INetworkedRunnable):
+            if isinstance(mock, NetworkedMock):
                 message += f' with UI: {mock.get_network().ui_url()}'
                 if mock.get_network().username:
                     message += f' and Username: "{mock.get_network().username}", ' \

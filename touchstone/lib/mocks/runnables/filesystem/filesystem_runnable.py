@@ -2,15 +2,10 @@ from touchstone.lib.mocks.runnables.i_runnable import IRunnable
 
 
 class FilesystemRunnable(IRunnable):
-    # TODO
-
-    def run(self):
+    def start(self):
         pass
 
-    def shut_down(self):
-        pass
-
-    def initialize(self):
+    def stop(self):
         pass
 
     def reset(self):

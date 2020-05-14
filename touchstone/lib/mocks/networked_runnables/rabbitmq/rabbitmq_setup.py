@@ -53,9 +53,9 @@ class RabbitmqSetup(object):
         self.__rmq_context.clear()
 
     def create_all(self, defaults: dict):
-        for exchange in defaults['exchanges']:
+        for exchange in defaults.get('exchanges', []):
             self.__create_exchange(exchange['name'], exchange['type'])
-            for queue in exchange['queues']:
+            for queue in exchange.get('queues', []):
                 routing_key = queue.get('routingKey', '')
                 self.__create_queue(queue['name'], exchange['name'], routing_key)
                 self.__create_shadow_queue(queue['name'], exchange['name'], routing_key)
@@ -63,8 +63,8 @@ class RabbitmqSetup(object):
             self.__message_consumer.start()
 
     def create_shadow_queues(self, defaults: dict):
-        for exchange in defaults['exchanges']:
-            for queue in exchange['queues']:
+        for exchange in defaults.get('exchanges', []):
+            for queue in exchange.get('queues', []):
                 routing_key = queue.get('routingKey', '')
                 self.__create_shadow_queue(queue['name'], exchange['name'], routing_key)
         if not self.__message_consumer.is_alive():

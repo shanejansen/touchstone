@@ -11,7 +11,7 @@ def execute():
 
     try:
         bootstrap.mocks.start()
-        bootstrap.services.start(bootstrap.mocks)
+        bootstrap.services.start(bootstrap.mocks.environment_vars())
         bootstrap.mocks.services_became_available()
         tests_did_pass = bootstrap.services.run_all_tests()
         if tests_did_pass:

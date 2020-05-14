@@ -70,8 +70,8 @@ This directory contains YAML files where default values for mocked dependencies 
 This directory is the default location for your Touchstone tests. This can optionally be configured for each service in `touchstone.yml`.  
 Touchstone follows a _given_, _when_, _then_ testing pattern. Each test is declared in a Python file prefixed with `test_` containing classes that extend `TouchstoneTest`. By extending this class, you can access Touchstone mocked dependencies to setup and then verify your requirements. For example, we can insert a document into a Mongo DB collection and then verify it exists using the following APIs:
 ```python
-self.mocks.mongodb.setup.insert_document('my_db', 'my_collection', {'foo': 'bar'})
-result: bool = self.mocks.mongodb.verify.document_exists('my_db', 'my_collection', {'foo': 'bar'})
+self.mocks.mongodb.setup().insert_document('my_db', 'my_collection', {'foo': 'bar'})
+result: bool = self.mocks.mongodb.verify().document_exists('my_db', 'my_collection', {'foo': 'bar'})
 ```
 Important APIs:
  * `self.mocks` - Hook into Touchstone managed mock dependencies.

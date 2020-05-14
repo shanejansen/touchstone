@@ -1,5 +1,3 @@
-from typing import Optional
-
 from touchstone.lib import exceptions
 from touchstone.lib.docker_manager import DockerManager
 from touchstone.lib.mocks.health_checks.http_health_check import HttpHealthCheck
@@ -15,10 +13,10 @@ class HttpRunnable(INetworkedRunnable, IHttpBehavior):
         self.__defaults = defaults
         self.__docker_manager = docker_manager
         self.__health_check = HttpHealthCheck()
-        self.__network: Optional[Network] = None
-        self.__setup: Optional[HttpSetup] = None
-        self.__verify: Optional[HttpVerify] = None
-        self.__container_id: Optional[str] = None
+        self.__network = None
+        self.__setup = None
+        self.__verify = None
+        self.__container_id = None
 
     def get_network(self) -> Network:
         if not self.__network:
@@ -63,3 +61,6 @@ class HttpRunnable(INetworkedRunnable, IHttpBehavior):
         if not self.__verify:
             raise exceptions.MockException('Verify unavailable. Mock is still starting.')
         return self.__verify
+
+    def url(self) -> str:
+        return self.get_network().external_url()

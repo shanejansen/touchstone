@@ -1,11 +1,8 @@
-from typing import Optional
-
 import pika
 
 from touchstone.lib import exceptions
 from touchstone.lib.docker_manager import DockerManager
 from touchstone.lib.mocks.configurers.BasicConfigurer import BasicConfigurer
-from touchstone.lib.mocks.configurers.i_configurable import IConfigurable
 from touchstone.lib.mocks.health_checks.http_health_check import HttpHealthCheck
 from touchstone.lib.mocks.network import Network
 from touchstone.lib.mocks.networked_runnables.i_networked_runnable import INetworkedRunnable
@@ -24,14 +21,14 @@ class RabbitmqRunnable(INetworkedRunnable, IRabbitmqBehavior):
 
     def __init__(self, defaults: dict, config: dict, docker_manager: DockerManager):
         self.__defaults = defaults
-        self.__docker_manager = docker_manager
-        self.__config: IConfigurable = BasicConfigurer(self.__DEFAULT_CONFIG)
+        self.__config = BasicConfigurer(self.__DEFAULT_CONFIG)
         self.__config.merge_config(config)
+        self.__docker_manager = docker_manager
         self.__health_check = HttpHealthCheck()
-        self.__network: Optional[Network] = None
-        self.__setup: Optional[RabbitmqSetup] = None
-        self.__verify: Optional[RabbitmqVerify] = None
-        self.__container_id: Optional[str] = None
+        self.__network = None
+        self.__setup = None
+        self.__verify = None
+        self.__container_id = None
 
     def get_network(self) -> Network:
         if not self.__network:
@@ -40,8 +37,8 @@ class RabbitmqRunnable(INetworkedRunnable, IRabbitmqBehavior):
 
     def initialize(self):
         connection_params = pika.ConnectionParameters(
-            host=self.__network.external_host,
-            port=self.__network.external_port,
+            host=self.get_network().external_host,
+            port=self.get_network().external_port,
             credentials=pika.PlainCredentials(self.__USERNAME, self.__PASSWORD),
             heartbeat=0
         )

@@ -12,3 +12,7 @@ class IHttpBehavior(object):
     @abc.abstractmethod
     def verify(self) -> HttpVerify:
         pass
+
+    @abc.abstractmethod
+    def url(self) -> str:
+        pass

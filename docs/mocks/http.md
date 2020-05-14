@@ -45,8 +45,8 @@ requests:
 ## Usage Example
 ```python
 # Return JSON when a GET request is made to an endpoint
-self.mocks.http.setup.get('/some-endpoint', {'foo': 'bar'})
+self.mocks.http.setup().get('/some-endpoint', {'foo': 'bar'})
 
 # Verify that an endpoint was called
-result: bool = self.mocks.http.verify.get_called('/some-endpoint')
+result: bool = self.mocks.http.verify().get_called('/some-endpoint')
 ```
