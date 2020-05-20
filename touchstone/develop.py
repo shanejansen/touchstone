@@ -45,16 +45,14 @@ def execute():
             elif command == 'mocks reset':
                 bootstrap.mocks.reset()
             elif command == 'exit':
-                bootstrap.services.stop()
-                bootstrap.mocks.stop()
-                bootstrap.runner.exit_touchstone(True)
+                bootstrap.exit(True)
             elif command == '':
                 pass
             else:
                 print(f'Unknown Touchstone command "{command}"')
     except (Exception, KeyboardInterrupt) as e:
         print('\nTouchstone was interrupted. Cleaning up...')
-        bootstrap.runner.cleanup()
+        bootstrap.cleanup()
         raise e
 
 

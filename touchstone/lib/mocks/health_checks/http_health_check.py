@@ -2,10 +2,10 @@ import urllib.error
 import urllib.request
 
 from touchstone.lib import exceptions
-from touchstone.lib.mocks.health_checks.i_health_checkable import IHealthCheckable
+from touchstone.lib.mocks.health_checks.i_url_health_checkable import IUrlHealthCheckable
 
 
-class HttpHealthCheck(IHealthCheckable):
+class HttpHealthCheck(IUrlHealthCheckable):
     def __init__(self):
         self.__url = None
 

@@ -3,9 +3,14 @@ from io import BytesIO
 
 from minio import Minio
 
+from touchstone.lib.mocks.networked_runnables.s3.i_s3_behavior import IS3Setup
 
-class S3Setup(object):
-    def __init__(self, s3_client: Minio):
+
+class DockerS3Setup(IS3Setup):
+    def __init__(self):
+        self.__s3_client = None
+
+    def set_s3_client(self, s3_client: Minio):
         self.__s3_client = s3_client
 
     def init(self, path: str, defaults: dict):

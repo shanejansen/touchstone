@@ -2,27 +2,27 @@ from minio import Minio
 
 from touchstone.lib import exceptions
 from touchstone.lib.docker_manager import DockerManager
-from touchstone.lib.mocks.health_checks.http_health_check import HttpHealthCheck
+from touchstone.lib.mocks.health_checks.i_url_health_checkable import IUrlHealthCheckable
 from touchstone.lib.mocks.network import Network
 from touchstone.lib.mocks.networked_runnables.i_networked_runnable import INetworkedRunnable
-from touchstone.lib.mocks.networked_runnables.s3.i_s3_behavior import IS3Behavior
-from touchstone.lib.mocks.networked_runnables.s3.s3_setup import S3Setup
-from touchstone.lib.mocks.networked_runnables.s3.s3_verify import S3Verify
+from touchstone.lib.mocks.networked_runnables.s3.docker.docker_s3_setup import DockerS3Setup
+from touchstone.lib.mocks.networked_runnables.s3.docker.docker_s3_verify import DockerS3Verify
+from touchstone.lib.mocks.networked_runnables.s3.i_s3_behavior import IS3Behavior, IS3Verify, IS3Setup
 
 
-class S3Runnable(INetworkedRunnable, IS3Behavior):
+class DockerS3Runnable(INetworkedRunnable, IS3Behavior):
     __USERNAME = 'admin123'
-
     __PASSWORD = 'admin123'
 
-    def __init__(self, defaults: dict, base_objects_path: str, docker_manager: DockerManager):
+    def __init__(self, defaults: dict, base_objects_path: str, health_check: IUrlHealthCheckable, setup: DockerS3Setup,
+                 verify: DockerS3Verify, docker_manager: DockerManager):
         self.__defaults = defaults
         self.__base_objects_path = base_objects_path
+        self.__health_check = health_check
+        self.__setup = setup
+        self.__verify = verify
         self.__docker_manager = docker_manager
-        self.__health_check = HttpHealthCheck()
         self.__network = None
-        self.__setup = None
-        self.__verify = None
         self.__container_id = None
 
     def get_network(self) -> Network:
@@ -35,8 +35,8 @@ class S3Runnable(INetworkedRunnable, IS3Behavior):
                           access_key=self.__USERNAME,
                           secret_key=self.__PASSWORD,
                           secure=False)
-        self.__setup = S3Setup(s3_client)
-        self.__verify = S3Verify(s3_client)
+        self.__setup.set_s3_client(s3_client)
+        self.__verify.set_s3_client(s3_client)
         self.__setup.init(self.__base_objects_path, self.__defaults)
 
     def start(self):
@@ -66,12 +66,15 @@ class S3Runnable(INetworkedRunnable, IS3Behavior):
         self.__health_check.set_url(self.get_network().ui_url() + '/health/ready')
         return self.__health_check.is_healthy()
 
-    def setup(self) -> S3Setup:
+    def setup(self) -> IS3Setup:
         if not self.__setup:
             raise exceptions.MockException('Setup unavailable. Mock is still starting.')
         return self.__setup
 
-    def verify(self) -> S3Verify:
+    def verify(self) -> IS3Verify:
         if not self.__verify:
             raise exceptions.MockException('Verify unavailable. Mock is still starting.')
         return self.__verify
+
+    def get_base_path(self) -> str:
+        return self.__base_objects_path

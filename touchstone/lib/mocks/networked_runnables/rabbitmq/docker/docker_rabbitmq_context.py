@@ -1,7 +1,7 @@
 from touchstone import common
 
 
-class RmqContext(object):
+class DockerRabbitmqContext(object):
     def __init__(self):
         self.__exchanges: dict = {}
 

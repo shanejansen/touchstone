@@ -1,21 +1,22 @@
 from touchstone.lib import exceptions
 from touchstone.lib.docker_manager import DockerManager
-from touchstone.lib.mocks.health_checks.http_health_check import HttpHealthCheck
+from touchstone.lib.mocks.health_checks.i_url_health_checkable import IUrlHealthCheckable
 from touchstone.lib.mocks.network import Network
-from touchstone.lib.mocks.networked_runnables.http.http_setup import HttpSetup
-from touchstone.lib.mocks.networked_runnables.http.http_verify import HttpVerify
-from touchstone.lib.mocks.networked_runnables.http.i_http_behavior import IHttpBehavior
+from touchstone.lib.mocks.networked_runnables.http.docker.docker_http_setup import DockerHttpSetup
+from touchstone.lib.mocks.networked_runnables.http.docker.docker_http_verify import DockerHttpVerify
+from touchstone.lib.mocks.networked_runnables.http.i_http_behavior import IHttpBehavior, IHttpSetup, IHttpVerify
 from touchstone.lib.mocks.networked_runnables.i_networked_runnable import INetworkedRunnable
 
 
-class HttpRunnable(INetworkedRunnable, IHttpBehavior):
-    def __init__(self, defaults: dict, docker_manager: DockerManager):
+class DockerHttpRunnable(INetworkedRunnable, IHttpBehavior):
+    def __init__(self, defaults: dict, health_check: IUrlHealthCheckable, setup: DockerHttpSetup,
+                 verify: DockerHttpVerify, docker_manager: DockerManager):
         self.__defaults = defaults
+        self.__health_check = health_check
+        self.__setup = setup
+        self.__verify = verify
         self.__docker_manager = docker_manager
-        self.__health_check = HttpHealthCheck()
         self.__network = None
-        self.__setup = None
-        self.__verify = None
         self.__container_id = None
 
     def get_network(self) -> Network:
@@ -24,8 +25,8 @@ class HttpRunnable(INetworkedRunnable, IHttpBehavior):
         return self.__network
 
     def initialize(self):
-        self.__setup: HttpSetup = HttpSetup(self.get_network().external_url())
-        self.__verify: HttpVerify = HttpVerify(self.get_network().external_url())
+        self.__setup.set_url(self.get_network().external_url())
+        self.__verify.set_url(self.get_network().external_url())
         self.__setup.init(self.__defaults)
 
     def start(self):
@@ -52,12 +53,12 @@ class HttpRunnable(INetworkedRunnable, IHttpBehavior):
         self.__health_check.set_url(self.get_network().ui_url())
         return self.__health_check.is_healthy()
 
-    def setup(self) -> HttpSetup:
+    def setup(self) -> IHttpSetup:
         if not self.__setup:
             raise exceptions.MockException('Setup unavailable. Mock is still starting.')
         return self.__setup
 
-    def verify(self) -> HttpVerify:
+    def verify(self) -> IHttpVerify:
         if not self.__verify:
             raise exceptions.MockException('Verify unavailable. Mock is still starting.')
         return self.__verify

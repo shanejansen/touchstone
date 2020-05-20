@@ -9,3 +9,4 @@ mocks:
   mongodb:
   mysql:
   s3:
+  filesystem:

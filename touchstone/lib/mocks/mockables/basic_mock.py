@@ -14,6 +14,9 @@ class BasicMock(IMockable):
     def get_pretty_name(self):
         return self.__pretty_name
 
+    def get_runnable(self) -> IRunnable:
+        return self.__runnable
+
     def start(self):
         self.__runnable.start()
 

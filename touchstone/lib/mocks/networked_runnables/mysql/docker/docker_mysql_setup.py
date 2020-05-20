@@ -3,13 +3,20 @@ from typing import List
 from pymysql.cursors import Cursor
 
 from touchstone import common
-from touchstone.lib.mocks.networked_runnables.mysql.mysql_context import MysqlContext
+from touchstone.lib.mocks.networked_runnables.mysql.docker.docker_mysql_context import DockerMysqlContext
+from touchstone.lib.mocks.networked_runnables.mysql.i_mysql_behabior import IMysqlSetup
 
 
-class MysqlSetup(object):
-    def __init__(self, cursor: Cursor, mysql_context: MysqlContext, convert_camel_to_snake: bool):
-        self.__cursor = cursor
+class DockerMysqlSetup(IMysqlSetup):
+    def __init__(self, mysql_context: DockerMysqlContext):
         self.__mysql_context = mysql_context
+        self.__cursor = None
+        self.__convert_camel_to_snake = False
+
+    def set_cursor(self, cursor: Cursor):
+        self.__cursor = cursor
+
+    def set_convert_camel_to_snake(self, convert_camel_to_snake: bool):
         self.__convert_camel_to_snake = convert_camel_to_snake
 
     def init(self, defaults: dict):

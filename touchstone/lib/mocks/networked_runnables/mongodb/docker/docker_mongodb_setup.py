@@ -2,13 +2,17 @@ from typing import List
 
 from pymongo import MongoClient
 
-from touchstone.lib.mocks.networked_runnables.mongodb.mongo_context import MongoContext
+from touchstone.lib.mocks.networked_runnables.mongodb.docker.docker_mongo_context import DockerMongoContext
+from touchstone.lib.mocks.networked_runnables.mongodb.i_mongodb_behavior import IMongodbSetup
 
 
-class MongodbSetup(object):
-    def __init__(self, mongo_client: MongoClient, mongo_context: MongoContext):
-        self.__mongo_client = mongo_client
+class DockerMongodbSetup(IMongodbSetup):
+    def __init__(self, mongo_context: DockerMongoContext):
         self.__mongo_context = mongo_context
+        self.__mongo_client = None
+
+    def set_mongo_client(self, mongo_client: MongoClient):
+        self.__mongo_client = mongo_client
 
     def init(self, defaults: dict):
         for database in self.__mongo_context.databases():
@@ -28,7 +32,6 @@ class MongodbSetup(object):
                     mongo_collection.insert_one(document)
 
     def command(self, database: str, command: dict):
-        """Execute an arbitrary command on the database."""
         if self.__mongo_context.database_exists(database):
             self.__mongo_client.get_database(database).command(command)
 

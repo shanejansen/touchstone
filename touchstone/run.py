@@ -18,11 +18,8 @@ def execute():
             print('All Touchstone tests passed successfully!')
         else:
             print('One or more Touchstone tests failed.')
-
-        bootstrap.services.stop()
-        bootstrap.mocks.stop()
-        bootstrap.runner.exit_touchstone(tests_did_pass)
+        bootstrap.exit(tests_did_pass)
     except (Exception, KeyboardInterrupt) as e:
         print('\nTouchstone was interrupted. Cleaning up...')
-        bootstrap.runner.cleanup()
+        bootstrap.cleanup()
         raise e

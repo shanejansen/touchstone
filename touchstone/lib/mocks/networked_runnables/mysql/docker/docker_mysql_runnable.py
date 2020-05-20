@@ -2,31 +2,27 @@ import pymysql
 
 from touchstone.lib import exceptions
 from touchstone.lib.docker_manager import DockerManager
-from touchstone.lib.mocks.configurers.BasicConfigurer import BasicConfigurer
+from touchstone.lib.mocks.configurers.i_configurable import IConfigurable
 from touchstone.lib.mocks.network import Network
 from touchstone.lib.mocks.networked_runnables.i_networked_runnable import INetworkedRunnable
-from touchstone.lib.mocks.networked_runnables.mysql.i_mysql_behabior import IMysqlBehavior
-from touchstone.lib.mocks.networked_runnables.mysql.mysql_context import MysqlContext
-from touchstone.lib.mocks.networked_runnables.mysql.mysql_setup import MysqlSetup
-from touchstone.lib.mocks.networked_runnables.mysql.mysql_verify import MysqlVerify
+from touchstone.lib.mocks.networked_runnables.mysql.docker.docker_mysql_setup import DockerMysqlSetup
+from touchstone.lib.mocks.networked_runnables.mysql.docker.docker_mysql_verify import DockerMysqlVerify
+from touchstone.lib.mocks.networked_runnables.mysql.i_mysql_behabior import IMysqlBehavior, IMysqlVerify, IMysqlSetup
 
 
-class MysqlRunnable(INetworkedRunnable, IMysqlBehavior):
+class DockerMysqlRunnable(INetworkedRunnable, IMysqlBehavior):
     __USERNAME = 'root'
     __PASSWORD = 'root'
-    __DEFAULT_CONFIG = {
-        'convertCamelToSnakeCase': True
-    }
 
-    def __init__(self, is_dev_mode: bool, defaults: dict, config: dict, docker_manager: DockerManager):
+    def __init__(self, is_dev_mode: bool, defaults: dict, configurer: IConfigurable, setup: DockerMysqlSetup,
+                 verify: DockerMysqlVerify, docker_manager: DockerManager):
         self.__is_dev_mode = is_dev_mode
         self.__defaults = defaults
-        self.__config = BasicConfigurer(self.__DEFAULT_CONFIG)
-        self.__config.merge_config(config)
+        self.__configurer = configurer
+        self.__setup = setup
+        self.__verify = verify
         self.__docker_manager = docker_manager
         self.__network = None
-        self.__setup = None
-        self.__verify = None
         self.__container_id = None
         self.__ui_container_id = None
 
@@ -44,10 +40,11 @@ class MysqlRunnable(INetworkedRunnable, IMysqlBehavior):
                                      autocommit=True,
                                      cursorclass=pymysql.cursors.DictCursor)
         cursor = connection.cursor()
-        mysql_context = MysqlContext()
-        convert_camel_to_snake = self.__config.get_config()['convertCamelToSnakeCase']
-        self.__setup = MysqlSetup(cursor, mysql_context, convert_camel_to_snake)
-        self.__verify = MysqlVerify(cursor, mysql_context, convert_camel_to_snake)
+        convert_camel_to_snake = self.__configurer.get_config()['convertCamelToSnakeCase']
+        self.__setup.set_cursor(cursor)
+        self.__setup.set_convert_camel_to_snake(convert_camel_to_snake)
+        self.__verify.set_cursor(cursor)
+        self.__verify.set_convert_camel_to_snake(convert_camel_to_snake)
         self.__setup.init(self.__defaults)
 
     def start(self):
@@ -93,12 +90,12 @@ class MysqlRunnable(INetworkedRunnable, IMysqlBehavior):
         except Exception:
             return False
 
-    def setup(self) -> MysqlSetup:
+    def setup(self) -> IMysqlSetup:
         if not self.__setup:
             raise exceptions.MockException('Setup unavailable. Mock is still starting.')
         return self.__setup
 
-    def verify(self) -> MysqlVerify:
+    def verify(self) -> IMysqlVerify:
         if not self.__verify:
             raise exceptions.MockException('Verify unavailable. Mock is still starting.')
         return self.__verify

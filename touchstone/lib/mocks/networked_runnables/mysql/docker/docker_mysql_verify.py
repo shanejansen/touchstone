@@ -1,18 +1,23 @@
 from pymysql.cursors import Cursor
 
 from touchstone import common
-from touchstone.lib.mocks.networked_runnables.mysql.mysql_context import MysqlContext
+from touchstone.lib.mocks.networked_runnables.mysql.docker.docker_mysql_context import DockerMysqlContext
+from touchstone.lib.mocks.networked_runnables.mysql.i_mysql_behabior import IMysqlVerify
 
 
-class MysqlVerify(object):
-    def __init__(self, cursor: Cursor, mysql_context: MysqlContext, convert_camel_to_snake: bool):
-        self.__cursor = cursor
+class DockerMysqlVerify(IMysqlVerify):
+    def __init__(self, mysql_context: DockerMysqlContext):
         self.__mysql_context = mysql_context
+        self.__cursor = None
+        self.__convert_camel_to_snake = False
+
+    def set_cursor(self, cursor: Cursor):
+        self.__cursor = cursor
+
+    def set_convert_camel_to_snake(self, convert_camel_to_snake: bool):
         self.__convert_camel_to_snake = convert_camel_to_snake
 
     def row_exists(self, database: str, table: str, where_conditions: dict, num_expected: int = 1) -> bool:
-        """Returns True if the given where conditions are found in the given database. If num_expected is set to None,
-        any number of rows will be considered passing."""
         if not self.__mysql_context.database_exists(database):
             return False
 
@@ -36,5 +41,4 @@ class MysqlVerify(object):
         return False
 
     def row_does_not_exist(self, database: str, table: str, where_conditions: dict) -> bool:
-        """Returns True if the given where conditions are not found in the given database."""
         return self.row_exists(database, table, where_conditions, num_expected=0)

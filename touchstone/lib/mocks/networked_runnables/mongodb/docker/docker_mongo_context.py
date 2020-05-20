@@ -1,7 +1,7 @@
 from typing import KeysView
 
 
-class MongoContext(object):
+class DockerMongoContext(object):
     def __init__(self):
         self.__databases = {}
 

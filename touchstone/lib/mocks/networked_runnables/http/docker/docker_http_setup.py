@@ -5,18 +5,22 @@ import urllib.parse
 import urllib.request
 
 from touchstone.lib import exceptions
+from touchstone.lib.mocks.networked_runnables.http.i_http_behavior import IHttpSetup
 
 
-class HttpSetup(object):
-    def __init__(self, url: str):
+class DockerHttpSetup(IHttpSetup):
+    def __init__(self):
         super().__init__()
-        self.url = url
+        self.__url = None
         self.mock_ids: list = []
+
+    def set_url(self, url: str):
+        self.__url = url
 
     def init(self, defaults: dict):
         # Remove all mocked endpoints
         for mock_id in self.mock_ids:
-            request = urllib.request.Request(f'{self.url}/__admin/mappings/{mock_id}', method='DELETE')
+            request = urllib.request.Request(f'{self.__url}/__admin/mappings/{mock_id}', method='DELETE')
             try:
                 urllib.request.urlopen(request)
             except urllib.error.HTTPError:
@@ -24,7 +28,7 @@ class HttpSetup(object):
         self.mock_ids = []
 
         # Reset requests journal
-        request = urllib.request.Request(f'{self.url}/__admin/requests', method='DELETE')
+        request = urllib.request.Request(f'{self.__url}/__admin/requests', method='DELETE')
         urllib.request.urlopen(request)
 
         for request in defaults.get('requests', []):
@@ -32,7 +36,6 @@ class HttpSetup(object):
 
     def get(self, endpoint: str, response: str, response_status: int = 200,
             response_headers: dict = {'Content-Type': 'application/json'}):
-        """Returns the given response when a GET request is made to the given endpoint."""
         self.__check_mock_response_type(response)
         mock = {
             'request': {
@@ -49,7 +52,6 @@ class HttpSetup(object):
 
     def post(self, endpoint: str, response: str, response_status: int = 200,
              response_headers: dict = {'Content-Type': 'application/json'}):
-        """Returns the given response when a POST request is made to the given endpoint."""
         self.__check_mock_response_type(response)
         mock = {
             'request': {
@@ -66,7 +68,6 @@ class HttpSetup(object):
 
     def put(self, endpoint: str, response: str, response_status: int = 200,
             response_headers: dict = {'Content-Type': 'application/json'}):
-        """Returns the given response when a PUT request is made to the given endpoint."""
         self.__check_mock_response_type(response)
         mock = {
             'request': {
@@ -83,7 +84,6 @@ class HttpSetup(object):
 
     def delete(self, endpoint: str, response: str, response_status: int = 200,
                response_headers: dict = {'Content-Type': 'application/json'}):
-        """Returns the given response when a DELETE request is made to the given endpoint."""
         self.__check_mock_response_type(response)
         mock = {
             'request': {
@@ -105,6 +105,6 @@ class HttpSetup(object):
     def __submit_mock(self, mock: dict):
         data = json.dumps(mock).encode('utf8')
         request = urllib.request.Request(
-            f'{self.url}/__admin/mappings', data=data, headers={'Content-Type': 'application/json'})
+            f'{self.__url}/__admin/mappings', data=data, headers={'Content-Type': 'application/json'})
         response = urllib.request.urlopen(request).read()
         self.mock_ids.append(json.loads(response)['id'])

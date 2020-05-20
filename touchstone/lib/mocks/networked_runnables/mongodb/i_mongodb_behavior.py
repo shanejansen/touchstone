@@ -1,14 +1,29 @@
 import abc
+from typing import List
 
-from touchstone.lib.mocks.networked_runnables.mongodb.mongodb_setup import MongodbSetup
-from touchstone.lib.mocks.networked_runnables.mongodb.mongodb_verify import MongodbVerify
+
+class IMongodbSetup(object):
+    def command(self, database: str, command: dict):
+        """Execute an arbitrary command on the database."""
+
+    def insert_document(self, database: str, collection: str, document: dict):
+        pass
+
+    def insert_documents(self, database: str, collection: str, documents: List[dict]):
+        pass
+
+
+class IMongodbVerify(object):
+    def document_exists(self, database: str, collection: str, document: dict, num_expected: int = 1) -> bool:
+        """Returns True if a document exists in the given database and collection. If num_expected is set to None,
+        any number of documents will be considered passing."""
 
 
 class IMongodbBehavior(object):
     @abc.abstractmethod
-    def setup(self) -> MongodbSetup:
+    def setup(self) -> IMongodbSetup:
         pass
 
     @abc.abstractmethod
-    def verify(self) -> MongodbVerify:
+    def verify(self) -> IMongodbVerify:
         pass

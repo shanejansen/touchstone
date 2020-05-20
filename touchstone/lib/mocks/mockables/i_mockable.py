@@ -11,3 +11,7 @@ class IMockable(IRunnable):
     @abc.abstractmethod
     def get_pretty_name(self):
         pass
+
+    @abc.abstractmethod
+    def get_runnable(self) -> IRunnable:
+        pass

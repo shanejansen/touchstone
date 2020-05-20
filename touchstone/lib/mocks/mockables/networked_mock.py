@@ -3,6 +3,7 @@ from touchstone.lib.mocks.health_checks.i_health_checkable import IHealthCheckab
 from touchstone.lib.mocks.mockables.i_mockable import IMockable
 from touchstone.lib.mocks.network import Network
 from touchstone.lib.mocks.networked_runnables.i_networked_runnable import INetworkedRunnable
+from touchstone.lib.mocks.runnables.i_runnable import IRunnable
 
 
 class NetworkedMock(IMockable, IHealthCheckable):
@@ -18,6 +19,9 @@ class NetworkedMock(IMockable, IHealthCheckable):
 
     def get_pretty_name(self):
         return self.__pretty_name
+
+    def get_runnable(self) -> IRunnable:
+        return self.__networked_runnable
 
     def start(self):
         self.__networked_runnable.start()

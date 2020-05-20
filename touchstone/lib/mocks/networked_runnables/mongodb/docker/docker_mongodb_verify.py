@@ -1,16 +1,18 @@
 from pymongo import MongoClient
 
-from touchstone.lib.mocks.networked_runnables.mongodb.mongo_context import MongoContext
+from touchstone.lib.mocks.networked_runnables.mongodb.docker.docker_mongo_context import DockerMongoContext
+from touchstone.lib.mocks.networked_runnables.mongodb.i_mongodb_behavior import IMongodbVerify
 
 
-class MongodbVerify(object):
-    def __init__(self, mongo_client: MongoClient, mongo_context: MongoContext):
-        self.__mongo_client = mongo_client
+class DockerMongodbVerify(IMongodbVerify):
+    def __init__(self, mongo_context: DockerMongoContext):
         self.__mongo_context = mongo_context
+        self.__mongo_client = None
+
+    def set_mongo_client(self, mongo_client: MongoClient):
+        self.__mongo_client = mongo_client
 
     def document_exists(self, database: str, collection: str, document: dict, num_expected: int = 1) -> bool:
-        """Returns True if a document exists in the given database and collection. If num_expected is set to None,
-        any number of documents will be considered passing."""
         if not self.__mongo_context.collection_exists(database, collection):
             return False
 

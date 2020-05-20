@@ -5,11 +5,12 @@ import pika.exceptions
 from pika import spec
 from pika.adapters.blocking_connection import BlockingChannel
 
-from touchstone.lib.mocks.networked_runnables.rabbitmq.rabbitmq_context import RmqContext
+from touchstone.lib.mocks.networked_runnables.rabbitmq.docker.docker_rabbitmq_context import DockerRabbitmqContext
+from touchstone.lib.mocks.networked_runnables.rabbitmq.i_rabbitmq_behavior import IRabbitmqSetup
 
 
 class MessageConsumer(Thread):
-    def __init__(self, connection_params: pika.ConnectionParameters, rmq_context: RmqContext):
+    def __init__(self, connection_params: pika.ConnectionParameters, rmq_context: DockerRabbitmqContext):
         super().__init__()
         self.__connection_params = connection_params
         self.__rmq_context = rmq_context
@@ -34,16 +35,21 @@ class MessageConsumer(Thread):
         self.channel.basic_consume(queue, message_received)
 
 
-class RabbitmqSetup(object):
-    def __init__(self, channel: BlockingChannel, connection_params: pika.ConnectionParameters, rmq_context: RmqContext):
+class DockerRabbitmqSetup(IRabbitmqSetup):
+    def __init__(self, rmq_context: DockerRabbitmqContext):
         super().__init__()
-        self.__channel = channel
         self.__rmq_context = rmq_context
-
-        self.__message_consumer: MessageConsumer = MessageConsumer(connection_params, rmq_context)
+        self.__channel = None
+        self.__message_consumer = None
         self.__exchanges: list = []
         self.__queues: list = []
         self.__shadow_queues: list = []
+
+    def set_channel(self, channel: BlockingChannel):
+        self.__channel = channel
+
+    def set_connection_params(self, connection_params: pika.ConnectionParameters):
+        self.__message_consumer = MessageConsumer(connection_params, self.__rmq_context)
 
     def purge_queues(self):
         for queue in self.__queues:

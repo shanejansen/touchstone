@@ -4,20 +4,21 @@ from touchstone.lib import exceptions
 from touchstone.lib.docker_manager import DockerManager
 from touchstone.lib.mocks.network import Network
 from touchstone.lib.mocks.networked_runnables.i_networked_runnable import INetworkedRunnable
-from touchstone.lib.mocks.networked_runnables.mongodb.i_mongodb_behavior import IMongodbBehavior
-from touchstone.lib.mocks.networked_runnables.mongodb.mongo_context import MongoContext
-from touchstone.lib.mocks.networked_runnables.mongodb.mongodb_setup import MongodbSetup
-from touchstone.lib.mocks.networked_runnables.mongodb.mongodb_verify import MongodbVerify
+from touchstone.lib.mocks.networked_runnables.mongodb.docker.docker_mongodb_setup import DockerMongodbSetup
+from touchstone.lib.mocks.networked_runnables.mongodb.docker.docker_mongodb_verify import DockerMongodbVerify
+from touchstone.lib.mocks.networked_runnables.mongodb.i_mongodb_behavior import IMongodbBehavior, IMongodbVerify, \
+    IMongodbSetup
 
 
-class MongodbRunnable(INetworkedRunnable, IMongodbBehavior):
-    def __init__(self, defaults: dict, is_dev_mode: bool, docker_manager: DockerManager):
+class DockerMongodbRunnable(INetworkedRunnable, IMongodbBehavior):
+    def __init__(self, defaults: dict, is_dev_mode: bool, setup: DockerMongodbSetup, verify: DockerMongodbVerify,
+                 docker_manager: DockerManager):
         self.__defaults = defaults
         self.__is_dev_mode = is_dev_mode
+        self.__setup = setup
+        self.__verify = verify
         self.__docker_manager = docker_manager
         self.__network = None
-        self.__setup = None
-        self.__verify = None
         self.__container_id = None
         self.__ui_container_id = None
 
@@ -28,9 +29,8 @@ class MongodbRunnable(INetworkedRunnable, IMongodbBehavior):
 
     def initialize(self):
         mongo_client = pymongo.MongoClient(self.get_network().external_host, self.get_network().external_port)
-        mongo_context = MongoContext()
-        self.__setup = MongodbSetup(mongo_client, mongo_context)
-        self.__verify = MongodbVerify(mongo_client, mongo_context)
+        self.__setup.set_mongo_client(mongo_client)
+        self.__verify.set_mongo_client(mongo_client)
         self.__setup.init(self.__defaults)
 
     def start(self):
@@ -72,12 +72,12 @@ class MongodbRunnable(INetworkedRunnable, IMongodbBehavior):
         except Exception:
             return False
 
-    def setup(self) -> MongodbSetup:
+    def setup(self) -> IMongodbSetup:
         if not self.__setup:
             raise exceptions.MockException('Setup unavailable. Mock is still starting.')
         return self.__setup
 
-    def verify(self) -> MongodbVerify:
+    def verify(self) -> IMongodbVerify:
         if not self.__verify:
             raise exceptions.MockException('Verify unavailable. Mock is still starting.')
         return self.__verify

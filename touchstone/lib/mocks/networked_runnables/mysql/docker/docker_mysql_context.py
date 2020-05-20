@@ -1,4 +1,4 @@
-class MysqlContext(object):
+class DockerMysqlContext(object):
     def __init__(self):
         self.__databases = []
 

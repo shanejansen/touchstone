@@ -11,6 +11,7 @@ from touchstone.lib.mocks.networked_runnables.mongodb.i_mongodb_behavior import 
 from touchstone.lib.mocks.networked_runnables.mysql.i_mysql_behabior import IMysqlBehavior
 from touchstone.lib.mocks.networked_runnables.rabbitmq.i_rabbitmq_behavior import IRabbitmqBehavior
 from touchstone.lib.mocks.networked_runnables.s3.i_s3_behavior import IS3Behavior
+from touchstone.lib.mocks.runnables.filesystem.i_filesystem_behavior import IFilesystemBehavior
 
 
 class Mocks(object):
@@ -20,6 +21,7 @@ class Mocks(object):
         self.mongodb: IMongodbBehavior = None
         self.mysql: IMysqlBehavior = None
         self.s3: IS3Behavior = None
+        self.filesystem: IFilesystemBehavior = None
         self.__registered_mocks: List[IMockable] = []
         self.__mocks_running = False
 
