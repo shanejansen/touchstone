@@ -4,7 +4,7 @@ buckets:
     objects:
       - name: foo.csv
         content-type: text/csv
-        path: ./s3-objects/foo.csv
+        path: ./s3/foo.csv
       - name: test/bar.png
         content-type: image/png
-        path: ./s3-objects/bar.png
+        path: ./s3/bar.png

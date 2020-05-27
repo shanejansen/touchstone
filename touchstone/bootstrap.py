@@ -1,35 +1,33 @@
+import glob
 import os
+import sys
+from pathlib import Path
 
 import yaml
 
-from touchstone import common
 from touchstone.lib import exceptions
 from touchstone.lib.configs.service_config import ServiceConfig
 from touchstone.lib.configs.touchstone_config import TouchstoneConfig
 from touchstone.lib.docker_manager import DockerManager
-from touchstone.lib.mocks.http.http import Http
-from touchstone.lib.mocks.mock_defaults import MockDefaults
+from touchstone.lib.mocks.mock_factory import MockFactory
 from touchstone.lib.mocks.mocks import Mocks
-from touchstone.lib.mocks.mongodb.mongodb import Mongodb
-from touchstone.lib.mocks.mysql.mysql import Mysql
-from touchstone.lib.mocks.rabbitmq.rabbitmq import Rabbitmq
-from touchstone.lib.mocks.s3.s3 import S3
 from touchstone.lib.service import Service
 from touchstone.lib.services import Services
 from touchstone.lib.tests import Tests
-from touchstone.runner import Runner
 
 
 class Bootstrap(object):
     def __init__(self, is_dev_mode=False):
+        touchstone_config = self.__build_touchstone_config(os.getcwd())
         self.is_dev_mode = is_dev_mode
-
-        docker_manager = DockerManager(should_auto_discover=not self.is_dev_mode)
-        self.touchstone_config = self.__build_touchstone_config(os.getcwd())
-        self.runner = Runner(self.touchstone_config, docker_manager)
-        self.mocks = self.__build_mocks(self.touchstone_config.config['root'], self.touchstone_config,
-                                        self.touchstone_config.config['host'], docker_manager)
-        self.services = self.__build_services(self.touchstone_config, docker_manager, self.mocks)
+        self.docker_manager = DockerManager(should_auto_discover=not self.is_dev_mode)
+        self.mocks = self.__build_mocks(touchstone_config.config['root'],
+                                        touchstone_config.config['mocks'],
+                                        touchstone_config.config['host'])
+        self.services = self.__build_services(touchstone_config.config['root'],
+                                              touchstone_config.config['host'],
+                                              touchstone_config.config['services'],
+                                              self.mocks)
 
     def __build_touchstone_config(self, root) -> TouchstoneConfig:
         config = TouchstoneConfig(os.getcwd())
@@ -38,46 +36,47 @@ class Bootstrap(object):
             config.merge(yaml.safe_load(file))
         return config
 
-    def __build_mocks(self, root, touchstone_config, host, docker_manager) -> Mocks:
-        mock_defaults = MockDefaults(os.path.join(root, 'defaults'))
+    def __build_mocks(self, root, configs, host) -> Mocks:
+        defaults_paths = {}
+        default_files = glob.glob(os.path.join(root, 'defaults') + '/*.yml')
+        for default_file in default_files:
+            defaults_paths[Path(default_file).stem] = default_file
+
         mocks = Mocks()
-        mocks.http = Http(host, mock_defaults, docker_manager)
-        mocks.rabbitmq = Rabbitmq(host, mock_defaults, docker_manager)
-        mocks.mongodb = Mongodb(host, mock_defaults, self.is_dev_mode, docker_manager)
-        mocks.mysql = Mysql(host, mock_defaults, self.is_dev_mode, docker_manager)
-        mocks.s3 = S3(host, mock_defaults, docker_manager)
-        potential_mocks = [mocks.http, mocks.rabbitmq, mocks.mongodb, mocks.mysql, mocks.s3]
-
-        if not touchstone_config.config['mocks']:
-            return mocks
-
-        for mock in touchstone_config.config['mocks']:
-            user_config = touchstone_config.config['mocks'][mock]
-            found_mock = False
-            for potential_mock in potential_mocks:
-                if potential_mock.name() == mock:
-                    found_mock = True
-                    potential_mock.config = common.dict_merge(potential_mock.default_config(), user_config)
-                    mocks.register_mock(potential_mock)
-            if not found_mock:
-                raise exceptions.MockNotSupportedException(
-                    f'"{mock}" is not a supported mock. Please check your touchstone.yml file.')
+        for mock_name in configs:
+            mock_factory = MockFactory(self.is_dev_mode, root, defaults_paths, configs, host, self.docker_manager)
+            mock = mock_factory.get_mock(mock_name)
+            if not mock:
+                raise exceptions.MockNotSupportedException(f'Mock: {mock_name} is not supported.')
+            setattr(mocks, mock_name, mock.get_runnable())
+            mocks.register_mock(mock)
         return mocks
 
-    def __build_services(self, touchstone_config, docker_manager, mocks) -> Services:
+    def __build_services(self, root, host, user_service_configs, mocks) -> Services:
         services = []
-        for given_service_config in touchstone_config.config['services']:
-            service_config = ServiceConfig(touchstone_config.config['host'])
+        for given_service_config in user_service_configs:
+            service_config = ServiceConfig(host)
             service_config.merge(given_service_config)
-            tests_path = os.path.abspath(
-                os.path.join(touchstone_config.config['root'], service_config.config['tests']))
+            tests_path = os.path.abspath(os.path.join(root, service_config.config['tests']))
             tests = Tests(mocks, tests_path)
-
-            service = Service(touchstone_config.config['root'], service_config.config['name'], tests,
+            service = Service(root, service_config.config['name'], tests,
                               service_config.config['dockerfile'], service_config.config['host'],
                               service_config.config['port'], service_config.config['availability_endpoint'],
                               service_config.config['num_retries'], service_config.config['seconds_between_retries'],
-                              docker_manager)
-
+                              self.docker_manager)
             services.append(service)
         return Services(services)
+
+    def cleanup(self):
+        self.services.stop()
+        self.mocks.stop()
+        self.docker_manager.cleanup()
+
+    def exit(self, is_successful: bool):
+        print('Shutting down...')
+        if is_successful:
+            code = 0
+        else:
+            code = 1
+        self.cleanup()
+        sys.exit(code)

@@ -7,12 +7,13 @@ from touchstone.bootstrap import Bootstrap
 
 
 def execute():
-    common.prep_run()
+    if not common.sanity_check_passes():
+        exit(1)
     bootstrap = Bootstrap(is_dev_mode=True)
     print(figlet_format('Touchstone', font='larry3d'))
 
     try:
-        mock_run_contexts = bootstrap.mocks.start()
+        bootstrap.mocks.start()
         bootstrap.mocks.print_available_mocks()
 
         __print_help()
@@ -34,7 +35,7 @@ def execute():
                 bootstrap.services.run_test(parts[1], parts[2], parts[3])
             elif command == 'services start':
                 try:
-                    bootstrap.services.start(mock_run_contexts)
+                    bootstrap.services.start(bootstrap.mocks.environment_vars())
                     bootstrap.mocks.services_became_available()
                 except KeyboardInterrupt:
                     bootstrap.services.stop()
@@ -45,16 +46,14 @@ def execute():
             elif command == 'mocks reset':
                 bootstrap.mocks.reset()
             elif command == 'exit':
-                bootstrap.services.stop()
-                bootstrap.mocks.stop()
-                bootstrap.runner.exit_touchstone(True)
+                bootstrap.exit(True)
             elif command == '':
                 pass
             else:
                 print(f'Unknown Touchstone command "{command}"')
     except (Exception, KeyboardInterrupt) as e:
         print('\nTouchstone was interrupted. Cleaning up...')
-        bootstrap.runner.cleanup()
+        bootstrap.cleanup()
         raise e
 
 

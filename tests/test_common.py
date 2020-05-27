@@ -1,34 +1,10 @@
 import unittest
-from unittest import TestCase, mock
+from unittest import TestCase
 
 from touchstone import common
 
 
 class TestCommon(TestCase):
-    @mock.patch('touchstone.common.os')
-    def test_sanityCheckPasses_requirementsMet_ReturnsTrue(self, mock_os):
-        # Given
-        mock_os.getcwd.return_value = 'temp'
-        mock_os.path.exists.return_value = True
-
-        # When
-        result = common.sanity_check_passes()
-
-        # Then
-        self.assertTrue(result)
-
-    @mock.patch('touchstone.common.os')
-    def test_sanityCheckPasses_requirementsNotMet_ReturnsFalse(self, mock_os):
-        # Given
-        mock_os.getcwd.return_value = 'temp'
-        mock_os.path.exists.return_value = False
-
-        # When
-        result = common.sanity_check_passes()
-
-        # Then
-        self.assertFalse(result)
-
     def test_dictMerge_emptyOverride_ReturnsBase(self):
         # Given
         base = {'foo': 'bar'}
