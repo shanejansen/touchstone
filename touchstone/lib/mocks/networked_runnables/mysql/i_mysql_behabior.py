@@ -5,14 +5,21 @@ from typing import List
 class IMysqlSetup(object):
     @abc.abstractmethod
     def execute(self, database: str, sql: str):
+        """Executes arbitrary SQL on the given database."""
         pass
 
     @abc.abstractmethod
     def insert_row(self, database: str, table: str, data: dict):
+        """Inserts a dictionary of key-value pairs into the given database and table. If the config option,
+        "convertCamelToSnakeCase" is set (default True), the dictionary keys will be converted from camel case to
+        snake case."""
         pass
 
     @abc.abstractmethod
     def insert_rows(self, database: str, table: str, data: List[dict]):
+        """Inserts a list of dictionaries of key-value pairs into the given database and table. If the config option,
+        "convertCamelToSnakeCase" is set (default True), the dictionary keys will be converted from camel case to
+        snake case."""
         pass
 
 

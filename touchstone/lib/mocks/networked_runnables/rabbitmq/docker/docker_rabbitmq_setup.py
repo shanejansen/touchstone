@@ -80,7 +80,7 @@ class DockerRabbitmqSetup(IRabbitmqSetup):
         def callback():
             self.__message_consumer.channel.stop_consuming()
 
-        if self.__message_consumer.is_alive():
+        if self.__message_consumer and self.__message_consumer.is_alive():
             self.__message_consumer.channel.connection.add_callback_threadsafe(callback)
             self.__message_consumer.join()
 

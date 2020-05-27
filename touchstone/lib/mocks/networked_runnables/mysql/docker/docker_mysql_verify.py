@@ -25,7 +25,10 @@ class DockerMysqlVerify(IMysqlVerify):
             where_conditions = common.to_snake(where_conditions)
         where = []
         for key, value in where_conditions.items():
-            where.append(f"{key}='{value}'")
+            if not value:
+                where.append(f'{key} is NULL')
+            else:
+                where.append(f"{key}='{value}'")
         sql = f"SELECT COUNT(*) FROM {table} WHERE {' AND '.join(where)}"
         common.logger.debug(f'Executing: {sql}')
         self.__cursor.execute(f'USE {database}')

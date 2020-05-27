@@ -50,3 +50,18 @@ class RowsInserted(TouchstoneTest):
         }
         return self.mocks.mysql.verify().row_exists(mysql_database, mysql_table, expected_foo, num_expected=2) \
                and self.mocks.mysql.verify().row_exists(mysql_database, mysql_table, expected_baz)
+
+
+class NullValueInserted(TouchstoneTest):
+    def given(self) -> object:
+        return {
+            'firstName': 'Foo',
+            'lastName': None
+        }
+
+    def when(self, given) -> object:
+        self.mocks.mysql.setup().insert_row(mysql_database, mysql_table, given)
+        return None
+
+    def then(self, given, result) -> bool:
+        return self.mocks.mysql.verify().row_exists(mysql_database, mysql_table, given)

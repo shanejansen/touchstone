@@ -60,7 +60,10 @@ class DockerMysqlSetup(IMysqlSetup):
     def __sql_values_from_dict(self, data: dict) -> str:
         col_values = []
         for value in data.values():
-            col_values.append(f"'{value}'")
+            if not value:
+                col_values.append('NULL')
+            else:
+                col_values.append(f"'{value}'")
         col_values = ', '.join(col_values)
         return '(' + col_values + ')'
 

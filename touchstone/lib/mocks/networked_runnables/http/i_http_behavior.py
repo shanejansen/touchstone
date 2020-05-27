@@ -79,4 +79,5 @@ class IHttpBehavior(object):
 
     @abc.abstractmethod
     def url(self) -> str:
+        """Returns the URL of this mocked HTTP resource."""
         pass
