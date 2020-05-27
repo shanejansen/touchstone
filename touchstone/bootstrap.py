@@ -37,15 +37,14 @@ class Bootstrap(object):
         return config
 
     def __build_mocks(self, root, configs, host) -> Mocks:
-        defaults = {}
+        defaults_paths = {}
         default_files = glob.glob(os.path.join(root, 'defaults') + '/*.yml')
         for default_file in default_files:
-            with open(default_file, 'r') as file:
-                defaults[Path(default_file).stem] = yaml.safe_load(file)
+            defaults_paths[Path(default_file).stem] = default_file
 
         mocks = Mocks()
         for mock_name in configs:
-            mock_factory = MockFactory(self.is_dev_mode, root, defaults, configs, host, self.docker_manager)
+            mock_factory = MockFactory(self.is_dev_mode, root, defaults_paths, configs, host, self.docker_manager)
             mock = mock_factory.get_mock(mock_name)
             if not mock:
                 raise exceptions.MockNotSupportedException(f'Mock: {mock_name} is not supported.')

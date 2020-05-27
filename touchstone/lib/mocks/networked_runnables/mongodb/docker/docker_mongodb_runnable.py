@@ -2,6 +2,7 @@ import pymongo
 
 from touchstone.lib import exceptions
 from touchstone.lib.docker_manager import DockerManager
+from touchstone.lib.mocks.configurers.i_configurable import IConfigurable
 from touchstone.lib.mocks.network import Network
 from touchstone.lib.mocks.networked_runnables.i_networked_runnable import INetworkedRunnable
 from touchstone.lib.mocks.networked_runnables.mongodb.docker.docker_mongodb_setup import DockerMongodbSetup
@@ -11,9 +12,9 @@ from touchstone.lib.mocks.networked_runnables.mongodb.i_mongodb_behavior import 
 
 
 class DockerMongodbRunnable(INetworkedRunnable, IMongodbBehavior):
-    def __init__(self, defaults: dict, is_dev_mode: bool, setup: DockerMongodbSetup, verify: DockerMongodbVerify,
-                 docker_manager: DockerManager):
-        self.__defaults = defaults
+    def __init__(self, defaults_configurer: IConfigurable, is_dev_mode: bool, setup: DockerMongodbSetup,
+                 verify: DockerMongodbVerify, docker_manager: DockerManager):
+        self.__defaults_configurer = defaults_configurer
         self.__is_dev_mode = is_dev_mode
         self.__setup = setup
         self.__verify = verify
@@ -31,7 +32,7 @@ class DockerMongodbRunnable(INetworkedRunnable, IMongodbBehavior):
         mongo_client = pymongo.MongoClient(self.get_network().external_host, self.get_network().external_port)
         self.__setup.set_mongo_client(mongo_client)
         self.__verify.set_mongo_client(mongo_client)
-        self.__setup.init(self.__defaults)
+        self.__setup.init(self.__defaults_configurer.get_config())
 
     def start(self):
         run_result = self.__docker_manager.run_image('mongo:4.0.14', port=27017)
@@ -59,7 +60,7 @@ class DockerMongodbRunnable(INetworkedRunnable, IMongodbBehavior):
             self.__docker_manager.stop_container(self.__ui_container_id)
 
     def reset(self):
-        self.__setup.init(self.__defaults)
+        self.__setup.init(self.__defaults_configurer.get_config())
 
     def services_available(self):
         pass

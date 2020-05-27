@@ -1,5 +1,6 @@
 from touchstone.lib import exceptions
 from touchstone.lib.docker_manager import DockerManager
+from touchstone.lib.mocks.configurers.i_configurable import IConfigurable
 from touchstone.lib.mocks.health_checks.i_url_health_checkable import IUrlHealthCheckable
 from touchstone.lib.mocks.network import Network
 from touchstone.lib.mocks.networked_runnables.http.docker.docker_http_setup import DockerHttpSetup
@@ -9,9 +10,9 @@ from touchstone.lib.mocks.networked_runnables.i_networked_runnable import INetwo
 
 
 class DockerHttpRunnable(INetworkedRunnable, IHttpBehavior):
-    def __init__(self, defaults: dict, health_check: IUrlHealthCheckable, setup: DockerHttpSetup,
+    def __init__(self, defaults_configurer: IConfigurable, health_check: IUrlHealthCheckable, setup: DockerHttpSetup,
                  verify: DockerHttpVerify, docker_manager: DockerManager):
-        self.__defaults = defaults
+        self.__defaults_configurer = defaults_configurer
         self.__health_check = health_check
         self.__setup = setup
         self.__verify = verify
@@ -27,7 +28,7 @@ class DockerHttpRunnable(INetworkedRunnable, IHttpBehavior):
     def initialize(self):
         self.__setup.set_url(self.get_network().external_url())
         self.__verify.set_url(self.get_network().external_url())
-        self.__setup.init(self.__defaults)
+        self.__setup.init(self.__defaults_configurer.get_config())
 
     def start(self):
         run_result = self.__docker_manager.run_image('holomekc/wiremock-gui:2.25.1', port=8080, exposed_port=9090)
@@ -44,7 +45,7 @@ class DockerHttpRunnable(INetworkedRunnable, IHttpBehavior):
             self.__docker_manager.stop_container(self.__container_id)
 
     def reset(self):
-        self.__setup.init(self.__defaults)
+        self.__setup.init(self.__defaults_configurer.get_config())
 
     def services_available(self):
         pass

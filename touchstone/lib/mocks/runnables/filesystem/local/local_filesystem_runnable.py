@@ -1,4 +1,5 @@
 from touchstone.lib import exceptions
+from touchstone.lib.mocks.configurers.i_configurable import IConfigurable
 from touchstone.lib.mocks.runnables.filesystem.i_filesystem_behavior import IFilesystemBehavior, IFilesystemVerify, \
     IFilesystemSetup
 from touchstone.lib.mocks.runnables.filesystem.local.local_filesystem_setup import LocalFilesystemSetup
@@ -7,21 +8,21 @@ from touchstone.lib.mocks.runnables.i_runnable import IRunnable
 
 
 class LocalFilesystemRunnable(IRunnable, IFilesystemBehavior):
-    def __init__(self, defaults: dict, base_files_path: str, setup: LocalFilesystemSetup,
+    def __init__(self, defaults_configurer: IConfigurable, base_files_path: str, setup: LocalFilesystemSetup,
                  verify: LocalFilesystemVerify):
-        self.__defaults = defaults
+        self.__defaults_configurer = defaults_configurer
         self.__base_files_path = base_files_path
         self.__setup = setup
         self.__verify = verify
 
     def start(self):
-        self.__setup.init(self.__defaults)
+        self.__setup.init(self.__defaults_configurer.get_config())
 
     def stop(self):
-        self.__setup.delete_defaults(self.__defaults)
+        self.__setup.delete_defaults(self.__defaults_configurer.get_config())
 
     def reset(self):
-        self.__setup.init(self.__defaults)
+        self.__setup.init(self.__defaults_configurer.get_config())
 
     def services_available(self):
         pass

@@ -14,10 +14,10 @@ class DockerMysqlRunnable(INetworkedRunnable, IMysqlBehavior):
     __USERNAME = 'root'
     __PASSWORD = 'root'
 
-    def __init__(self, is_dev_mode: bool, defaults: dict, configurer: IConfigurable, setup: DockerMysqlSetup,
-                 verify: DockerMysqlVerify, docker_manager: DockerManager):
+    def __init__(self, defaults_configurer: IConfigurable, is_dev_mode: bool, configurer: IConfigurable,
+                 setup: DockerMysqlSetup, verify: DockerMysqlVerify, docker_manager: DockerManager):
+        self.__defaults_configurer = defaults_configurer
         self.__is_dev_mode = is_dev_mode
-        self.__defaults = defaults
         self.__configurer = configurer
         self.__setup = setup
         self.__verify = verify
@@ -45,7 +45,7 @@ class DockerMysqlRunnable(INetworkedRunnable, IMysqlBehavior):
         self.__setup.set_convert_camel_to_snake(convert_camel_to_snake)
         self.__verify.set_cursor(cursor)
         self.__verify.set_convert_camel_to_snake(convert_camel_to_snake)
-        self.__setup.init(self.__defaults)
+        self.__setup.init(self.__defaults_configurer.get_config())
 
     def start(self):
         run_result = self.__docker_manager.run_image('mysql:5.7.29', port=3306,
@@ -75,7 +75,7 @@ class DockerMysqlRunnable(INetworkedRunnable, IMysqlBehavior):
             self.__docker_manager.stop_container(self.__ui_container_id)
 
     def reset(self):
-        self.__setup.init(self.__defaults)
+        self.__setup.init(self.__defaults_configurer.get_config())
 
     def services_available(self):
         pass

@@ -2,6 +2,7 @@ from minio import Minio
 
 from touchstone.lib import exceptions
 from touchstone.lib.docker_manager import DockerManager
+from touchstone.lib.mocks.configurers.i_configurable import IConfigurable
 from touchstone.lib.mocks.health_checks.i_url_health_checkable import IUrlHealthCheckable
 from touchstone.lib.mocks.network import Network
 from touchstone.lib.mocks.networked_runnables.i_networked_runnable import INetworkedRunnable
@@ -14,9 +15,9 @@ class DockerS3Runnable(INetworkedRunnable, IS3Behavior):
     __USERNAME = 'admin123'
     __PASSWORD = 'admin123'
 
-    def __init__(self, defaults: dict, base_objects_path: str, health_check: IUrlHealthCheckable, setup: DockerS3Setup,
-                 verify: DockerS3Verify, docker_manager: DockerManager):
-        self.__defaults = defaults
+    def __init__(self, defaults_configurer: IConfigurable, base_objects_path: str, health_check: IUrlHealthCheckable,
+                 setup: DockerS3Setup, verify: DockerS3Verify, docker_manager: DockerManager):
+        self.__defaults_configurer = defaults_configurer
         self.__base_objects_path = base_objects_path
         self.__health_check = health_check
         self.__setup = setup
@@ -37,7 +38,7 @@ class DockerS3Runnable(INetworkedRunnable, IS3Behavior):
                           secure=False)
         self.__setup.set_s3_client(s3_client)
         self.__verify.set_s3_client(s3_client)
-        self.__setup.init(self.__base_objects_path, self.__defaults)
+        self.__setup.init(self.__base_objects_path, self.__defaults_configurer.get_config())
 
     def start(self):
         run_result = self.__docker_manager.run_image('minio/minio:RELEASE.2020-02-27T00-23-05Z server /data',
@@ -57,7 +58,7 @@ class DockerS3Runnable(INetworkedRunnable, IS3Behavior):
             self.__docker_manager.stop_container(self.__container_id)
 
     def reset(self):
-        self.__setup.init(self.__base_objects_path, self.__defaults)
+        self.__setup.init(self.__base_objects_path, self.__defaults_configurer.get_config())
 
     def services_available(self):
         pass

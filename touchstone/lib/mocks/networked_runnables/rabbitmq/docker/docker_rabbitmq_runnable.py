@@ -16,9 +16,9 @@ class DockerRabbitmqRunnable(INetworkedRunnable, IRabbitmqBehavior):
     __USERNAME = 'guest'
     __PASSWORD = 'guest'
 
-    def __init__(self, defaults: dict, configurer: IConfigurable, health_check: IUrlHealthCheckable,
+    def __init__(self, defaults_configurer: IConfigurable, configurer: IConfigurable, health_check: IUrlHealthCheckable,
                  setup: DockerRabbitmqSetup, verify: DockerRabbitmqVerify, docker_manager: DockerManager):
-        self.__defaults = defaults
+        self.__defaults_configurer = defaults_configurer
         self.__configurer = configurer
         self.__health_check = health_check
         self.__setup = setup
@@ -45,7 +45,7 @@ class DockerRabbitmqRunnable(INetworkedRunnable, IRabbitmqBehavior):
         self.__setup.set_connection_params(connection_params)
         self.__verify.set_blocking_channel(channel)
         if self.__configurer.get_config()['autoCreate']:
-            self.__setup.create_all(self.__defaults)
+            self.__setup.create_all(self.__defaults_configurer.get_config())
 
     def start(self):
         run_result = self.__docker_manager.run_image('rabbitmq:3.7.22-management-alpine', port=5672, ui_port=15672)
@@ -67,7 +67,7 @@ class DockerRabbitmqRunnable(INetworkedRunnable, IRabbitmqBehavior):
 
     def services_available(self):
         if not self.__configurer.get_config()['autoCreate']:
-            self.__setup.create_shadow_queues(self.__defaults)
+            self.__setup.create_shadow_queues(self.__defaults_configurer.get_config())
 
     def is_healthy(self) -> bool:
         self.__health_check.set_url(self.get_network().ui_url())
