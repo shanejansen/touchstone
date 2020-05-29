@@ -3,9 +3,7 @@ import importlib.util
 import inspect
 import os
 import sys
-from typing import Optional
 
-from touchstone.lib import exceptions
 from touchstone.lib.mocks.mocks import Mocks
 from touchstone.lib.test import TestContainer, TestClass
 
@@ -14,13 +12,10 @@ class Tests(object):
     __TEST_PREFIX = 'test_'
 
     def __init__(self, mocks: Mocks, tests_path: str):
-        self.service_url: Optional[str] = None
         self.__mocks = mocks
         self.__tests_path = tests_path
 
-    def run(self, file_name, test_name) -> bool:
-        if not self.service_url:
-            raise exceptions.TestException('service_url must be set before running tests.')
+    def run(self, file_name: str, test_name: str, service_url: str = None) -> bool:
         self.__load_package(self.__tests_path)
         self.__reload_support_modules(self.__tests_path)
         test_container = self.__load_test_class(file_name, test_name)
@@ -28,11 +23,9 @@ class Tests(object):
         if not test_container:
             print(f'No tests found with file name "{file_name}".')
             return False
-        return test_container.execute(self.service_url, self.__mocks)
+        return test_container.execute(service_url, self.__mocks)
 
-    def run_all(self) -> bool:
-        if not self.service_url:
-            raise exceptions.TestException('service_url must be set before running tests.')
+    def run_all(self, service_url: str = None) -> bool:
         self.__load_package(self.__tests_path)
         self.__reload_support_modules(self.__tests_path)
         all_test_containers = self.__load_test_classes()
@@ -43,7 +36,7 @@ class Tests(object):
         tests_passed = True
         for test_container in all_test_containers:
             print(test_container.file)
-            if not test_container.execute(self.service_url, self.__mocks):
+            if not test_container.execute(service_url, self.__mocks):
                 tests_passed = False
 
         self.__mocks.reset()

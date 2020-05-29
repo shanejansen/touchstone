@@ -29,8 +29,8 @@ databases:
 ## Usage Example
 ```python
 # Insert a row into a table
-self.mocks.mysql.setup.insert_row('my_db', 'my_table', {'foo': 'bar'})
+self.mocks.mysql.setup().insert_row('my_db', 'my_table', {'foo': 'bar'})
 
 # Verify that a row exists in a table
-result: bool = self.mocks.mysql.verify.row_exists('my_db', 'my_table', {'foo': 'bar'})
+result: bool = self.mocks.mysql.verify().row_exists('my_db', 'my_table', {'foo': 'bar'})
 ```

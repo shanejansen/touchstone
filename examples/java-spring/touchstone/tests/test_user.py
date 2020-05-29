@@ -22,7 +22,7 @@ class GetUser(TouchstoneTest):
             'lastName': 'Brown',
             'email': 'jane789@example.com'
         }
-        self.mocks.mysql.setup.insert_row(creds.MYSQL_DATABASE, creds.MYSQL_TABLE, given)
+        self.mocks.mysql.setup().insert_row(creds.MYSQL_DATABASE, creds.MYSQL_TABLE, given)
         return given
 
     def when(self, given) -> object:
@@ -48,7 +48,7 @@ class PostUser(TouchstoneTest):
             'lastName': 'Brown',
             'email': 'jane789@example.com'
         }
-        self.mocks.http.setup.get('/jane-brown/email', given['email'])
+        self.mocks.http.setup().get('/jane-brown/email', given['email'])
         return given
 
     def when(self, given) -> object:
@@ -66,7 +66,7 @@ class PostUser(TouchstoneTest):
         expected_response = given.copy()
         expected_response['id'] = validation.ANY
         expected_row = given.copy()
-        return validation.matches(expected_response, result) and self.mocks.mysql.verify.row_exists(
+        return validation.matches(expected_response, result) and self.mocks.mysql.verify().row_exists(
             creds.MYSQL_DATABASE,
             creds.MYSQL_TABLE,
             expected_row)
@@ -93,7 +93,7 @@ class PutUser(TouchstoneTest):
             'lastName': 'Brown',
             'email': 'jane789@example.com'
         }
-        self.mocks.mysql.setup.insert_row(creds.MYSQL_DATABASE, creds.MYSQL_TABLE, existing_user)
+        self.mocks.mysql.setup().insert_row(creds.MYSQL_DATABASE, creds.MYSQL_TABLE, existing_user)
         return new_info
 
     def when(self, given) -> object:
@@ -104,7 +104,7 @@ class PutUser(TouchstoneTest):
         return None
 
     def then(self, given, result) -> bool:
-        return self.mocks.mysql.verify.row_exists(creds.MYSQL_DATABASE, creds.MYSQL_TABLE, given)
+        return self.mocks.mysql.verify().row_exists(creds.MYSQL_DATABASE, creds.MYSQL_TABLE, given)
 
 
 class DeleteUser(TouchstoneTest):
@@ -128,7 +128,7 @@ class DeleteUser(TouchstoneTest):
             'lastName': 'Brown',
             'email': 'jane789@example.com'
         }
-        self.mocks.mysql.setup.insert_row(creds.MYSQL_DATABASE, creds.MYSQL_TABLE, user)
+        self.mocks.mysql.setup().insert_row(creds.MYSQL_DATABASE, creds.MYSQL_TABLE, user)
         return user_id
 
     def when(self, given) -> object:
@@ -140,6 +140,6 @@ class DeleteUser(TouchstoneTest):
         where = {
             'id': given
         }
-        return self.mocks.rabbitmq.verify.payload_published('user.exchange', str(given),
-                                                            routing_key='user-deleted') and \
-               self.mocks.mysql.verify.row_does_not_exist(creds.MYSQL_DATABASE, creds.MYSQL_TABLE, where)
+        return self.mocks.rabbitmq.verify().payload_published('user.exchange', str(given),
+                                                              routing_key='user-deleted') and \
+               self.mocks.mysql.verify().row_does_not_exist(creds.MYSQL_DATABASE, creds.MYSQL_TABLE, where)

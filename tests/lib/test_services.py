@@ -1,8 +1,9 @@
 import unittest
 from unittest import TestCase
-from unittest.mock import Mock
+from unittest.mock import Mock, MagicMock
 
-from touchstone.lib.services import Services
+from touchstone.lib.services.i_testable import ITestable
+from touchstone.lib.services.services import Services
 
 
 class TestServices(TestCase):
@@ -41,7 +42,8 @@ class TestServices(TestCase):
 
     def test_runTests_testFails_ReturnsFalse(self):
         # Given
-        mock_service = Mock()
+        MagicMock()
+        mock_service = Mock(spec=ITestable)
         mock_service.run_all_tests.return_value = False
         services = Services([mock_service])
 
