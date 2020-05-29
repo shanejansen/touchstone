@@ -1,10 +1,12 @@
 from typing import List, Tuple
 
-from touchstone.lib.service import Service
+from touchstone.lib.services.i_runnable import IRunnable
+from touchstone.lib.services.i_service import IService
+from touchstone.lib.services.i_testable import ITestable
 
 
 class Services(object):
-    def __init__(self, services: List[Service]):
+    def __init__(self, services: List[IService]):
         self.__services = services
         self.__services_running = False
 
@@ -12,36 +14,41 @@ class Services(object):
         if self.__services_running:
             print('Services have already been started. They cannot be started again.')
         else:
-            print(f'Starting services {[_.name for _ in self.__services]}...')
+            print(f'Starting services {[_.get_name() for _ in self.__services]}...')
             for service in self.__services:
-                service.start(environment_vars)
+                if isinstance(service, IRunnable):
+                    service.start(environment_vars)
             self.__services_running = True
             for service in self.__services:
-                service.wait_for_availability()
+                if isinstance(service, IRunnable):
+                    service.wait_for_availability()
             print('Finished starting services.\n')
 
     def stop(self):
         print('Stopping services...')
         for service in self.__services:
-            service.stop()
+            if isinstance(service, IRunnable):
+                service.stop()
         self.__services_running = False
 
     def run_test(self, service_name, file_name, test_name) -> bool:
         found_service = None
         for service in self.__services:
-            if service.name.replace(' ', '-').lower() == service_name:
+            if service.get_name().replace(' ', '-').lower() == service_name \
+                    and isinstance(service, ITestable):
                 found_service = service
         if not found_service:
-            print(f'No service could be found with the name "{service_name}".')
+            print(f'No testable service could be found with the name "{service_name}".')
             return False
 
         return found_service.run_test(file_name, test_name)
 
     def run_all_tests(self) -> bool:
         for service in self.__services:
-            did_pass = service.run_all_tests()
-            if not did_pass:
-                return False
+            if isinstance(service, ITestable):
+                did_pass = service.run_all_tests()
+                if not did_pass:
+                    return False
         return True
 
     def are_running(self) -> bool:

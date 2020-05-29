@@ -40,7 +40,7 @@ class DockerHttpSetup(IHttpSetup):
         mock = {
             'request': {
                 'method': 'GET',
-                'url': endpoint
+                'urlPattern': endpoint
             },
             'response': {
                 'status': response_status,
@@ -56,7 +56,7 @@ class DockerHttpSetup(IHttpSetup):
         mock = {
             'request': {
                 'method': 'POST',
-                'url': endpoint
+                'urlPattern': endpoint
             },
             'response': {
                 'status': response_status,
@@ -72,7 +72,7 @@ class DockerHttpSetup(IHttpSetup):
         mock = {
             'request': {
                 'method': 'PUT',
-                'url': endpoint
+                'urlPattern': endpoint
             },
             'response': {
                 'status': response_status,
@@ -88,7 +88,7 @@ class DockerHttpSetup(IHttpSetup):
         mock = {
             'request': {
                 'method': 'DELETE',
-                'url': endpoint
+                'urlPattern': endpoint
             },
             'response': {
                 'status': response_status,

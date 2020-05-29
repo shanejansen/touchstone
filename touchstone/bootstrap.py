@@ -11,8 +11,8 @@ from touchstone.lib.configs.touchstone_config import TouchstoneConfig
 from touchstone.lib.docker_manager import DockerManager
 from touchstone.lib.mocks.mock_factory import MockFactory
 from touchstone.lib.mocks.mocks import Mocks
-from touchstone.lib.service import Service
-from touchstone.lib.services import Services
+from touchstone.lib.services.networked_service import NetworkedService
+from touchstone.lib.services.services import Services
 from touchstone.lib.tests import Tests
 
 
@@ -59,11 +59,13 @@ class Bootstrap(object):
             service_config.merge(given_service_config)
             tests_path = os.path.abspath(os.path.join(root, service_config.config['tests']))
             tests = Tests(mocks, tests_path)
-            service = Service(root, service_config.config['name'], tests,
-                              service_config.config['dockerfile'], service_config.config['host'],
-                              service_config.config['port'], service_config.config['availability_endpoint'],
-                              service_config.config['num_retries'], service_config.config['seconds_between_retries'],
-                              self.docker_manager)
+            dockerfile_path = None
+            if service_config.config['dockerfile']:
+                dockerfile_path = os.path.abspath(os.path.join(root, service_config.config['dockerfile']))
+            service = NetworkedService(service_config.config['name'], tests, dockerfile_path, self.docker_manager, host,
+                                       service_config.config['port'], service_config.config['availability_endpoint'],
+                                       service_config.config['num_retries'],
+                                       service_config.config['seconds_between_retries'])
             services.append(service)
         return Services(services)
 
