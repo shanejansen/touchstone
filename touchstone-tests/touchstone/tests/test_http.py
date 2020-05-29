@@ -3,7 +3,7 @@ import urllib.request
 from touchstone.lib.touchstone_test import TouchstoneTest
 
 
-class GetCalled(TouchstoneTest):
+class Get(TouchstoneTest):
     def given(self) -> object:
         self.mocks.http.setup().get('/some-endpoint', 'hello http!')
         return None
@@ -16,7 +16,7 @@ class GetCalled(TouchstoneTest):
         return self.mocks.http.verify().get_called('/some-endpoint')
 
 
-class GetCalledWithTimes(TouchstoneTest):
+class GetWithTimes(TouchstoneTest):
     def given(self) -> object:
         self.mocks.http.setup().get('/some-endpoint', 'hello http!')
         return None
@@ -32,7 +32,7 @@ class GetCalledWithTimes(TouchstoneTest):
         return self.mocks.http.verify().get_called('/some-endpoint', times=expected_calls)
 
 
-class PostCalled(TouchstoneTest):
+class Post(TouchstoneTest):
     def given(self) -> object:
         self.mocks.http.setup().post('/some-endpoint', 'hello http!')
         return None
@@ -45,7 +45,7 @@ class PostCalled(TouchstoneTest):
         return self.mocks.http.verify().post_called('/some-endpoint')
 
 
-class PutCalled(TouchstoneTest):
+class Put(TouchstoneTest):
     def given(self) -> object:
         self.mocks.http.setup().put('/some-endpoint', 'hello http!')
         return None
@@ -59,7 +59,7 @@ class PutCalled(TouchstoneTest):
         return self.mocks.http.verify().put_called('/some-endpoint')
 
 
-class DeleteCalled(TouchstoneTest):
+class Delete(TouchstoneTest):
     def given(self) -> object:
         self.mocks.http.setup().delete('/some-endpoint', 'hello http!')
         return None
@@ -122,3 +122,16 @@ class DeleteContained(TouchstoneTest):
     def then(self, given, result) -> bool:
         expected_body = 'foo'
         return self.mocks.http.verify().delete_contained('/some-endpoint', expected_body)
+
+
+class WildcardMatches(TouchstoneTest):
+    def given(self) -> object:
+        self.mocks.http.setup().get('/some-endpoint/([a-z]*)/bar', 'hello http!')
+        return None
+
+    def when(self, given) -> object:
+        urllib.request.urlopen(f'{self.mocks.http.url()}/some-endpoint/foo/bar')
+        return None
+
+    def then(self, given, result) -> bool:
+        return self.mocks.http.verify().get_called('/some-endpoint/foo/bar')
