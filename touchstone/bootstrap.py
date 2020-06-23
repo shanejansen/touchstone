@@ -18,7 +18,8 @@ from touchstone.lib.tests import Tests
 
 class Bootstrap(object):
     def __init__(self, is_dev_mode=False):
-        touchstone_config = self.__build_touchstone_config(os.getcwd())
+        root = os.path.join(os.getcwd(), 'touchstone')
+        touchstone_config = self.__build_touchstone_config(root)
         self.is_dev_mode = is_dev_mode
         self.docker_manager = DockerManager(should_auto_discover=not self.is_dev_mode)
         self.mocks = self.__build_mocks(touchstone_config.config['root'],
@@ -30,7 +31,7 @@ class Bootstrap(object):
                                               self.mocks)
 
     def __build_touchstone_config(self, root) -> TouchstoneConfig:
-        config = TouchstoneConfig(os.getcwd())
+        config = TouchstoneConfig(root)
         path = os.path.join(root, 'touchstone.yml')
         with open(path, 'r') as file:
             config.merge(yaml.safe_load(file))

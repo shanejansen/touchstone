@@ -62,8 +62,8 @@ def __print_help():
           'help - Prints this message.\n'
           'run - Runs all Touchstone tests.\n'
           'run {service} {test file name} {test name} - Run a single test. Leaves mocks in the tested state.\n'
-          'services start - Starts all services under test.\n'
-          'services stop - Stops all services under test.\n'
+          'services start - If you don\'t want to run services manually, this starts all services with a non-empty Dockerfile.\n'
+          'services stop - Stops all started containerized services.\n'
           'mocks print - Prints mock UI URLs.\n'
           'mocks reset - Resets all mocks to their default state.\n'
           'exit - Exit Touchstone.\n')

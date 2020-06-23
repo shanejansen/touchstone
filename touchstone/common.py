@@ -14,16 +14,20 @@ __camel_to_snake_pattern = re.compile(r'(?<!^)(?=[A-Z])')
 
 def sanity_check_passes() -> bool:
     # Ensure paths and files exist
-    touchstone_path = os.path.join(os.getcwd(), 'touchstone.yml')
-    defaults_path = os.path.join(os.getcwd(), 'defaults')
-    paths_exist = os.path.exists(touchstone_path) and os.path.exists(defaults_path)
+    touchstone_path = os.path.join(os.getcwd(), 'touchstone')
+    touchstone_yml_path = os.path.join(touchstone_path, 'touchstone.yml')
+    defaults_path = os.path.join(touchstone_path, 'defaults')
+    paths_exist = os.path.exists(touchstone_path) \
+                  and os.path.exists(touchstone_yml_path) \
+                  and os.path.exists(defaults_path)
     if not paths_exist:
-        print('touchstone.yml and the defaults directory could not be found. '
+        print('The touchstone directory, touchstone.yml, or the defaults directory could not be found. '
               'If touchstone has not been initialized, run \'touchstone init\'.')
+        return False
 
     # Ensure versions are compatible
     versions_match = False
-    with open(touchstone_path, 'r') as file:
+    with open(touchstone_yml_path, 'r') as file:
         touchstone_config = yaml.safe_load(file)
         given_version = touchstone_config.get('touchstone-version')
         if given_version:
@@ -36,8 +40,7 @@ def sanity_check_passes() -> bool:
                       f'version:"{__version__}"')
         else:
             print('A touchstone version number must be defined in "touchstone.yml".')
-
-    return paths_exist and versions_match
+    return versions_match
 
 
 def dict_merge(base: dict, override: dict) -> dict:

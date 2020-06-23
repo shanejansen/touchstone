@@ -11,16 +11,13 @@ class TestDockerManager(TestCase):
         self.docker_manager = DockerManager(should_auto_discover=False)
 
     @mock.patch('touchstone.lib.docker_manager.subprocess')
-    def test_buildDockerfile_CommandReturnsNon0_imageNotCreated(self, mock_subprocess: Mock):
+    def test_buildDockerfile_CommandReturnsNon0_exceptionRaised(self, mock_subprocess: Mock):
         # Given
         dockerfile_path = '../'
         mock_subprocess.run.return_value = Mock(**{'returncode': 1})
 
-        # When
-        result = self.docker_manager.build_dockerfile(dockerfile_path)
-
         # Then
-        self.assertIsNone(result)
+        self.assertRaises(exceptions.ContainerException, self.docker_manager.build_dockerfile, dockerfile_path)
 
     @mock.patch('touchstone.lib.docker_manager.subprocess')
     def test_runImage_commandReturnsNon0_exceptionRaised(self, mock_subprocess: Mock):

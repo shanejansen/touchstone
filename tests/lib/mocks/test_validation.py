@@ -71,13 +71,17 @@ class TestValidation(TestCase):
     def test_matches_MatchingNestedDict_ReturnsTrue(self):
         # Given
         expected = {
-            'foo': 'foo',
+            'foo': {
+                'nested': 'buzz'
+            },
             'bar': {
                 'buzz': 'baz'
             }
         }
         actual = {
-            'foo': 'foo',
+            'foo': {
+                'nested': 'buzz'
+            },
             'bar': {
                 'buzz': 'baz'
             }

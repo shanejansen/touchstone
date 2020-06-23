@@ -48,8 +48,9 @@ class DockerMysqlRunnable(INetworkedRunnable, IMysqlBehavior):
         self.__setup.init(self.__defaults_configurer.get_config())
 
     def start(self):
-        run_result = self.__docker_manager.run_image('mysql:5.7.29', port=3306,
-                                                     environment_vars=[('MYSQL_ROOT_PASSWORD', self.__USERNAME)])
+        run_result = self.__docker_manager.run_image(
+            'mysql:8.0.20 --default-authentication-plugin=mysql_native_password', port=3306,
+            environment_vars=[('MYSQL_ROOT_PASSWORD', self.__USERNAME)])
         self.__container_id = run_result.container_id
 
         ui_port = None

@@ -1,13 +1,11 @@
 import json
-
-from touchstone.lib.touchstone_test import TouchstoneTest
-
 from tests import creds
+from touchstone.lib.touchstone_test import TouchstoneTest
 
 
 class OrderMessageReceived(TouchstoneTest):
     """
-    GIVEN an oder.
+    GIVEN an order.
     WHEN the given order is submitted to the 'order-placed.exchange'.
     THEN a mongo document should exist with that order.
     """

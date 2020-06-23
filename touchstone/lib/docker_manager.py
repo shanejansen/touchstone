@@ -23,7 +23,7 @@ class DockerManager(object):
         self.__should_auto_discover = should_auto_discover
         self.__network: Optional[str] = None
 
-    def build_dockerfile(self, dockerfile_path: str) -> Optional[str]:
+    def build_dockerfile(self, dockerfile_path: str) -> str:
         # Build context will always be the same location as the Dockerfile for our purposes
         build_context = os.path.dirname(dockerfile_path)
         tag = uuid.uuid4().hex
@@ -31,7 +31,7 @@ class DockerManager(object):
         common.logger.debug(f'Building Dockerfile with command: {command}')
         result = subprocess.run(command, shell=True, stdout=subprocess.DEVNULL)
         if result.returncode is not 0:
-            return None
+            raise exceptions.ContainerException(f'An error occurred while building Dockerfile: "{dockerfile_path}".')
         self.__images.append(tag)
         return tag
 
