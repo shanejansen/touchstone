@@ -11,7 +11,7 @@ from touchstone.lib.configs.touchstone_config import TouchstoneConfig
 from touchstone.lib.docker_manager import DockerManager
 from touchstone.lib.mocks.mock_factory import MockFactory
 from touchstone.lib.mocks.mocks import Mocks
-from touchstone.lib.services.networked_service import NetworkedService
+from touchstone.lib.services.service_factory import ServiceFactory
 from touchstone.lib.services.services import Services
 from touchstone.lib.tests import Tests
 
@@ -44,8 +44,8 @@ class Bootstrap(object):
             defaults_paths[Path(default_file).stem] = default_file
 
         mocks = Mocks()
+        mock_factory = MockFactory(self.is_dev_mode, root, defaults_paths, configs, host, self.docker_manager)
         for mock_name in configs:
-            mock_factory = MockFactory(self.is_dev_mode, root, defaults_paths, configs, host, self.docker_manager)
             mock = mock_factory.get_mock(mock_name)
             if not mock:
                 raise exceptions.MockNotSupportedException(f'Mock: {mock_name} is not supported.')
@@ -54,21 +54,16 @@ class Bootstrap(object):
         return mocks
 
     def __build_services(self, root, host, user_service_configs, mocks) -> Services:
-        services = []
-        for given_service_config in user_service_configs:
+        services = Services()
+        service_factory = ServiceFactory(self.is_dev_mode, root, self.docker_manager)
+        for user_service_config in user_service_configs:
             service_config = ServiceConfig(host)
-            service_config.merge(given_service_config)
+            service_config.merge(user_service_config)
             tests_path = os.path.abspath(os.path.join(root, service_config.config['tests']))
-            tests = Tests(mocks, tests_path)
-            dockerfile_path = None
-            if service_config.config['dockerfile']:
-                dockerfile_path = os.path.abspath(os.path.join(root, service_config.config['dockerfile']))
-            service = NetworkedService(service_config.config['name'], tests, dockerfile_path, self.docker_manager, host,
-                                       service_config.config['port'], service_config.config['availability_endpoint'],
-                                       service_config.config['num_retries'],
-                                       service_config.config['seconds_between_retries'])
-            services.append(service)
-        return Services(services)
+            tests = Tests(mocks, services, tests_path)
+            service = service_factory.get_service(service_config, tests)
+            services.add_service(service)
+        return services
 
     def cleanup(self):
         self.services.stop()

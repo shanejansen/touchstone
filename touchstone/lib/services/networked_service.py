@@ -46,7 +46,7 @@ class NetworkedService(IService, ITestable, IRunnable):
             self.__container_id = run_result.container_id
             self.__port = run_result.external_port
         else:
-            self.__log('Service could not be started. A Dockerfile was not supplied. Please check your touchstone.yml.')
+            self.__log('Service could not be started. A Dockerfile was not supplied. Check your "touchstone.yml".')
 
     def stop(self):
         if self.__container_id:

@@ -9,7 +9,7 @@ from touchstone.lib.services.services import Services
 class TestServices(TestCase):
     def test_start_servicesNotRunning_servicesAreRunning(self):
         # Given
-        services = Services([])
+        services = Services()
 
         # When
         services.start([])
@@ -19,7 +19,7 @@ class TestServices(TestCase):
 
     def test_stop_servicesRunning_servicesAreNotRunning(self):
         # Given
-        services = Services([])
+        services = Services()
 
         # When
         services.start([])
@@ -32,7 +32,8 @@ class TestServices(TestCase):
         # Given
         mock_service = Mock()
         mock_service.run_all_tests.return_value = True
-        services = Services([mock_service])
+        services = Services()
+        services.add_service(mock_service)
 
         # When
         result = services.run_all_tests()
@@ -45,7 +46,8 @@ class TestServices(TestCase):
         MagicMock()
         mock_service = Mock(spec=ITestable)
         mock_service.run_all_tests.return_value = False
-        services = Services([mock_service])
+        services = Services()
+        services.add_service(mock_service)
 
         # When
         result = services.run_all_tests()

@@ -1,27 +1,35 @@
 from typing import List, Tuple
 
+from touchstone.lib import exceptions
+from touchstone.lib.services.i_executable import IExecutable
 from touchstone.lib.services.i_runnable import IRunnable
 from touchstone.lib.services.i_service import IService
+from touchstone.lib.services.i_service_executor import IServiceExecutor
 from touchstone.lib.services.i_testable import ITestable
 
 
-class Services(object):
-    def __init__(self, services: List[IService]):
-        self.__services = services
+class Services(IServiceExecutor):
+    def __init__(self):
+        self.__services: List[IService] = []
         self.__services_running = False
+
+    def add_service(self, service: IService):
+        self.__services.append(service)
 
     def start(self, environment_vars: List[Tuple[str, str]] = []):
         if self.__services_running:
             print('Services have already been started. They cannot be started again.')
         else:
-            print(f'Starting services {[_.get_name() for _ in self.__services]}...')
+            runnables: List[IRunnable] = []
             for service in self.__services:
                 if isinstance(service, IRunnable):
-                    service.start(environment_vars)
+                    runnables.append(service)
+            print(f'Starting services {[_.get_name() for _ in runnables]}...')
+            for service in runnables:
+                service.start(environment_vars)
             self.__services_running = True
-            for service in self.__services:
-                if isinstance(service, IRunnable):
-                    service.wait_for_availability()
+            for service in runnables:
+                service.wait_for_availability()
             print('Finished starting services.\n')
 
     def stop(self):
@@ -31,7 +39,16 @@ class Services(object):
                 service.stop()
         self.__services_running = False
 
-    def run_test(self, service_name, file_name, test_name) -> bool:
+    def execute(self, service_name: str):
+        found = False
+        for service in self.__services:
+            if service.get_name() == service_name and isinstance(service, IExecutable):
+                found = True
+                service.execute()
+        if not found:
+            raise exceptions.ServiceException(f'Service could not be found with name: "{service_name}".')
+
+    def run_test(self, service_name: str, file_name: str, test_name: str) -> bool:
         found_service = None
         for service in self.__services:
             if service.get_name().replace(' ', '-').lower() == service_name \

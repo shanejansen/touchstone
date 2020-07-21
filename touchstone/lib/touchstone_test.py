@@ -1,14 +1,16 @@
 import abc
 
 from touchstone.lib.mocks.mocks import Mocks
+from touchstone.lib.services.i_service_executor import IServiceExecutor
 
 
 class TouchstoneTest(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, service_url: str, mocks: Mocks):
+    def __init__(self, service_url: str, mocks: Mocks, service_executor: IServiceExecutor):
         self.service_url = service_url
         self.mocks = mocks
+        self.service_executor = service_executor
 
     def processing_period(self) -> float:
         """The amount of time to wait before "then" is executed. This is useful to configure if you are using a mock

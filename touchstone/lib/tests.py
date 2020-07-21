@@ -5,14 +5,16 @@ import os
 import sys
 
 from touchstone.lib.mocks.mocks import Mocks
+from touchstone.lib.services.i_service_executor import IServiceExecutor
 from touchstone.lib.test import TestContainer, TestClass
 
 
 class Tests(object):
     __TEST_PREFIX = 'test_'
 
-    def __init__(self, mocks: Mocks, tests_path: str):
+    def __init__(self, mocks: Mocks, service_executor: IServiceExecutor, tests_path: str):
         self.__mocks = mocks
+        self.__service_executor = service_executor
         self.__tests_path = tests_path
 
     def run(self, file_name: str, test_name: str, service_url: str = None) -> bool:
@@ -23,7 +25,7 @@ class Tests(object):
         if not test_container:
             print(f'No tests found with file name "{file_name}".')
             return False
-        return test_container.execute(service_url, self.__mocks)
+        return test_container.execute(service_url, self.__mocks, self.__service_executor)
 
     def run_all(self, service_url: str = None) -> bool:
         self.__load_package(self.__tests_path)
@@ -36,7 +38,7 @@ class Tests(object):
         tests_passed = True
         for test_container in all_test_containers:
             print(test_container.file)
-            if not test_container.execute(service_url, self.__mocks):
+            if not test_container.execute(service_url, self.__mocks, self.__service_executor):
                 tests_passed = False
 
         self.__mocks.reset()
