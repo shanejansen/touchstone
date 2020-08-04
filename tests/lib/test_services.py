@@ -12,7 +12,7 @@ class TestServices(TestCase):
         services = Services()
 
         # When
-        services.start([])
+        services.start()
 
         # Then
         self.assertTrue(services.are_running())
@@ -22,7 +22,7 @@ class TestServices(TestCase):
         services = Services()
 
         # When
-        services.start([])
+        services.start()
         services.stop()
 
         # Then

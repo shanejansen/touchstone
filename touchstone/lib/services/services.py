@@ -12,11 +12,15 @@ class Services(IServiceExecutor):
     def __init__(self):
         self.__services: List[IService] = []
         self.__services_running = False
+        self.__environment_vars: List[Tuple[str, str]] = []
 
     def add_service(self, service: IService):
         self.__services.append(service)
 
-    def start(self, environment_vars: List[Tuple[str, str]] = []):
+    def add_environment_vars(self, environment_vars: List[Tuple[str, str]] = []):
+        self.__environment_vars.extend(environment_vars)
+
+    def start(self):
         if self.__services_running:
             print('Services have already been started. They cannot be started again.')
         else:
@@ -26,7 +30,7 @@ class Services(IServiceExecutor):
                     runnables.append(service)
             print(f'Starting services {[_.get_name() for _ in runnables]}...')
             for service in runnables:
-                service.start(environment_vars)
+                service.start(self.__environment_vars)
             self.__services_running = True
             for service in runnables:
                 service.wait_for_availability()
@@ -44,7 +48,7 @@ class Services(IServiceExecutor):
         for service in self.__services:
             if service.get_name() == service_name and isinstance(service, IExecutable):
                 found = True
-                service.execute()
+                service.execute(self.__environment_vars)
         if not found:
             raise exceptions.ServiceException(f'Service could not be found with name: "{service_name}".')
 

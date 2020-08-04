@@ -42,7 +42,7 @@ class NetworkedService(IService, ITestable, IRunnable):
         if self.__dockerfile_path is not None:
             self.__log('Building and running Dockerfile...')
             tag = self.__docker_manager.build_dockerfile(self.__dockerfile_path)
-            run_result = self.__docker_manager.run_image(tag, self.__port, environment_vars=environment_vars)
+            run_result = self.__docker_manager.run_background_image(tag, self.__port, environment_vars=environment_vars)
             self.__container_id = run_result.container_id
             self.__port = run_result.external_port
         else:

@@ -14,7 +14,7 @@ class ServiceConfig(object):
             'availability_endpoint': '',
             'num_retries': 20,
             'seconds_between_retries': 5,
-            'execute_command': ''
+            'develop_command': ''
         }
         service_type = self.config['type']
         if service_type != 'networked' and service_type != 'executable':

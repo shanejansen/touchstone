@@ -22,7 +22,11 @@ jobs:
         working-directory: ./touchstone-tests
         run: |
           touchstone run
-      - name: Run Java example Touchstone Tests
+      - name: Run Java Spring example Touchstone Tests
         working-directory: ./examples/java-spring
         run: |
           touchstone run
+      - name: Run Python Spark example Touchstone Tests
+          working-directory: ./examples/python-spark
+          run: |
+            touchstone run

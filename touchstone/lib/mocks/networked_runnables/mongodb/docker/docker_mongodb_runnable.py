@@ -35,16 +35,18 @@ class DockerMongodbRunnable(INetworkedRunnable, IMongodbBehavior):
         self.__setup.init(self.__defaults_configurer.get_config())
 
     def start(self):
-        run_result = self.__docker_manager.run_image('mongo:4.0.14', port=27017)
+        run_result = self.__docker_manager.run_background_image('mongo:4.0.14', port=27017)
         self.__container_id = run_result.container_id
 
         ui_port = None
         if self.__is_dev_mode:
-            ui_run_result = self.__docker_manager.run_image('mongo-express:0.49.0',
-                                                            ui_port=8081,
-                                                            environment_vars=[
-                                                                ('ME_CONFIG_MONGODB_PORT', run_result.internal_port),
-                                                                ('ME_CONFIG_MONGODB_SERVER', run_result.container_id)])
+            ui_run_result = self.__docker_manager.run_background_image('mongo-express:0.49.0',
+                                                                       ui_port=8081,
+                                                                       environment_vars=[
+                                                                           ('ME_CONFIG_MONGODB_PORT',
+                                                                            run_result.internal_port),
+                                                                           ('ME_CONFIG_MONGODB_SERVER',
+                                                                            run_result.container_id)])
             self.__ui_container_id = ui_run_result.container_id
             ui_port = ui_run_result.ui_port
 

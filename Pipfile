@@ -4,6 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pyspark = "~=2.3.2"
 
 [packages]
 pyfiglet = "~=0.8"

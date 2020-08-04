@@ -3,5 +3,8 @@ touchstone-version: 1.2.0
 services:
   - name: my-exec
     type: executable
-    execute_command: echoo hello-world
+    dockerfile: ../Dockerfile
+    develop_command: spark-submit --jars jars/mysql-connector-java-8.0.21.jar ./src/main.py
 mocks:
+  filesystem:
+  mysql:

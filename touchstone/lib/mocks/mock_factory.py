@@ -91,9 +91,10 @@ class MockFactory(object):
             mock = NetworkedMock('s3', 'S3', self.__host, runnable)
         elif mock_name == 'filesystem':
             defaults_configurer = FileConfigurer(mock_defaults_paths)
-            base_files_path = os.path.join(self.__root, 'defaults')
-            setup = LocalFilesystemSetup(base_files_path)
-            verify = LocalFilesystemVerify(base_files_path)
-            runnable = LocalFilesystemRunnable(defaults_configurer, base_files_path, setup, verify)
+            files_path = os.path.join(self.__root, 'io')
+            base_files_path = os.path.join(self.__root, 'defaults', 'filesystem')
+            setup = LocalFilesystemSetup(files_path, base_files_path)
+            verify = LocalFilesystemVerify(files_path)
+            runnable = LocalFilesystemRunnable(defaults_configurer, files_path, setup, verify)
             mock = BasicMock('filesystem', 'Filesystem', runnable)
         return mock

@@ -48,7 +48,8 @@ class DockerRabbitmqRunnable(INetworkedRunnable, IRabbitmqBehavior):
             self.__setup.create_all(self.__defaults_configurer.get_config())
 
     def start(self):
-        run_result = self.__docker_manager.run_image('rabbitmq:3.7.22-management-alpine', port=5672, ui_port=15672)
+        run_result = self.__docker_manager.run_background_image('rabbitmq:3.7.22-management-alpine', port=5672,
+                                                                ui_port=15672)
         self.__container_id = run_result.container_id
         self.__network = Network(internal_host=run_result.container_id,
                                  internal_port=run_result.internal_port,

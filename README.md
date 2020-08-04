@@ -68,10 +68,23 @@ This directory contains YAML files where default values for mocked dependencies 
 ### `/tests`
 [Example](./examples/java-spring/touchstone/tests)  
 This directory is the default location for your Touchstone tests. This can optionally be configured for each service in `touchstone.yml`.  
-Touchstone follows a _given_, _when_, _then_ testing pattern. Each test is declared in a Python file prefixed with `test_` containing classes that extend `TouchstoneTest`. By extending this class, you can access Touchstone mocked dependencies to setup and then verify your requirements. For example, we can insert a document into a Mongo DB collection and then verify it exists using the following APIs:
+Touchstone follows a _given_, _when_, _then_ testing pattern. Each test is declared in a Python file prefixed with `test_` containing classes that extend `TouchstoneTest`. By extending this class, you can access Touchstone mocked dependencies to setup and then verify your requirements. For example, we can insert a user document into a Mongo DB collection, send a "PUT" request to our service with an updated email address, and then verify the updated document exists:
 ```python
-self.mocks.mongodb.setup().insert_document('my_db', 'my_collection', {'foo': 'bar'})
-result: bool = self.mocks.mongodb.verify().document_exists('my_db', 'my_collection', {'foo': 'bar'})
+class UpdateUser(TouchstoneTest):
+    def given(self) -> object:
+        self.mocks.mongodb.setup().insert_document('my_db', 'users', {'name': 'Foo', 'email': 'bar@example.com'})
+        user_update = {'name': 'Foo', 'email': 'foo@example.com'}
+        return user_update # user_update is passed to "when" and "then" for reference
+
+    def when(self, given) -> object:
+        body = bytes(json.dumps(given), encoding='utf-8')
+        request = urllib.request.Request(f'{self.service_url}/user', data=body, method='PUT',
+                                         headers={'Content-type': 'application/json'})
+        urllib.request.urlopen(request)
+        return None # The response from our service could be returned here for additional validation in "then"
+
+    def then(self, given, result) -> bool:
+        return self.mocks.mongodb.verify().document_exists('my_db', 'users', given)
 ```
 Important APIs:
  * `self.mocks` - Hook into Touchstone managed mock dependencies.

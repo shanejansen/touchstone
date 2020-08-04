@@ -29,6 +29,5 @@ class ServiceFactory(object):
                                        service_config.config['seconds_between_retries'])
         elif service_config.config['type'] == 'executable':
             service = ExecutableService(service_config.config['name'], self.__is_dev_mode, tests, dockerfile_path,
-                                        self.__docker_manager, service_config.config['execute_command'])
-
+                                        self.__docker_manager, service_config.config['develop_command'])
         return service

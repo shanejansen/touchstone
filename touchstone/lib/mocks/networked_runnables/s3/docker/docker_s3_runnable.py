@@ -41,10 +41,11 @@ class DockerS3Runnable(INetworkedRunnable, IS3Behavior):
         self.__setup.init(self.__base_objects_path, self.__defaults_configurer.get_config())
 
     def start(self):
-        run_result = self.__docker_manager.run_image('minio/minio:RELEASE.2020-02-27T00-23-05Z server /data',
-                                                     port=9000,
-                                                     environment_vars=[('MINIO_ACCESS_KEY', self.__USERNAME),
-                                                                       ('MINIO_SECRET_KEY', self.__PASSWORD)])
+        run_result = self.__docker_manager.run_background_image('minio/minio:RELEASE.2020-02-27T00-23-05Z server /data',
+                                                                port=9000,
+                                                                environment_vars=[('MINIO_ACCESS_KEY', self.__USERNAME),
+                                                                                  (
+                                                                                  'MINIO_SECRET_KEY', self.__PASSWORD)])
         self.__container_id = run_result.container_id
         self.__network = Network(internal_host=run_result.container_id,
                                  internal_port=run_result.internal_port,

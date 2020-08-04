@@ -14,6 +14,8 @@ N/A
 
 
 ## Defaults Example
+**WARNING:** Each path listed under `directories` is deleted after each test! This ensures consistency between tests as files are re-copied.
+
 ```yaml
 ---
 directories:

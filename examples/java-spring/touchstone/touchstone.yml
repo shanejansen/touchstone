@@ -2,8 +2,8 @@
 touchstone-version: 1.2.0
 services:
   - name: my-app
-    availability_endpoint: "/actuator/health"
-    dockerfile: "../Dockerfile"
+    availability_endpoint: /actuator/health
+    dockerfile: ../Dockerfile
 mocks:
   http:
   rabbitmq:

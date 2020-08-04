@@ -1,0 +1,5 @@
+---
+databases:
+  - name: myapp
+    statements:
+      - "CREATE TABLE numbers (name VARCHAR(255), number VARCHAR(255))"

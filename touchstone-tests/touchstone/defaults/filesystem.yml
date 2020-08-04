@@ -1,9 +1,0 @@
----
-directories:
-  - path: ./filesystem/some-dir
-    files:
-      - ./filesystem/foo.csv
-      - ./filesystem/bar.png
-  - path: ./filesystem/some-dir/sub-dir
-    files:
-      - ./filesystem/foo.csv

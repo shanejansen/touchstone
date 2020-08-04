@@ -26,7 +26,7 @@ class TestDockerManager(TestCase):
         mock_subprocess.run.return_value = Mock(**{'returncode': 1})
 
         # Then
-        self.assertRaises(exceptions.ContainerException, self.docker_manager.run_image, image)
+        self.assertRaises(exceptions.ContainerException, self.docker_manager.run_background_image, image)
         self.assertFalse(self.docker_manager.containers_running())
 
     @mock.patch('touchstone.lib.docker_manager.subprocess')
@@ -35,8 +35,8 @@ class TestDockerManager(TestCase):
         mock_subprocess.run.return_value = Mock(**{'returncode': 0, 'stdout': bytes()})
 
         # When
-        self.docker_manager.run_image('some-container')
-        self.docker_manager.run_image('some-container1')
+        self.docker_manager.run_background_image('some-container')
+        self.docker_manager.run_background_image('some-container1')
         self.docker_manager.cleanup()
 
         # Then

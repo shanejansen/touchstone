@@ -3,7 +3,7 @@ touchstone-version: 1.2.0
 services:
   - name: my-app
     port: 8080
-    dockerfile: "../Dockerfile"
+    dockerfile: ../Dockerfile
 mocks:
   http:
   rabbitmq:

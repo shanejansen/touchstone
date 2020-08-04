@@ -48,17 +48,18 @@ class DockerMysqlRunnable(INetworkedRunnable, IMysqlBehavior):
         self.__setup.init(self.__defaults_configurer.get_config())
 
     def start(self):
-        run_result = self.__docker_manager.run_image(
+        run_result = self.__docker_manager.run_background_image(
             'mysql:8.0.20 --default-authentication-plugin=mysql_native_password', port=3306,
             environment_vars=[('MYSQL_ROOT_PASSWORD', self.__USERNAME)])
         self.__container_id = run_result.container_id
 
         ui_port = None
         if self.__is_dev_mode:
-            ui_run_result = self.__docker_manager.run_image('adminer:4.7.5-standalone',
-                                                            ui_port=8080,
-                                                            environment_vars=[
-                                                                ('ADMINER_DEFAULT_SERVER', self.__container_id)])
+            ui_run_result = self.__docker_manager.run_background_image('adminer:4.7.5-standalone',
+                                                                       ui_port=8080,
+                                                                       environment_vars=[
+                                                                           ('ADMINER_DEFAULT_SERVER',
+                                                                            self.__container_id)])
             self.__ui_container_id = ui_run_result.container_id
             ui_port = ui_run_result.ui_port
 

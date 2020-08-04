@@ -31,7 +31,8 @@ class DockerHttpRunnable(INetworkedRunnable, IHttpBehavior):
         self.__setup.init(self.__defaults_configurer.get_config())
 
     def start(self):
-        run_result = self.__docker_manager.run_image('holomekc/wiremock-gui:2.25.1', port=8080, exposed_port=9090)
+        run_result = self.__docker_manager.run_background_image('holomekc/wiremock-gui:2.25.1', port=8080,
+                                                                exposed_port=9090)
         self.__container_id = run_result.container_id
         self.__network = Network(internal_host=run_result.container_id,
                                  internal_port=run_result.internal_port,

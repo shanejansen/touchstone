@@ -35,7 +35,8 @@ def execute():
                 bootstrap.services.run_test(parts[1], parts[2], parts[3])
             elif command == 'services start':
                 try:
-                    bootstrap.services.start(bootstrap.mocks.environment_vars())
+                    bootstrap.services.add_environment_vars(bootstrap.mocks.environment_vars())
+                    bootstrap.services.start()
                     bootstrap.mocks.services_became_available()
                 except KeyboardInterrupt:
                     bootstrap.services.stop()
