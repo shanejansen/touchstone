@@ -27,6 +27,6 @@ jobs:
         run: |
           touchstone run
       - name: Run Python Spark example Touchstone Tests
-          working-directory: ./examples/python-spark
-          run: |
-            touchstone run
+        working-directory: ./examples/python-spark
+        run: |
+          touchstone run
