@@ -1,5 +1,5 @@
 ---
-touchstone-version: 1.2.0
+touchstone-version: 1.2.1
 services:
   - name: my-app
     port: 8080
