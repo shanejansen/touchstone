@@ -5,7 +5,7 @@ from touchstone.lib.touchstone_test import TouchstoneTest
 
 class FileExists(TouchstoneTest):
     def given(self) -> object:
-        return 'some-dir/foo.csv'
+        return os.path.join('some-dir', 'foo.csv')
 
     def when(self, given) -> object:
         return None
@@ -16,7 +16,7 @@ class FileExists(TouchstoneTest):
 
 class FileExistsWithWildcard(TouchstoneTest):
     def given(self) -> object:
-        return 'some-dir/*.csv'
+        return os.path.join('some-dir', '*.csv')
 
     def when(self, given) -> object:
         return None
