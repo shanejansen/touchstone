@@ -1,7 +1,7 @@
 import json
 import urllib.request
 
-from touchstone.lib.mocks import validation
+from touchstone.helpers import validation
 from touchstone.lib.mocks.networked_runnables.http.i_http_behavior import IHttpVerify
 
 

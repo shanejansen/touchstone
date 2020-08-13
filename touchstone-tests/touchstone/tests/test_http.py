@@ -1,5 +1,4 @@
-import urllib.request
-
+from touchstone.helpers import http
 from touchstone.lib.touchstone_test import TouchstoneTest
 
 
@@ -9,7 +8,7 @@ class Get(TouchstoneTest):
         return None
 
     def when(self, given) -> object:
-        urllib.request.urlopen(f'{self.mocks.http.url()}/some-endpoint')
+        http.get(f'{self.mocks.http.url()}/some-endpoint')
         return None
 
     def then(self, given, result) -> bool:
@@ -22,14 +21,13 @@ class GetWithTimes(TouchstoneTest):
         return None
 
     def when(self, given) -> object:
-        urllib.request.urlopen(f'{self.mocks.http.url()}/some-endpoint')
-        urllib.request.urlopen(f'{self.mocks.http.url()}/some-endpoint')
-        urllib.request.urlopen(f'{self.mocks.http.url()}/some-endpoint')
+        http.get(f'{self.mocks.http.url()}/some-endpoint')
+        http.get(f'{self.mocks.http.url()}/some-endpoint')
+        http.get(f'{self.mocks.http.url()}/some-endpoint')
         return None
 
     def then(self, given, result) -> bool:
-        expected_calls = 3
-        return self.mocks.http.verify().get_called('/some-endpoint', times=expected_calls)
+        return self.mocks.http.verify().get_called('/some-endpoint', times=3)
 
 
 class Post(TouchstoneTest):
@@ -38,7 +36,7 @@ class Post(TouchstoneTest):
         return None
 
     def when(self, given) -> object:
-        urllib.request.urlopen(f'{self.mocks.http.url()}/some-endpoint', data=bytes())
+        http.post(f'{self.mocks.http.url()}/some-endpoint')
         return None
 
     def then(self, given, result) -> bool:
@@ -51,8 +49,7 @@ class Put(TouchstoneTest):
         return None
 
     def when(self, given) -> object:
-        request = urllib.request.Request(f'{self.mocks.http.url()}/some-endpoint', method='PUT')
-        urllib.request.urlopen(request)
+        http.put(f'{self.mocks.http.url()}/some-endpoint')
         return None
 
     def then(self, given, result) -> bool:
@@ -65,8 +62,7 @@ class Delete(TouchstoneTest):
         return None
 
     def when(self, given) -> object:
-        request = urllib.request.Request(f'{self.mocks.http.url()}/some-endpoint', method='DELETE')
-        urllib.request.urlopen(request)
+        http.delete(f'{self.mocks.http.url()}/some-endpoint')
         return None
 
     def then(self, given, result) -> bool:
@@ -79,15 +75,11 @@ class PostContained(TouchstoneTest):
         return None
 
     def when(self, given) -> object:
-        body = 'foo'.encode('utf8')
-        request = urllib.request.Request(f'{self.mocks.http.url()}/some-endpoint', method='POST',
-                                         data=body)
-        urllib.request.urlopen(request)
+        http.post(f'{self.mocks.http.url()}/some-endpoint', 'foo')
         return None
 
     def then(self, given, result) -> bool:
-        expected_body = 'foo'
-        return self.mocks.http.verify().post_contained('/some-endpoint', expected_body)
+        return self.mocks.http.verify().post_contained('/some-endpoint', 'foo')
 
 
 class PutContained(TouchstoneTest):
@@ -96,15 +88,11 @@ class PutContained(TouchstoneTest):
         return None
 
     def when(self, given) -> object:
-        body = 'foo'.encode('utf8')
-        request = urllib.request.Request(f'{self.mocks.http.url()}/some-endpoint', method='PUT',
-                                         data=body)
-        urllib.request.urlopen(request)
+        http.put(f'{self.mocks.http.url()}/some-endpoint', 'foo')
         return None
 
     def then(self, given, result) -> bool:
-        expected_body = 'foo'
-        return self.mocks.http.verify().put_contained('/some-endpoint', expected_body)
+        return self.mocks.http.verify().put_contained('/some-endpoint', 'foo')
 
 
 class DeleteContained(TouchstoneTest):
@@ -113,15 +101,11 @@ class DeleteContained(TouchstoneTest):
         return None
 
     def when(self, given) -> object:
-        body = 'foo'.encode('utf8')
-        request = urllib.request.Request(f'{self.mocks.http.url()}/some-endpoint', method='DELETE',
-                                         data=body)
-        urllib.request.urlopen(request)
+        http.delete(f'{self.mocks.http.url()}/some-endpoint', 'foo')
         return None
 
     def then(self, given, result) -> bool:
-        expected_body = 'foo'
-        return self.mocks.http.verify().delete_contained('/some-endpoint', expected_body)
+        return self.mocks.http.verify().delete_contained('/some-endpoint', 'foo')
 
 
 class WildcardMatches(TouchstoneTest):
@@ -130,7 +114,7 @@ class WildcardMatches(TouchstoneTest):
         return None
 
     def when(self, given) -> object:
-        urllib.request.urlopen(f'{self.mocks.http.url()}/some-endpoint/foo/bar')
+        http.get(f'{self.mocks.http.url()}/some-endpoint/foo/bar')
         return None
 
     def then(self, given, result) -> bool:

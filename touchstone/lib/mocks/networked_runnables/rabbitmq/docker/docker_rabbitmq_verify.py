@@ -1,6 +1,9 @@
+import json
+from json.decoder import JSONDecodeError
+
 from pika.adapters.blocking_connection import BlockingChannel
 
-from touchstone.lib.mocks import validation
+from touchstone.helpers import validation
 from touchstone.lib.mocks.networked_runnables.rabbitmq.docker.docker_rabbitmq_context import DockerRabbitmqContext
 from touchstone.lib.mocks.networked_runnables.rabbitmq.i_rabbitmq_behavior import IRabbitmqVerify
 
@@ -27,3 +30,17 @@ class DockerRabbitmqVerify(IRabbitmqVerify):
             return False
         payloads = self.__rmq_context.payloads_published(exchange, routing_key)
         return validation.contains(expected_payload, payloads)
+
+    def payload_published_json(self, exchange: str, expected_payload: dict, routing_key: str = '') -> bool:
+        if not self.__rmq_context.exchange_is_tracked(exchange, routing_key):
+            return False
+        payloads = self.__rmq_context.payloads_published(exchange, routing_key)
+        for payload in payloads:
+            try:
+                payload = json.loads(payload)
+                if validation.matches(expected_payload, payload, quiet=True):
+                    return True
+            except JSONDecodeError:
+                pass
+        print(f'Expected:\n{expected_payload}\nwas not found in actual:\n{payloads}')
+        return False

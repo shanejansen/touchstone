@@ -1,8 +1,9 @@
+import json
 from threading import Thread
 
 import pika
 import pika.exceptions
-from pika import spec
+from pika import spec, BasicProperties
 from pika.adapters.blocking_connection import BlockingChannel
 
 from touchstone.lib.mocks.networked_runnables.rabbitmq.docker.docker_rabbitmq_context import DockerRabbitmqContext
@@ -84,10 +85,14 @@ class DockerRabbitmqSetup(IRabbitmqSetup):
             self.__message_consumer.channel.connection.add_callback_threadsafe(callback)
             self.__message_consumer.join()
 
-    def publish(self, exchange: str, payload: str, routing_key: str = ''):
-        """Publish a message with a payload to the given exchange and optional routing-key."""
+    def publish(self, exchange: str, payload: str, routing_key: str = '', content_type: str = None,
+                headers: dict = None):
         if self.__rmq_context.exchange_is_tracked(exchange, routing_key):
-            self.__channel.basic_publish(exchange, routing_key, bytes(payload, encoding='utf-8'))
+            properties = BasicProperties(content_type=content_type, headers=headers)
+            self.__channel.basic_publish(exchange, routing_key, bytes(payload, encoding='utf-8'), properties=properties)
+
+    def publish_json(self, exchange: str, payload: dict, routing_key: str = '', headers: dict = None):
+        self.publish(exchange, json.dumps(payload), routing_key, 'application/json', headers)
 
     def __create_exchange(self, name: str, exchange_type: str = 'direct'):
         if name not in self.__exchanges:

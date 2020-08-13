@@ -21,18 +21,19 @@ def __equals_dict(expected: dict, actual: dict) -> bool:
     return True
 
 
-def matches(expected, actual) -> bool:
+def matches(expected, actual, quiet: bool = False) -> bool:
     if isinstance(expected, dict) and isinstance(actual, dict):
         result = __equals_dict(expected, actual)
     else:
         result = __equals(expected, actual)
-    if not result:
+    if not result and not quiet:
         print(f'Expected:\n{expected}\ndoes not match actual:\n{actual}')
     return result
 
 
-def contains(expected, actual) -> bool:
+def contains(expected, actual, quiet: bool = False) -> bool:
     if expected in actual:
         return True
-    print(f'Expected:\n{expected}\nwas not found in actual:\n{actual}')
+    if not quiet:
+        print(f'Expected:\n{expected}\nwas not found in actual:\n{actual}')
     return False

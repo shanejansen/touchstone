@@ -108,3 +108,6 @@ When running via `touchstone develop`, dev ports for each mock are used. When ru
  * `TS_{MOCK_NAME}_URL` - Complete URL where the mock is running.
  * `TS_{MOCK_NAME}_USERNAME` - Username for authenticating with the mock.
  * `TS_{MOCK_NAME}_PASSWORD` - Password for authenticating with the mock.
+ 
+## Testing Non-Services (Executables)
+Touchstone can also be used to test non-service based applications. This includes applications that can be invoked via the command line like Spark jobs, for example.

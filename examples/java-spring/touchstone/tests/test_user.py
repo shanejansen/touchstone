@@ -1,10 +1,6 @@
-import json
-import urllib.request
-
-from touchstone.lib.mocks import validation
-from touchstone.lib.touchstone_test import TouchstoneTest
-
 from tests import creds
+from touchstone.helpers import validation, http
+from touchstone.lib.touchstone_test import TouchstoneTest
 
 
 class GetUser(TouchstoneTest):
@@ -26,8 +22,7 @@ class GetUser(TouchstoneTest):
         return given
 
     def when(self, given) -> object:
-        response = urllib.request.urlopen(f'{self.service_url}/user/{given["id"]}').read()
-        return json.loads(response.decode('utf-8'))
+        return http.get_json(f'{self.service_url}/user/{given["id"]}')
 
     def then(self, given, result) -> bool:
         return validation.matches(given, result)
@@ -56,11 +51,7 @@ class PostUser(TouchstoneTest):
             'firstName': given['firstName'],
             'lastName': given['lastName']
         }
-        body = bytes(json.dumps(body), encoding='utf-8')
-        request = urllib.request.Request(f'{self.service_url}/user', data=body,
-                                         headers={'Content-type': 'application/json'})
-        response = urllib.request.urlopen(request).read()
-        return json.loads(response.decode('utf-8'))
+        return http.post_json(f'{self.service_url}/user', body)
 
     def then(self, given, result) -> bool:
         expected_response = given.copy()
@@ -97,10 +88,7 @@ class PutUser(TouchstoneTest):
         return new_info
 
     def when(self, given) -> object:
-        body = bytes(json.dumps(given), encoding='utf-8')
-        request = urllib.request.Request(f'{self.service_url}/user', data=body, method='PUT',
-                                         headers={'Content-type': 'application/json'})
-        urllib.request.urlopen(request)
+        http.put_json(f'{self.service_url}/user', given)
         return None
 
     def then(self, given, result) -> bool:
@@ -132,8 +120,7 @@ class DeleteUser(TouchstoneTest):
         return user_id
 
     def when(self, given) -> object:
-        request = urllib.request.Request(f'{self.service_url}/user/{given}', method='DELETE')
-        urllib.request.urlopen(request)
+        http.delete(f'{self.service_url}/user/{given}')
         return None
 
     def then(self, given, result) -> bool:

@@ -1,7 +1,7 @@
 import unittest
 from unittest import TestCase
 
-from touchstone.lib.mocks import validation
+from touchstone.helpers import validation
 
 
 class TestValidation(TestCase):
