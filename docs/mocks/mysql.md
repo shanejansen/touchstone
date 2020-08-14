@@ -1,6 +1,6 @@
-My SQL
+MySQL
 ======
-Used to mock a My SQL dependency.
+Used to mock a MySQL dependency.
 
 
 ## Specs
@@ -11,7 +11,8 @@ Used to mock a My SQL dependency.
  
  
 ## Configuration
- * `convertCamelToSnakeCase` - Default: True. When supplying a dict to this mock's API, this value determines if the dict keys should be converted to snake case to match My SQL's convention.
+ * `convertCamelToSnakeCase` - Default: True. When supplying a dict to this mock's API, this value determines if the dict keys should be converted to snake case to match MySQL's convention.
+ * `snapshotDatabases` - Default: False. When set to True, a snapshot of the database(s) specified in the defaults file is taken when the services become healthy. This snapshot is then used during each reset the MySql mock. This can be useful if your app uses a database migration tool (e.g. Flyway) where some initial data is inserted by the apps themselves.
 
 
 ## Defaults Example

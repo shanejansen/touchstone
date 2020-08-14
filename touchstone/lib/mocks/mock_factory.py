@@ -78,7 +78,7 @@ class MockFactory(object):
             context = DockerMysqlContext()
             setup = DockerMysqlSetup(context)
             verify = DockerMysqlVerify(context)
-            runnable = DockerMysqlRunnable(defaults_configurer, self.__is_dev_mode, configurer, setup, verify,
+            runnable = DockerMysqlRunnable(defaults_configurer, context, self.__is_dev_mode, configurer, setup, verify,
                                            self.__docker_manager)
             mock = NetworkedMock('mysql', 'MySQL', self.__host, runnable)
         elif mock_name == 's3':

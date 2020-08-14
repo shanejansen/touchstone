@@ -39,6 +39,18 @@ class FileMatches(TouchstoneTest):
         return self.mocks.filesystem.verify().file_matches(path, given)
 
 
+class FileMatchesJson(TouchstoneTest):
+    def given(self) -> object:
+        return {'foo': 'bar'}
+
+    def when(self, given) -> object:
+        return None
+
+    def then(self, given, result) -> bool:
+        path = os.path.join('some-dir', 'bar.json')
+        return self.mocks.filesystem.verify().file_matches_json(path, given)
+
+
 class FileMatchesWithWildcard(TouchstoneTest):
     def given(self) -> object:
         path = os.path.join(self.mocks.filesystem.get_io_path(), 'some-dir', 'foo.csv')

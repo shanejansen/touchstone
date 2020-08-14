@@ -41,21 +41,21 @@ class IHttpVerify(object):
         pass
 
     @abc.abstractmethod
-    def put_called(self, endpoint: str, times: int = 1) -> bool:
-        """Returns True if the given endpoint has been called with a PUT request the given number of times.
-        If times is set to None, the endpoint can be called any number of times."""
-        pass
-
-    @abc.abstractmethod
-    def delete_called(self, endpoint: str, times: int = 1) -> bool:
-        """Returns True if the given endpoint has been called with a DELETE request the given number of times.
-        If times is set to None, the endpoint can be called any number of times."""
-        pass
-
-    @abc.abstractmethod
     def post_contained(self, endpoint: str, expected_body: str) -> bool:
         """Returns True if the given endpoint has been called with a POST request containing the given expected
         body."""
+        pass
+
+    @abc.abstractmethod
+    def post_contained_json(self, endpoint: str, expected_body: dict) -> bool:
+        """Returns True if the given endpoint has been called with a POST request containing the given expected
+        JSON body."""
+        pass
+
+    @abc.abstractmethod
+    def put_called(self, endpoint: str, times: int = 1) -> bool:
+        """Returns True if the given endpoint has been called with a PUT request the given number of times.
+        If times is set to None, the endpoint can be called any number of times."""
         pass
 
     @abc.abstractmethod
@@ -65,9 +65,27 @@ class IHttpVerify(object):
         pass
 
     @abc.abstractmethod
+    def put_contained_json(self, endpoint: str, expected_body: dict) -> bool:
+        """Returns True if the given endpoint has been called with a PUT request containing the given expected
+        JSON body."""
+        pass
+
+    @abc.abstractmethod
+    def delete_called(self, endpoint: str, times: int = 1) -> bool:
+        """Returns True if the given endpoint has been called with a DELETE request the given number of times.
+        If times is set to None, the endpoint can be called any number of times."""
+        pass
+
+    @abc.abstractmethod
     def delete_contained(self, endpoint: str, expected_body: str) -> bool:
         """Returns True if the given endpoint has been called with a DELETE request containing the given expected
         body."""
+        pass
+
+    @abc.abstractmethod
+    def delete_contained_json(self, endpoint: str, expected_body: dict) -> bool:
+        """Returns True if the given endpoint has been called with a DELETE request containing the given expected
+        JSON body."""
         pass
 
 

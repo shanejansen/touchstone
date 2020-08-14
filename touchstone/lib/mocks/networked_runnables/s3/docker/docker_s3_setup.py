@@ -1,3 +1,4 @@
+import json
 import os
 from io import BytesIO
 
@@ -43,3 +44,7 @@ class DockerS3Setup(IS3Setup):
         length = len(data)
         data = BytesIO(data)
         self.__s3_client.put_object(bucket_name, object_name, data, length, content_type)
+
+    def put_json_object(self, bucket_name: str, object_name: str, input_json: dict):
+        input_bytes = bytes(json.dumps(input_json), encoding='utf-8')
+        self.put_object(bucket_name, object_name, input_bytes, 'application/json')

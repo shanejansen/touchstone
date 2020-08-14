@@ -103,7 +103,7 @@ class DockerHttpSetup(IHttpSetup):
             raise exceptions.MockException('Response must be of type str.')
 
     def __submit_mock(self, mock: dict):
-        data = json.dumps(mock).encode('utf8')
+        data = json.dumps(mock).encode('utf-8')
         request = urllib.request.Request(
             f'{self.__url}/__admin/mappings', data=data, headers={'Content-Type': 'application/json'})
         response = urllib.request.urlopen(request).read()

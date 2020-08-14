@@ -10,3 +10,4 @@ mocks:
     autoCreate: False
   mongodb:
   mysql:
+    snapshotDatabases: True

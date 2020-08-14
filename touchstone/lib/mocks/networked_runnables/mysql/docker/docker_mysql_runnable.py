@@ -1,3 +1,5 @@
+import subprocess
+
 import pymysql
 
 from touchstone.lib import exceptions
@@ -5,6 +7,7 @@ from touchstone.lib.docker_manager import DockerManager
 from touchstone.lib.mocks.configurers.i_configurable import IConfigurable
 from touchstone.lib.mocks.network import Network
 from touchstone.lib.mocks.networked_runnables.i_networked_runnable import INetworkedRunnable
+from touchstone.lib.mocks.networked_runnables.mysql.docker.docker_mysql_context import DockerMysqlContext
 from touchstone.lib.mocks.networked_runnables.mysql.docker.docker_mysql_setup import DockerMysqlSetup
 from touchstone.lib.mocks.networked_runnables.mysql.docker.docker_mysql_verify import DockerMysqlVerify
 from touchstone.lib.mocks.networked_runnables.mysql.i_mysql_behabior import IMysqlBehavior, IMysqlVerify, IMysqlSetup
@@ -14,9 +17,11 @@ class DockerMysqlRunnable(INetworkedRunnable, IMysqlBehavior):
     __USERNAME = 'root'
     __PASSWORD = 'root'
 
-    def __init__(self, defaults_configurer: IConfigurable, is_dev_mode: bool, configurer: IConfigurable,
-                 setup: DockerMysqlSetup, verify: DockerMysqlVerify, docker_manager: DockerManager):
+    def __init__(self, defaults_configurer: IConfigurable, mysql_context: DockerMysqlContext, is_dev_mode: bool,
+                 configurer: IConfigurable, setup: DockerMysqlSetup, verify: DockerMysqlVerify,
+                 docker_manager: DockerManager):
         self.__defaults_configurer = defaults_configurer
+        self.__mysql_context = mysql_context
         self.__is_dev_mode = is_dev_mode
         self.__configurer = configurer
         self.__setup = setup
@@ -77,10 +82,22 @@ class DockerMysqlRunnable(INetworkedRunnable, IMysqlBehavior):
             self.__docker_manager.stop_container(self.__ui_container_id)
 
     def reset(self):
-        self.__setup.init(self.__defaults_configurer.get_config())
+        if self.__configurer.get_config()['snapshotDatabases']:
+            self.__setup.recreate_databases()
+            for database in self.__mysql_context.databases:
+                subprocess.run(f'docker exec {self.__container_id} sh -c "mysql -u {self.__USERNAME} '
+                               f'-p{self.__PASSWORD} {database} < dump-{database}.sql"', shell=True,
+                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        else:
+            self.__setup.init(self.__defaults_configurer.get_config())
 
     def services_available(self):
-        pass
+        if self.__configurer.get_config()['snapshotDatabases']:
+            for database in self.__mysql_context.databases:
+                subprocess.run(
+                    f'docker exec {self.__container_id} sh -c "mysqldump -u {self.__USERNAME} -p{self.__PASSWORD} '
+                    f'--no-create-db {database} > dump-{database}.sql"', shell=True,
+                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     def is_healthy(self) -> bool:
         try:

@@ -43,3 +43,19 @@ class PutObjectMatches(TouchstoneTest):
 
     def then(self, given, result) -> bool:
         return self.mocks.s3.verify().object_matches(self.BUCKET_NAME, self.OBJECT_NAME, given)
+
+
+class PutJsonObjectMatches(TouchstoneTest):
+    BUCKET_NAME = 'foo'
+    OBJECT_NAME = 'bar'
+
+    def given(self) -> object:
+        self.mocks.s3.setup().create_bucket(self.BUCKET_NAME)
+        return {'foo': 'bar'}
+
+    def when(self, given) -> object:
+        self.mocks.s3.setup().put_json_object(self.BUCKET_NAME, self.OBJECT_NAME, given)
+        return None
+
+    def then(self, given, result) -> bool:
+        return self.mocks.s3.verify().object_matches_json(self.BUCKET_NAME, self.OBJECT_NAME, given)

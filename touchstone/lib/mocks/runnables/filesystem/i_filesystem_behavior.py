@@ -20,6 +20,12 @@ class IFilesystemVerify(object):
         pass
 
     @abc.abstractmethod
+    def file_matches_json(self, path: str, expected: dict) -> bool:
+        """Returns True if the given path to a file matches the expected JSON. Assumes "touchstone/io" as a base
+        directory. Wildcards may be used in path."""
+        pass
+
+    @abc.abstractmethod
     def get_file_matching(self, path: str) -> Optional[str]:
         """Returns the path to a single file matching the given path including wildcards. Returns None if nothing
         found."""

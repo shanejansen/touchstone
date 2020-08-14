@@ -1,5 +1,8 @@
+import json
+
 from minio import Minio
 
+from touchstone.helpers import validation
 from touchstone.lib.mocks.networked_runnables.s3.i_s3_behavior import IS3Verify
 
 
@@ -25,3 +28,8 @@ class DockerS3Verify(IS3Verify):
         if not data_matches:
             print('Expected data does not match data in object.')
         return data_matches
+
+    def object_matches_json(self, bucket_name: str, object_name: str, expected_json: dict) -> bool:
+        data = self.__s3_client.get_object(bucket_name, object_name).data
+        actual = json.loads(data.decode('utf-8'))
+        return validation.matches(expected_json, actual)

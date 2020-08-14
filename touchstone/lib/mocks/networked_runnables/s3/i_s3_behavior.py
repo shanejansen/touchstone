@@ -10,7 +10,12 @@ class IS3Setup(object):
     @abc.abstractmethod
     def put_object(self, bucket_name: str, object_name: str, data: bytes,
                    content_type: str = 'application/octet-stream'):
-        """Puts a the given bytes into an object and bucket."""
+        """Puts the given bytes into a bucket and object."""
+        pass
+
+    @abc.abstractmethod
+    def put_json_object(self, bucket_name: str, object_name: str, input_json: dict):
+        """Puts the given JSON into a bucket and object."""
         pass
 
 
@@ -28,6 +33,11 @@ class IS3Verify(object):
     @abc.abstractmethod
     def object_matches(self, bucket_name: str, object_name: str, expected: bytes) -> bool:
         """Returns True if the given object in a bucket matches the expected bytes."""
+        pass
+
+    @abc.abstractmethod
+    def object_matches_json(self, bucket_name: str, object_name: str, expected_json: dict) -> bool:
+        """Returns True if the given JSON object in a bucket matches the expected JSON."""
         pass
 
 

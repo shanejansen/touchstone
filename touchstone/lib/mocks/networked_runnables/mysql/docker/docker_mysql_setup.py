@@ -19,6 +19,11 @@ class DockerMysqlSetup(IMysqlSetup):
     def set_convert_camel_to_snake(self, convert_camel_to_snake: bool):
         self.__convert_camel_to_snake = convert_camel_to_snake
 
+    def recreate_databases(self):
+        for database in self.__mysql_context.databases:
+            self.__cursor.execute(f'DROP DATABASE {database}')
+            self.__cursor.execute(f'CREATE DATABASE {database} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci')
+
     def init(self, defaults: dict):
         for database in self.__mysql_context.databases:
             self.__cursor.execute(f'DROP DATABASE {database}')

@@ -1,7 +1,9 @@
 import glob
+import json
 import os
 from typing import Optional
 
+from touchstone.helpers import validation
 from touchstone.lib.mocks.runnables.filesystem.i_filesystem_behavior import IFilesystemVerify
 
 
@@ -28,6 +30,15 @@ class LocalFilesystemVerify(IFilesystemVerify):
         if not data_matches:
             print('Expected data does not match data in file.')
         return data_matches
+
+    def file_matches_json(self, path: str, expected: dict) -> bool:
+        path = self.get_file_matching(path)
+        if not path:
+            print(f'Expected exactly 1 matching file at: "{path}".')
+            return False
+        with open(path, 'rb') as data:
+            actual = json.loads(data.read().decode('utf-8'))
+        return validation.matches(expected, actual)
 
     def get_file_matching(self, path: str) -> Optional[str]:
         path = os.path.join(self.__files_path, path)
