@@ -39,7 +39,7 @@ class IMysqlVerify(object):
 class IMysqlBehavior(object):
     DEFAULT_CONFIG = {
         'convertCamelToSnakeCase': True,
-        'recordInitialData': False
+        'snapshotDatabases': False
     }
 
     @abc.abstractmethod

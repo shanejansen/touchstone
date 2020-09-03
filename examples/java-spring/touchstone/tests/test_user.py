@@ -54,13 +54,14 @@ class PostUser(TouchstoneTest):
         return http.post_json(f'{self.service_url}/user', body)
 
     def then(self, given, result) -> bool:
-        expected_response = given.copy()
-        expected_response['id'] = validation.ANY
-        expected_row = given.copy()
+        expected_response = {
+            'id': validation.ANY,
+            'firstName': given['firstName'],
+            'lastName': given['lastName'],
+            'email': given['email']
+        }
         return validation.matches(expected_response, result) and self.mocks.mysql.verify().row_exists(
-            creds.MYSQL_DATABASE,
-            creds.MYSQL_TABLE,
-            expected_row)
+            creds.MYSQL_DATABASE, creds.MYSQL_TABLE, given)
 
 
 class PutUser(TouchstoneTest):
@@ -127,6 +128,5 @@ class DeleteUser(TouchstoneTest):
         where = {
             'id': given
         }
-        return self.mocks.rabbitmq.verify().payload_published('user.exchange', str(given),
-                                                              routing_key='user-deleted') and \
+        return self.mocks.rabbitmq.verify().payload_published('user.exchange', str(given), 'user-deleted') and \
                self.mocks.mysql.verify().row_does_not_exist(creds.MYSQL_DATABASE, creds.MYSQL_TABLE, where)

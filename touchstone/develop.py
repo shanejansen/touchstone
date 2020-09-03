@@ -6,10 +6,10 @@ from touchstone import common
 from touchstone.bootstrap import Bootstrap
 
 
-def execute():
+def execute(should_log_services=False):
     if not common.sanity_check_passes():
         exit(1)
-    bootstrap = Bootstrap(is_dev_mode=True)
+    bootstrap = Bootstrap(True, should_log_services)
     print(figlet_format('Touchstone', font='larry3d'))
 
     try:

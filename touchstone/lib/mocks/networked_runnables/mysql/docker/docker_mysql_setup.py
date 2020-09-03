@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Iterable
 
 from pymysql.cursors import Cursor
 
@@ -47,28 +47,22 @@ class DockerMysqlSetup(IMysqlSetup):
             if self.__convert_camel_to_snake:
                 data = common.to_snake(data)
             values = self.__sql_values_from_dict(data)
-            sql = self.__build_insert_sql(table, data, values)
+            sql = self.__build_insert_sql(table, data.keys(), values)
             common.logger.debug(f'Executing: {sql}')
             self.__cursor.execute(f'USE {database}')
-            self.__cursor.execute(sql)
+            self.__cursor.execute(sql, data)
 
     def insert_rows(self, database: str, table: str, data: List[dict]):
-        if self.__mysql_context.database_exists(database):
-            if self.__convert_camel_to_snake:
-                data = common.to_snake(data)
-            values = self.__sql_values_from_list(data)
-            sql = self.__build_insert_sql(table, data[0], values)
-            common.logger.debug(f'Executing: {sql}')
-            self.__cursor.execute(f'USE {database}')
-            self.__cursor.execute(sql)
+        for datum in data:
+            self.insert_row(database, table, datum)
 
     def __sql_values_from_dict(self, data: dict) -> str:
         col_values = []
-        for value in data.values():
+        for key, value in data.items():
             if value is None:
                 col_values.append('NULL')
             else:
-                col_values.append(f"'{value}'")
+                col_values.append(f'%({key})s')
         col_values = ', '.join(col_values)
         return '(' + col_values + ')'
 
@@ -78,6 +72,6 @@ class DockerMysqlSetup(IMysqlSetup):
             values.append(self.__sql_values_from_dict(datum))
         return ', '.join(values)
 
-    def __build_insert_sql(self, table: str, cols: dict, values: str) -> str:
-        col_names = ', '.join(cols.keys())
+    def __build_insert_sql(self, table: str, cols: Iterable, values: str) -> str:
+        col_names = ', '.join(cols)
         return f"INSERT INTO {table} ({col_names}) VALUES {values}"

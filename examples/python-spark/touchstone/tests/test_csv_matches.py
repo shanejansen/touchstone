@@ -5,6 +5,13 @@ from touchstone.lib.touchstone_test import TouchstoneTest
 
 
 class OutputCsvMatch(TouchstoneTest):
+    """
+    GIVEN a CSV file containing names and emails
+        AND associated names and numbers exist in the database.
+    WHEN the service is executed.
+    THEN a new CSV is created containing the expected records.
+    """
+
     def given(self) -> object:
         csv_path = os.path.join(self.mocks.filesystem.get_io_path(), 'emails.csv')
         with open(csv_path, 'w') as file:

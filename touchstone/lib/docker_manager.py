@@ -54,13 +54,14 @@ class DockerManager(object):
         self.__containers.append(container_id)
         return RunResult(container_id, port, exposed_port, ui_port)
 
-    def run_foreground_image(self, image: str, bind_mount: str, environment_vars: List[Tuple[str, str]] = []):
+    def run_foreground_image(self, image: str, bind_mount: str, environment_vars: List[Tuple[str, str]] = [],
+                             log_path: str = None):
         self.__create_network()
         additional_params = f'-v {bind_mount}'
         if len(environment_vars) != 0:
             additional_params += ' '
             additional_params += self.__build_env_str(environment_vars)
-        self.__execute_image(image, additional_params)
+        self.__execute_image(image, additional_params, log_path)
 
     def __create_network(self):
         if not self.__network:
@@ -97,10 +98,14 @@ class DockerManager(object):
                 f'use.')
         return container_id
 
-    def __execute_image(self, image: str, additional_params: str):
+    def __execute_image(self, image: str, additional_params: str, log_path: Optional[str]):
         command = f'docker run --rm --network {self.__network} {additional_params} {image}'
         common.logger.debug(f'Executing container with command: {command}')
-        result = subprocess.run(command, shell=True)
+        if log_path:
+            with open(log_path, 'w') as file:
+                result = subprocess.run(command, shell=True, stdout=file)
+        else:
+            result = subprocess.run(command, shell=True)
         if result.returncode is not 0:
             raise exceptions.ContainerException(f'Container finished execution with non-zero return code.')
 
@@ -114,7 +119,11 @@ class DockerManager(object):
                 return new_port
         return given_port
 
-    def stop_container(self, id):
+    def stop_container(self, id: str, log_path: str = None):
+        if log_path:
+            common.logger.debug(f'Writing container logs: {log_path}')
+            with open(log_path, 'w') as file:
+                subprocess.run(['docker', 'container', 'logs', id], stdout=file)
         common.logger.debug(f'Stopping container: {id}')
         subprocess.run(['docker', 'container', 'stop', id], stdout=subprocess.DEVNULL)
         self.__containers.remove(id)

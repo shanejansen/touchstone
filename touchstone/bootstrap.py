@@ -17,10 +17,14 @@ from touchstone.lib.tests import Tests
 
 
 class Bootstrap(object):
-    def __init__(self, is_dev_mode=False):
+    def __init__(self, is_dev_mode=False, should_log_services=False):
         root = os.path.join(os.getcwd(), 'touchstone')
         touchstone_config = self.__build_touchstone_config(root)
         self.is_dev_mode = is_dev_mode
+        log_directory = None
+        if should_log_services:
+            log_directory = os.path.join(root, 'logs')
+            os.makedirs(log_directory, exist_ok=True)
         self.docker_manager = DockerManager(should_auto_discover=not self.is_dev_mode)
         self.mocks = self.__build_mocks(touchstone_config.config['root'],
                                         touchstone_config.config['mocks'],
@@ -28,7 +32,7 @@ class Bootstrap(object):
         self.services = self.__build_services(touchstone_config.config['root'],
                                               touchstone_config.config['host'],
                                               touchstone_config.config['services'],
-                                              self.mocks)
+                                              self.mocks, log_directory)
 
     def __build_touchstone_config(self, root) -> TouchstoneConfig:
         config = TouchstoneConfig(root)
@@ -53,9 +57,9 @@ class Bootstrap(object):
             mocks.register_mock(mock)
         return mocks
 
-    def __build_services(self, root, host, user_service_configs, mocks) -> Services:
+    def __build_services(self, root, host, user_service_configs, mocks, log_directory) -> Services:
         services = Services()
-        service_factory = ServiceFactory(self.is_dev_mode, root, self.docker_manager)
+        service_factory = ServiceFactory(self.is_dev_mode, root, self.docker_manager, log_directory)
         for user_service_config in user_service_configs:
             service_config = ServiceConfig(host)
             service_config.merge(user_service_config)

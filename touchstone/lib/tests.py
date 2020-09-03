@@ -37,7 +37,7 @@ class Tests(object):
 
         tests_passed = True
         for test_container in all_test_containers:
-            print(test_container.file)
+            print(f'\n{test_container.file}')
             if not test_container.execute(service_url, self.__mocks, self.__service_executor):
                 tests_passed = False
 
@@ -83,7 +83,7 @@ class Tests(object):
         return test_container
 
     def __load_test_classes(self):
-        files = glob.glob(os.path.join(self.__tests_path, self.__TEST_PREFIX + '*.py'))
+        files = glob.glob(self.__tests_path + f'/**/{self.__TEST_PREFIX}*.py', recursive=True)
         all_test_containers = []
         for file in files:
             test_container = TestContainer(file)

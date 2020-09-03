@@ -1,3 +1,4 @@
+import os
 import time
 import urllib.error
 import urllib.request
@@ -13,8 +14,8 @@ from touchstone.lib.tests import Tests
 
 class NetworkedService(IService, ITestable, IRunnable):
     def __init__(self, name: str, tests: Tests, dockerfile_path: str, docker_manager: DockerManager, host: str,
-                 port: str, availability_endpoint: str,
-                 num_retries: int, seconds_between_retries: int):
+                 port: str, availability_endpoint: str, num_retries: int, seconds_between_retries: int,
+                 log_directory: Optional[str]):
         self.__name = name
         self.__tests = tests
         self.__dockerfile_path = dockerfile_path
@@ -25,6 +26,7 @@ class NetworkedService(IService, ITestable, IRunnable):
         self.__num_retries = num_retries
         self.__seconds_between_retries = seconds_between_retries
         self.__container_id: Optional[str] = None
+        self.__log_directory = log_directory
 
     def get_name(self):
         return self.__name
@@ -50,7 +52,10 @@ class NetworkedService(IService, ITestable, IRunnable):
 
     def stop(self):
         if self.__container_id:
-            self.__docker_manager.stop_container(self.__container_id)
+            log_path = None
+            if self.__log_directory:
+                log_path = os.path.join(self.__log_directory, f'{self.__name}.log')
+            self.__docker_manager.stop_container(self.__container_id, log_path)
             self.__container_id = None
 
     def wait_for_availability(self):

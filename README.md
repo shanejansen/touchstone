@@ -41,6 +41,10 @@ Touchstone has three basic commands:
  * `touchstone run` - Run all Touchstone tests and exit. This is typically how you would run your Touchstone tests on a build server. Ports will be auto-discovered in this mode to avoid collisions in case multiple runs occur on the same host. See [mocks docs](#mocks) for more information on how to hook into auto-discovered ports.
  * `touchstone develop` - Start a development session of Touchstone. You would typically use this to develop/debug a service locally. This will keep service dependencies running while you make changes to your Touchstone tests or the services themselves. This will also provide a web interface to each mock dependency for additional debugging. Mocked dependencies can be altered or reset on the fly to make exploratory testing easier.
  
+Touchstone has the following options:
+ * `--log={LEVEL}` - Sets Touchstone's log level.
+ * `--log-services` - Captures service logs and stores them in 'touchstone/logs'.
+ 
 After running `touchstone init`, a new directory will be created with the following contents:
 
 ### `/touchstone.yml`
@@ -77,11 +81,8 @@ class UpdateUser(TouchstoneTest):
         return user_update # user_update is passed to "when" and "then" for reference
 
     def when(self, given) -> object:
-        body = bytes(json.dumps(given), encoding='utf-8')
-        request = urllib.request.Request(f'{self.service_url}/user', data=body, method='PUT',
-                                         headers={'Content-type': 'application/json'})
-        urllib.request.urlopen(request)
-        return None # The response from our service could be returned here for additional validation in "then"
+        result = http.put_json(f'{self.service_url}/user', given)
+        return result # The response from our service could be returned here for additional validation in "then"
 
     def then(self, given, result) -> bool:
         return self.mocks.mongodb.verify().document_exists('my_db', 'users', given)
@@ -89,7 +90,8 @@ class UpdateUser(TouchstoneTest):
 Important APIs:
  * `self.mocks` - Hook into Touchstone managed mock dependencies.
  * `self.service_url` - The service under test's URL. Useful for calling RESTful endpoints on the service under test.
- * `touchstone.lib.mocks.validation` - Contains methods for validating test results. `validation.ANY` can be used to accept any value which is useful in some circumstances.
+ * `touchstone.helpers.validation` - Contains methods for easily validating test results. `validation.ANY` can be used to accept any value which is useful when the expected value is unknown. This only works when validating dicts or JSON.
+ * `touchstone.helpers.http` - Contains methods for easily making HTTP requests. Contains helper methods for making JSON CRUD requests.
 
 ## Mocks
  * [HTTP](./docs/mocks/http.md)
@@ -110,4 +112,14 @@ When running via `touchstone develop`, dev ports for each mock are used. When ru
  * `TS_{MOCK_NAME}_PASSWORD` - Password for authenticating with the mock.
  
 ## Testing Non-Services (Executables)
-Touchstone can also be used to test non-service based applications. This includes applications that can be invoked via the command line like Spark jobs, for example.
+Touchstone can also be used to test non-service based applications. This includes applications that can be invoked via the command line, like Spark jobs, for example. A Python Spark job tested with Touchstone can be found [here](./examples/python-spark).
+
+To define a service as executable, set its type to `executable` in your `touchstone.yml`. The supplied Dockerfile will be ran as the executable service. You can also supply a `develop_command` which will be used when running Touchstone in develop mode. [Example](./examples/python-spark/touchstone/touchstone.yml)
+
+In your Touchstone tests, the executable service can be triggered using the following API:
+```python
+def when(self, given) -> object:
+    self.service_executor.execute(SERVICE_NAME)
+    return None
+```
+[Example](./examples/python-spark/touchstone/tests/test_csv_matches.py)
