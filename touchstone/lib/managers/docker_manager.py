@@ -1,7 +1,6 @@
 import os
 import re
 import subprocess
-import sys
 import uuid
 from typing import Optional, Tuple, List
 
@@ -21,6 +20,7 @@ class DockerManager(object):
         self.__images: list = []
         self.__containers: list = []
         self.__should_auto_discover = should_auto_discover
+        self.__network: Optional[str] = None
 
     def build_dockerfile(self, dockerfile_path: str) -> str:
         # Build context will always be the same location as the Dockerfile for our purposes
@@ -37,6 +37,7 @@ class DockerManager(object):
     def run_background_image(self, image: str, port: int = None, exposed_port: int = None, ui_port: int = None,
                              environment_vars: List[Tuple[str, str]] = []) -> RunResult:
         exposed_port = port if not exposed_port else exposed_port
+        self.__create_network()
 
         additional_params = self.__build_ports_str(port, exposed_port, ui_port)
         if len(environment_vars) != 0:
@@ -55,11 +56,18 @@ class DockerManager(object):
 
     def run_foreground_image(self, image: str, bind_mount: str, environment_vars: List[Tuple[str, str]] = [],
                              log_path: str = None):
+        self.__create_network()
         additional_params = f'-v {bind_mount}'
         if len(environment_vars) != 0:
             additional_params += ' '
             additional_params += self.__build_env_str(environment_vars)
         self.__execute_image(image, additional_params, log_path)
+
+    def __create_network(self):
+        if not self.__network:
+            self.__network = uuid.uuid4().hex
+            common.logger.debug(f'Creating network: {self.__network}')
+            subprocess.run(['docker', 'network', 'create', self.__network], stdout=subprocess.DEVNULL)
 
     def __build_ports_str(self, port: int, exposed_port: int, ui_port: int) -> str:
         additional_params = ''
@@ -81,9 +89,7 @@ class DockerManager(object):
 
     def __run_image(self, additional_params: str, image: str) -> str:
         container_id = uuid.uuid4().hex
-        command = f'docker run --rm -d '
-        if sys.platform == 'linux':
-            command += f'--network="host" '
+        command = f'docker run --rm -d --network {self.__network} '
         command += f'--name {container_id} {additional_params} {image}'
         common.logger.debug(f'Running container with command: {command}')
         result = subprocess.run(command, shell=True, stdout=subprocess.DEVNULL)
@@ -94,9 +100,7 @@ class DockerManager(object):
         return container_id
 
     def __execute_image(self, image: str, additional_params: str, log_path: Optional[str]):
-        command = f'docker run --rm '
-        if sys.platform == 'linux':
-            command += f'--network="host" '
+        command = f'docker run --rm --network {self.__network} '
         command += f'{additional_params} {image}'
         common.logger.debug(f'Executing container with command: {command}')
         if log_path:
@@ -131,12 +135,15 @@ class DockerManager(object):
             for image in self.__images:
                 common.logger.debug(f'Removing image: {image}')
                 subprocess.run(['docker', 'image', 'rm', image], stdout=subprocess.DEVNULL)
-        self.__images = []
+            self.__images = []
         if self.__containers:
             for container in self.__containers:
                 common.logger.debug(f'Stopping container: {container}')
                 subprocess.run(['docker', 'container', 'stop', container], stdout=subprocess.DEVNULL)
-        self.__containers = []
+            self.__containers = []
+        if self.__network:
+            subprocess.run(['docker', 'network', 'rm', self.__network], stdout=subprocess.DEVNULL)
+            self.__network = None
 
     def containers_running(self) -> bool:
         return len(self.__containers) > 0

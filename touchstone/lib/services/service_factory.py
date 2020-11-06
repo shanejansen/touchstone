@@ -11,10 +11,9 @@ from touchstone.lib.tests import Tests
 
 
 class ServiceFactory(object):
-    def __init__(self, is_dev_mode: bool, is_docker_in_docker: bool, root: str, docker_manager: DockerManager,
+    def __init__(self, is_dev_mode: bool, root: str, docker_manager: DockerManager,
                  log_directory: Optional[str]):
         self.__is_dev_mode = is_dev_mode
-        self.__is_docker_in_docker = is_docker_in_docker
         self.__root = root
         self.__docker_manager = docker_manager
         self.__log_directory = log_directory
@@ -32,7 +31,7 @@ class ServiceFactory(object):
                                        service_config.config['num_retries'],
                                        service_config.config['seconds_between_retries'],
                                        self.__log_directory,
-                                       DockerNetwork(self.__is_docker_in_docker))
+                                       DockerNetwork())
         elif service_config.config['type'] == 'executable':
             service = ExecutableService(service_config.config['name'], self.__is_dev_mode, tests, dockerfile_path,
                                         self.__docker_manager, service_config.config['develop_command'],

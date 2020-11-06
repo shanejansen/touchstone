@@ -2,14 +2,8 @@ from touchstone.lib.networking.i_network import INetwork
 
 
 class DockerNetwork(INetwork):
-    def __init__(self, docker_in_docker: bool):
-        # if sys.platform == 'linux':
-        #     self.__internal_host = '127.0.0.1'
-        # else:
-        self.__internal_host = 'host.docker.internal'
+    def __init__(self):
         self.__external_host = 'localhost'
-        if docker_in_docker:
-            self.__external_host = self.__internal_host
         self.__container_id = None
         self.__port = None
         self.__ui_port = None
@@ -20,15 +14,15 @@ class DockerNetwork(INetwork):
         self.__password = None
 
     def internal_host(self) -> str:
-        return self.__internal_host
+        return self.__container_id
 
     def external_host(self) -> str:
         return self.__external_host
 
-    def container_id(self):
+    def container_id(self) -> str:
         return self.__container_id
 
-    def set_container_id(self, container_id):
+    def set_container_id(self, container_id: str):
         self.__container_id = container_id
 
     def port(self) -> int:
@@ -62,10 +56,11 @@ class DockerNetwork(INetwork):
         self.__password = password
 
     def internal_url(self) -> str:
-        return f'{self.__prefix + self.__internal_host}:{self.__port}{self.__endpoint}'
+        return f'{self.__prefix + self.__container_id}:{self.__port}{self.__endpoint}'
 
     def external_url(self) -> str:
         return f'{self.__prefix + self.__external_host}:{self.__port}{self.__endpoint}'
 
     def ui_url(self) -> str:
-        return f'http://{self.__external_host}:{self.__ui_port}{self.__ui_endpoint}'
+        port = self.__ui_port if self.__ui_port else self.__port
+        return f'http://{self.__external_host}:{port}{self.__ui_endpoint}'

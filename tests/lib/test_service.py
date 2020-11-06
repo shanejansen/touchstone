@@ -14,7 +14,7 @@ class TestService(TestCase):
     def test_start_dockerfileNotSet_serviceNotStarted(self):
         # Given
         service = NetworkedService('', self.mock_tests, None, self.mock_docker_manager, 0, '', 0, 0, None,
-                                   DockerNetwork(False))
+                                   DockerNetwork())
 
         # When
         service.start([])
@@ -24,7 +24,7 @@ class TestService(TestCase):
 
     def test_stop_serviceIsRunning_serviceStops(self):
         service = NetworkedService('', self.mock_tests, '', self.mock_docker_manager, 0, '', 0, 0, None,
-                                   DockerNetwork(False))
+                                   DockerNetwork())
 
         # When
         service.start([])

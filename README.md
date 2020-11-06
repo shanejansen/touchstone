@@ -123,3 +123,9 @@ def when(self, given) -> object:
     return None
 ```
 [Example](./examples/python-spark/touchstone/tests/test_csv_matches.py)
+
+## Docker-In-Docker
+Some CI pipelines utilize Docker-in-Docker (DinD) to run their tests. If Touchstone is running using DinD, the network must point to the host:
+```
+docker run --network="host" -v /var/run/docker.sock:/var/run/docker.sock your-touchstone-image
+```

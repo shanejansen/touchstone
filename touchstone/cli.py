@@ -9,15 +9,12 @@ from touchstone import run
 from touchstone.lib import exceptions
 
 should_log_services: bool = False
-is_docker_in_docker: bool = False
 
 
 @click.group()
 @click.option('--log', default='WARNING', help='Sets the log level.')
 @click.option('--log-services', is_flag=True, help="Captures service logs and stores them in 'touchstone/logs'.")
-@click.option('--docker-in-docker', is_flag=True,
-              help="Include this flag if Touchstone is running with Docker-in-Docker.")
-def cli(log, log_services, docker_in_docker):
+def cli(log, log_services):
     # Logging
     numeric_level = getattr(logging, log.upper(), None)
     if not isinstance(numeric_level, int):
@@ -27,9 +24,7 @@ def cli(log, log_services, docker_in_docker):
 
     # Log Services
     global should_log_services
-    global is_docker_in_docker
     should_log_services = log_services
-    is_docker_in_docker = docker_in_docker
 
 
 @cli.command('version', help='Prints the Touchstone version number.')
