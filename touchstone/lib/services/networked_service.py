@@ -5,7 +5,8 @@ import urllib.request
 from typing import List, Tuple, Optional
 
 from touchstone.lib import exceptions
-from touchstone.lib.docker_manager import DockerManager
+from touchstone.lib.managers.docker_manager import DockerManager
+from touchstone.lib.networking.docker_network import DockerNetwork
 from touchstone.lib.services.i_runnable import IRunnable
 from touchstone.lib.services.i_service import IService
 from touchstone.lib.services.i_testable import ITestable
@@ -13,20 +14,19 @@ from touchstone.lib.tests import Tests
 
 
 class NetworkedService(IService, ITestable, IRunnable):
-    def __init__(self, name: str, tests: Tests, dockerfile_path: str, docker_manager: DockerManager, host: str,
-                 port: str, availability_endpoint: str, num_retries: int, seconds_between_retries: int,
-                 log_directory: Optional[str]):
+    def __init__(self, name: str, tests: Tests, dockerfile_path: Optional[str], docker_manager: DockerManager,
+                 port: int, availability_endpoint: str, num_retries: int, seconds_between_retries: int,
+                 log_directory: Optional[str], docker_network: DockerNetwork):
         self.__name = name
         self.__tests = tests
         self.__dockerfile_path = dockerfile_path
         self.__docker_manager = docker_manager
-        self.__host = host
         self.__port = port
         self.__availability_endpoint = availability_endpoint
         self.__num_retries = num_retries
         self.__seconds_between_retries = seconds_between_retries
-        self.__container_id: Optional[str] = None
         self.__log_directory = log_directory
+        self.__docker_network = docker_network
 
     def get_name(self):
         return self.__name
@@ -45,18 +45,18 @@ class NetworkedService(IService, ITestable, IRunnable):
             self.__log('Building and running Dockerfile...')
             tag = self.__docker_manager.build_dockerfile(self.__dockerfile_path)
             run_result = self.__docker_manager.run_background_image(tag, self.__port, environment_vars=environment_vars)
-            self.__container_id = run_result.container_id
-            self.__port = run_result.external_port
+            self.__docker_network.set_container_id(run_result.container_id)
+            self.__docker_network.set_port(run_result.port)
         else:
             self.__log('Service could not be started. A Dockerfile was not supplied. Check your "touchstone.yml".')
 
     def stop(self):
-        if self.__container_id:
+        if self.__docker_network.container_id():
             log_path = None
             if self.__log_directory:
                 log_path = os.path.join(self.__log_directory, f'{self.__name}.log')
-            self.__docker_manager.stop_container(self.__container_id, log_path)
-            self.__container_id = None
+            self.__docker_manager.stop_container(self.__docker_network.container_id(), log_path)
+            self.__docker_network.set_container_id(None)
 
     def wait_for_availability(self):
         full_endpoint = self.url() + self.__availability_endpoint
@@ -75,10 +75,11 @@ class NetworkedService(IService, ITestable, IRunnable):
         raise exceptions.ServiceException('Could not connect to service\'s availability endpoint.')
 
     def is_running(self) -> bool:
-        return self.__container_id is not None
+        return self.__docker_network.container_id() is not None
 
     def url(self):
-        return f'http://{self.__host}:{self.__port}'
+        port = self.__docker_network.port() if self.is_running() else self.__port
+        return f'http://{self.__docker_network.external_host()}:{port}'
 
     def __log(self, message: str):
         print(f'{self.get_name()} :: {message}')

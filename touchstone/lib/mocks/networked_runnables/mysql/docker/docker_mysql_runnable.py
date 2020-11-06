@@ -3,14 +3,15 @@ import subprocess
 import pymysql
 
 from touchstone.lib import exceptions
-from touchstone.lib.docker_manager import DockerManager
+from touchstone.lib.managers.docker_manager import DockerManager
 from touchstone.lib.mocks.configurers.i_configurable import IConfigurable
-from touchstone.lib.mocks.network import Network
 from touchstone.lib.mocks.networked_runnables.i_networked_runnable import INetworkedRunnable
 from touchstone.lib.mocks.networked_runnables.mysql.docker.docker_mysql_context import DockerMysqlContext
 from touchstone.lib.mocks.networked_runnables.mysql.docker.docker_mysql_setup import DockerMysqlSetup
 from touchstone.lib.mocks.networked_runnables.mysql.docker.docker_mysql_verify import DockerMysqlVerify
 from touchstone.lib.mocks.networked_runnables.mysql.i_mysql_behabior import IMysqlBehavior, IMysqlVerify, IMysqlSetup
+from touchstone.lib.networking.docker_network import DockerNetwork
+from touchstone.lib.networking.i_network import INetwork
 
 
 class DockerMysqlRunnable(INetworkedRunnable, IMysqlBehavior):
@@ -19,7 +20,7 @@ class DockerMysqlRunnable(INetworkedRunnable, IMysqlBehavior):
 
     def __init__(self, defaults_configurer: IConfigurable, mysql_context: DockerMysqlContext, is_dev_mode: bool,
                  configurer: IConfigurable, setup: DockerMysqlSetup, verify: DockerMysqlVerify,
-                 docker_manager: DockerManager):
+                 docker_manager: DockerManager, docker_network: DockerNetwork):
         self.__defaults_configurer = defaults_configurer
         self.__mysql_context = mysql_context
         self.__is_dev_mode = is_dev_mode
@@ -27,18 +28,15 @@ class DockerMysqlRunnable(INetworkedRunnable, IMysqlBehavior):
         self.__setup = setup
         self.__verify = verify
         self.__docker_manager = docker_manager
-        self.__network = None
-        self.__container_id = None
+        self.__docker_network = docker_network
         self.__ui_container_id = None
 
-    def get_network(self) -> Network:
-        if not self.__network:
-            raise exceptions.MockException('Network unavailable. Mock is still starting.')
-        return self.__network
+    def get_network(self) -> INetwork:
+        return self.__docker_network
 
     def initialize(self):
-        connection = pymysql.connect(host=self.get_network().external_host,
-                                     port=self.get_network().external_port,
+        connection = pymysql.connect(host=self.__docker_network.external_host(),
+                                     port=self.__docker_network.port(),
                                      user=self.__USERNAME,
                                      password=self.__PASSWORD,
                                      charset='utf8mb4',
@@ -56,28 +54,22 @@ class DockerMysqlRunnable(INetworkedRunnable, IMysqlBehavior):
         run_result = self.__docker_manager.run_background_image(
             'mysql:8.0.20 --default-authentication-plugin=mysql_native_password', port=3306,
             environment_vars=[('MYSQL_ROOT_PASSWORD', self.__USERNAME)])
-        self.__container_id = run_result.container_id
-
-        ui_port = None
+        self.__docker_network.set_container_id(run_result.container_id)
         if self.__is_dev_mode:
             ui_run_result = self.__docker_manager.run_background_image('adminer:4.7.5-standalone',
                                                                        ui_port=8080,
                                                                        environment_vars=[
                                                                            ('ADMINER_DEFAULT_SERVER',
-                                                                            self.__container_id)])
+                                                                            self.__docker_network.internal_host())])
             self.__ui_container_id = ui_run_result.container_id
-            ui_port = ui_run_result.ui_port
-
-        self.__network = Network(internal_host=run_result.container_id,
-                                 internal_port=run_result.internal_port,
-                                 external_port=run_result.external_port,
-                                 ui_port=ui_port,
-                                 username=self.__USERNAME,
-                                 password=self.__PASSWORD)
+            self.__docker_network.set_ui_port(ui_run_result.ui_port)
+        self.__docker_network.set_port(run_result.port)
+        self.__docker_network.set_username(self.__USERNAME)
+        self.__docker_network.set_password(self.__PASSWORD)
 
     def stop(self):
-        if self.__container_id:
-            self.__docker_manager.stop_container(self.__container_id)
+        if self.__docker_network.container_id():
+            self.__docker_manager.stop_container(self.__docker_network.container_id())
         if self.__ui_container_id:
             self.__docker_manager.stop_container(self.__ui_container_id)
 
@@ -85,7 +77,7 @@ class DockerMysqlRunnable(INetworkedRunnable, IMysqlBehavior):
         if self.__configurer.get_config()['snapshotDatabases']:
             self.__setup.recreate_databases()
             for database in self.__mysql_context.databases:
-                subprocess.run(f'docker exec {self.__container_id} sh -c "mysql -u {self.__USERNAME} '
+                subprocess.run(f'docker exec {self.__docker_network.container_id()} sh -c "mysql -u {self.__USERNAME} '
                                f'-p{self.__PASSWORD} {database} < dump-{database}.sql"', shell=True,
                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         else:
@@ -95,14 +87,14 @@ class DockerMysqlRunnable(INetworkedRunnable, IMysqlBehavior):
         if self.__configurer.get_config()['snapshotDatabases']:
             for database in self.__mysql_context.databases:
                 subprocess.run(
-                    f'docker exec {self.__container_id} sh -c "mysqldump -u {self.__USERNAME} -p{self.__PASSWORD} '
-                    f'--no-create-db {database} > dump-{database}.sql"', shell=True,
+                    f'docker exec {self.__docker_network.container_id()} sh -c "mysqldump -u {self.__USERNAME} '
+                    f'-p{self.__PASSWORD} --no-create-db {database} > dump-{database}.sql"', shell=True,
                     stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     def is_healthy(self) -> bool:
         try:
-            pymysql.connect(host=self.get_network().external_host,
-                            port=self.get_network().external_port,
+            pymysql.connect(host=self.__docker_network.external_host(),
+                            port=self.__docker_network.port(),
                             user=self.__USERNAME,
                             password=self.__PASSWORD)
             return True

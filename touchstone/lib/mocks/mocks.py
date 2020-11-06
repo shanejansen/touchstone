@@ -61,11 +61,11 @@ class Mocks(object):
         for mock in self.__registered_mocks:
             if isinstance(mock, NetworkedMock):
                 name = mock.get_name().upper()
-                envs.append((f'TS_{name}_HOST', mock.get_network().internal_host))
-                envs.append((f'TS_{name}_PORT', mock.get_network().internal_port))
+                envs.append((f'TS_{name}_HOST', mock.get_network().internal_host()))
+                envs.append((f'TS_{name}_PORT', mock.get_network().port()))
                 envs.append((f'TS_{name}_URL', mock.get_network().internal_url()))
-                envs.append((f'TS_{name}_USERNAME', mock.get_network().username))
-                envs.append((f'TS_{name}_PASSWORD', mock.get_network().password))
+                envs.append((f'TS_{name}_USERNAME', mock.get_network().username()))
+                envs.append((f'TS_{name}_PASSWORD', mock.get_network().password()))
         return envs
 
     def print_available_mocks(self):
@@ -73,9 +73,9 @@ class Mocks(object):
             message = f'Mock {mock.get_pretty_name()} running'
             if isinstance(mock, NetworkedMock):
                 message += f' with UI: {mock.get_network().ui_url()}'
-                if mock.get_network().username:
-                    message += f' and Username: "{mock.get_network().username}", ' \
-                               f'Password: "{mock.get_network().password}"'
+                if mock.get_network().username():
+                    message += f' and Username: "{mock.get_network().username()}", ' \
+                               f'Password: "{mock.get_network().password()}"'
             print(message)
 
     def __wait_for_healthy_mocks(self):

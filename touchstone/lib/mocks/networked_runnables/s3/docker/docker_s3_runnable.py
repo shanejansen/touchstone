@@ -1,14 +1,15 @@
 from minio import Minio
 
 from touchstone.lib import exceptions
-from touchstone.lib.docker_manager import DockerManager
+from touchstone.lib.managers.docker_manager import DockerManager
 from touchstone.lib.mocks.configurers.i_configurable import IConfigurable
 from touchstone.lib.mocks.health_checks.i_url_health_checkable import IUrlHealthCheckable
-from touchstone.lib.mocks.network import Network
 from touchstone.lib.mocks.networked_runnables.i_networked_runnable import INetworkedRunnable
 from touchstone.lib.mocks.networked_runnables.s3.docker.docker_s3_setup import DockerS3Setup
 from touchstone.lib.mocks.networked_runnables.s3.docker.docker_s3_verify import DockerS3Verify
 from touchstone.lib.mocks.networked_runnables.s3.i_s3_behavior import IS3Behavior, IS3Verify, IS3Setup
+from touchstone.lib.networking.docker_network import DockerNetwork
+from touchstone.lib.networking.i_network import INetwork
 
 
 class DockerS3Runnable(INetworkedRunnable, IS3Behavior):
@@ -16,23 +17,21 @@ class DockerS3Runnable(INetworkedRunnable, IS3Behavior):
     __PASSWORD = 'admin123'
 
     def __init__(self, defaults_configurer: IConfigurable, base_objects_path: str, health_check: IUrlHealthCheckable,
-                 setup: DockerS3Setup, verify: DockerS3Verify, docker_manager: DockerManager):
+                 setup: DockerS3Setup, verify: DockerS3Verify, docker_manager: DockerManager,
+                 docker_network: DockerNetwork):
         self.__defaults_configurer = defaults_configurer
         self.__base_objects_path = base_objects_path
         self.__health_check = health_check
         self.__setup = setup
         self.__verify = verify
         self.__docker_manager = docker_manager
-        self.__network = None
-        self.__container_id = None
+        self.__docker_network = docker_network
 
-    def get_network(self) -> Network:
-        if not self.__network:
-            raise exceptions.MockException('Network unavailable. Mock is still starting.')
-        return self.__network
+    def get_network(self) -> INetwork:
+        return self.__docker_network
 
     def initialize(self):
-        s3_client = Minio(self.get_network().external_url(),
+        s3_client = Minio(self.__docker_network.external_url(),
                           access_key=self.__USERNAME,
                           secret_key=self.__PASSWORD,
                           secure=False)
@@ -45,18 +44,17 @@ class DockerS3Runnable(INetworkedRunnable, IS3Behavior):
                                                                 port=9000,
                                                                 environment_vars=[('MINIO_ACCESS_KEY', self.__USERNAME),
                                                                                   (
-                                                                                  'MINIO_SECRET_KEY', self.__PASSWORD)])
-        self.__container_id = run_result.container_id
-        self.__network = Network(internal_host=run_result.container_id,
-                                 internal_port=run_result.internal_port,
-                                 external_port=run_result.external_port,
-                                 ui_endpoint='/minio',
-                                 username=self.__USERNAME,
-                                 password=self.__PASSWORD)
+                                                                                      'MINIO_SECRET_KEY',
+                                                                                      self.__PASSWORD)])
+        self.__docker_network.set_container_id(run_result.container_id)
+        self.__docker_network.set_port(run_result.port)
+        self.__docker_network.set_ui_endpoint('/minio')
+        self.__docker_network.set_username(self.__USERNAME)
+        self.__docker_network.set_password(self.__PASSWORD)
 
     def stop(self):
-        if self.__container_id:
-            self.__docker_manager.stop_container(self.__container_id)
+        if self.__docker_network.container_id():
+            self.__docker_manager.stop_container(self.__docker_network.container_id())
 
     def reset(self):
         self.__setup.init(self.__base_objects_path, self.__defaults_configurer.get_config())
@@ -65,7 +63,7 @@ class DockerS3Runnable(INetworkedRunnable, IS3Behavior):
         pass
 
     def is_healthy(self) -> bool:
-        self.__health_check.set_url(self.get_network().ui_url() + '/health/ready')
+        self.__health_check.set_url(self.__docker_network.ui_url() + '/health/ready')
         return self.__health_check.is_healthy()
 
     def setup(self) -> IS3Setup:

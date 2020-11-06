@@ -8,7 +8,7 @@ import yaml
 from touchstone.lib import exceptions
 from touchstone.lib.configs.service_config import ServiceConfig
 from touchstone.lib.configs.touchstone_config import TouchstoneConfig
-from touchstone.lib.docker_manager import DockerManager
+from touchstone.lib.managers.docker_manager import DockerManager
 from touchstone.lib.mocks.mock_factory import MockFactory
 from touchstone.lib.mocks.mocks import Mocks
 from touchstone.lib.services.service_factory import ServiceFactory
@@ -17,19 +17,19 @@ from touchstone.lib.tests import Tests
 
 
 class Bootstrap(object):
-    def __init__(self, is_dev_mode=False, should_log_services=False):
+    def __init__(self, is_dev_mode=False, should_log_services=False, is_docker_in_docker=False):
         root = os.path.join(os.getcwd(), 'touchstone')
         touchstone_config = self.__build_touchstone_config(root)
-        self.is_dev_mode = is_dev_mode
         log_directory = None
         if should_log_services:
             log_directory = os.path.join(root, 'logs')
             os.makedirs(log_directory, exist_ok=True)
-        self.docker_manager = DockerManager(should_auto_discover=not self.is_dev_mode)
-        self.mocks = self.__build_mocks(touchstone_config.config['root'],
-                                        touchstone_config.config['mocks'],
-                                        touchstone_config.config['host'])
-        self.services = self.__build_services(touchstone_config.config['root'],
+        self.docker_manager = DockerManager(should_auto_discover=not is_dev_mode)
+        self.mocks = self.__build_mocks(is_dev_mode, is_docker_in_docker,
+                                        touchstone_config.config['root'],
+                                        touchstone_config.config['mocks'])
+        self.services = self.__build_services(is_dev_mode, is_docker_in_docker,
+                                              touchstone_config.config['root'],
                                               touchstone_config.config['host'],
                                               touchstone_config.config['services'],
                                               self.mocks, log_directory)
@@ -41,14 +41,15 @@ class Bootstrap(object):
             config.merge(yaml.safe_load(file))
         return config
 
-    def __build_mocks(self, root, configs, host) -> Mocks:
+    def __build_mocks(self, is_dev_mode, is_docker_in_docker, root, configs) -> Mocks:
         defaults_paths = {}
         default_files = glob.glob(os.path.join(root, 'defaults') + '/*.yml')
         for default_file in default_files:
             defaults_paths[Path(default_file).stem] = default_file
 
         mocks = Mocks()
-        mock_factory = MockFactory(self.is_dev_mode, root, defaults_paths, configs, host, self.docker_manager)
+        mock_factory = MockFactory(is_dev_mode, is_docker_in_docker, root, defaults_paths, configs,
+                                   self.docker_manager)
         for mock_name in configs:
             mock = mock_factory.get_mock(mock_name)
             if not mock:
@@ -57,9 +58,11 @@ class Bootstrap(object):
             mocks.register_mock(mock)
         return mocks
 
-    def __build_services(self, root, host, user_service_configs, mocks, log_directory) -> Services:
+    def __build_services(self, is_dev_mode, is_docker_in_docker, root, host, user_service_configs, mocks,
+                         log_directory) -> Services:
         services = Services()
-        service_factory = ServiceFactory(self.is_dev_mode, root, self.docker_manager, log_directory)
+        service_factory = ServiceFactory(is_dev_mode, is_docker_in_docker, root, self.docker_manager,
+                                         log_directory)
         for user_service_config in user_service_configs:
             service_config = ServiceConfig(host)
             service_config.merge(user_service_config)

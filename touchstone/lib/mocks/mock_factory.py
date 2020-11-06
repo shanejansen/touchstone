@@ -1,7 +1,7 @@
 import os
 from typing import Optional
 
-from touchstone.lib.docker_manager import DockerManager
+from touchstone.lib.managers.docker_manager import DockerManager
 from touchstone.lib.mocks.configurers.BasicConfigurer import BasicConfigurer
 from touchstone.lib.mocks.configurers.FileConfigurer import FileConfigurer
 from touchstone.lib.mocks.health_checks.http_health_check import HttpHealthCheck
@@ -31,16 +31,17 @@ from touchstone.lib.mocks.networked_runnables.s3.docker.docker_s3_verify import 
 from touchstone.lib.mocks.runnables.filesystem.local.local_filesystem_runnable import LocalFilesystemRunnable
 from touchstone.lib.mocks.runnables.filesystem.local.local_filesystem_setup import LocalFilesystemSetup
 from touchstone.lib.mocks.runnables.filesystem.local.local_filesystem_verify import LocalFilesystemVerify
+from touchstone.lib.networking.docker_network import DockerNetwork
 
 
 class MockFactory(object):
-    def __init__(self, is_dev_mode: bool, root: str, defaults_paths: dict, configs: dict, host: str,
+    def __init__(self, is_dev_mode: bool, is_docker_in_docker: bool, root: str, defaults_paths: dict, configs: dict,
                  docker_manager: DockerManager):
         self.__is_dev_mode = is_dev_mode
+        self.__is_docker_in_docker = is_docker_in_docker
         self.__root = root
         self.__defaults_paths = defaults_paths
         self.__configs = configs
-        self.__host = host
         self.__docker_manager = docker_manager
 
     def get_mock(self, mock_name: str) -> Optional[IMockable]:
@@ -51,8 +52,8 @@ class MockFactory(object):
         if mock_name == 'http':
             defaults_configurer = FileConfigurer(mock_defaults_paths)
             runnable = DockerHttpRunnable(defaults_configurer, HttpHealthCheck(), DockerHttpSetup(), DockerHttpVerify(),
-                                          self.__docker_manager)
-            mock = NetworkedMock('http', 'HTTP', self.__host, runnable)
+                                          self.__docker_manager, DockerNetwork(self.__is_docker_in_docker))
+            mock = NetworkedMock('http', 'HTTP', runnable)
         elif mock_name == 'rabbitmq':
             defaults_configurer = FileConfigurer(mock_defaults_paths)
             configurer = BasicConfigurer(IRabbitmqBehavior.DEFAULT_CONFIG)
@@ -61,16 +62,16 @@ class MockFactory(object):
             setup = DockerRabbitmqSetup(context)
             verify = DockerRabbitmqVerify(context)
             runnable = DockerRabbitmqRunnable(defaults_configurer, configurer, HttpHealthCheck(), setup, verify,
-                                              self.__docker_manager)
-            mock = NetworkedMock('rabbitmq', 'Rabbit MQ', self.__host, runnable)
+                                              self.__docker_manager, DockerNetwork(self.__is_docker_in_docker))
+            mock = NetworkedMock('rabbitmq', 'Rabbit MQ', runnable)
         elif mock_name == 'mongodb':
             defaults_configurer = FileConfigurer(mock_defaults_paths)
             context = DockerMongoContext()
             setup = DockerMongodbSetup(context)
             verify = DockerMongodbVerify(context)
             runnable = DockerMongodbRunnable(defaults_configurer, self.__is_dev_mode, setup, verify,
-                                             self.__docker_manager)
-            mock = NetworkedMock('mongodb', 'Mongo DB', self.__host, runnable)
+                                             self.__docker_manager, DockerNetwork(self.__is_docker_in_docker))
+            mock = NetworkedMock('mongodb', 'Mongo DB', runnable)
         elif mock_name == 'mysql':
             defaults_configurer = FileConfigurer(mock_defaults_paths)
             configurer = BasicConfigurer(IMysqlBehavior.DEFAULT_CONFIG)
@@ -79,16 +80,16 @@ class MockFactory(object):
             setup = DockerMysqlSetup(context)
             verify = DockerMysqlVerify(context)
             runnable = DockerMysqlRunnable(defaults_configurer, context, self.__is_dev_mode, configurer, setup, verify,
-                                           self.__docker_manager)
-            mock = NetworkedMock('mysql', 'MySQL', self.__host, runnable)
+                                           self.__docker_manager, DockerNetwork(self.__is_docker_in_docker))
+            mock = NetworkedMock('mysql', 'MySQL', runnable)
         elif mock_name == 's3':
             defaults_configurer = FileConfigurer(mock_defaults_paths)
             base_objects_path = os.path.join(self.__root, 'defaults')
             setup = DockerS3Setup()
             verify = DockerS3Verify()
             runnable = DockerS3Runnable(defaults_configurer, base_objects_path, HttpHealthCheck(), setup, verify,
-                                        self.__docker_manager)
-            mock = NetworkedMock('s3', 'S3', self.__host, runnable)
+                                        self.__docker_manager, DockerNetwork(self.__is_docker_in_docker))
+            mock = NetworkedMock('s3', 'S3', runnable)
         elif mock_name == 'filesystem':
             defaults_configurer = FileConfigurer(mock_defaults_paths)
             files_path = os.path.join(self.__root, 'io')

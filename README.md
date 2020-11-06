@@ -50,7 +50,7 @@ After running `touchstone init`, a new directory will be created with the follow
 ### `/touchstone.yml`
 [Example](./examples/java-spring/touchstone/touchstone.yml)  
 Your services and their monitored dependencies are defined here. Default values should be enough in most cases.
- * `host:` - Default: localhost. The host where your services are running.
+ * `host:` - Default: localhost. The host where your services/Docker are running.
  * `services:` - Each service included in your Touchstone tests is defined here.
    * `name:` - Default: unnamed-service. The name of the service.
    * `tests:` - Default: ./tests. The path to Touchstone tests for this service.

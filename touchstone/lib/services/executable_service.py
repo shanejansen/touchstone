@@ -2,7 +2,7 @@ import os
 import subprocess
 from typing import List, Tuple, Optional
 
-from touchstone.lib.docker_manager import DockerManager
+from touchstone.lib.managers.docker_manager import DockerManager
 from touchstone.lib.services.i_executable import IExecutable
 from touchstone.lib.services.i_service import IService
 from touchstone.lib.services.i_testable import ITestable

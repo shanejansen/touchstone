@@ -6,10 +6,10 @@ from touchstone import common
 from touchstone.bootstrap import Bootstrap
 
 
-def execute(should_log_services=False):
+def execute(should_log_services=False, is_docker_in_docker=False):
     if not common.sanity_check_passes():
         exit(1)
-    bootstrap = Bootstrap(True, should_log_services)
+    bootstrap = Bootstrap(True, should_log_services, is_docker_in_docker)
     print(figlet_format('Touchstone', font='larry3d'))
 
     try:
