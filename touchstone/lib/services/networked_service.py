@@ -14,12 +14,13 @@ from touchstone.lib.tests import Tests
 
 
 class NetworkedService(IService, ITestable, IRunnable):
-    def __init__(self, name: str, tests: Tests, dockerfile_path: Optional[str], docker_manager: DockerManager,
-                 port: int, availability_endpoint: str, num_retries: int, seconds_between_retries: int,
-                 log_directory: Optional[str], docker_network: DockerNetwork):
+    def __init__(self, name: str, tests: Tests, dockerfile_path: Optional[str], docker_options: Optional[str],
+                 docker_manager: DockerManager, port: int, availability_endpoint: str, num_retries: int,
+                 seconds_between_retries: int, log_directory: Optional[str], docker_network: DockerNetwork):
         self.__name = name
         self.__tests = tests
         self.__dockerfile_path = dockerfile_path
+        self.__docker_options = docker_options
         self.__docker_manager = docker_manager
         self.__port = port
         self.__availability_endpoint = availability_endpoint
@@ -44,9 +45,10 @@ class NetworkedService(IService, ITestable, IRunnable):
         if self.__dockerfile_path is not None:
             self.__log('Building and running Dockerfile...')
             tag = self.__docker_manager.build_dockerfile(self.__dockerfile_path)
-            run_result = self.__docker_manager.run_background_image(tag, self.__port, environment_vars=environment_vars)
+            run_result = self.__docker_manager.run_background_image(tag, self.__port, environment_vars=environment_vars,
+                                                                    options=self.__docker_options)
             self.__docker_network.set_container_id(run_result.container_id)
-            self.__docker_network.set_port(run_result.port)
+            self.__docker_network.set_external_port(run_result.external_port)
         else:
             self.__log('Service could not be started. A Dockerfile was not supplied. Check your "touchstone.yml".')
 
@@ -78,7 +80,7 @@ class NetworkedService(IService, ITestable, IRunnable):
         return self.__docker_network.container_id() is not None
 
     def url(self):
-        port = self.__docker_network.port() if self.is_running() else self.__port
+        port = self.__docker_network.external_port() if self.is_running() else self.__port
         return f'http://{self.__docker_network.external_host()}:{port}'
 
     def __log(self, message: str):

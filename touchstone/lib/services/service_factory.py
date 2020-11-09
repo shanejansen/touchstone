@@ -25,7 +25,11 @@ class ServiceFactory(object):
         service: Optional[IService] = None
 
         if service_config.config['type'] == 'networked':
-            service = NetworkedService(service_config.config['name'], tests, dockerfile_path, self.__docker_manager,
+            service = NetworkedService(service_config.config['name'],
+                                       tests,
+                                       dockerfile_path,
+                                       service_config.config['docker_options'],
+                                       self.__docker_manager,
                                        service_config.config['port'],
                                        service_config.config['availability_endpoint'],
                                        service_config.config['num_retries'],
@@ -33,7 +37,12 @@ class ServiceFactory(object):
                                        self.__log_directory,
                                        DockerNetwork())
         elif service_config.config['type'] == 'executable':
-            service = ExecutableService(service_config.config['name'], self.__is_dev_mode, tests, dockerfile_path,
-                                        self.__docker_manager, service_config.config['develop_command'],
+            service = ExecutableService(service_config.config['name'],
+                                        self.__is_dev_mode,
+                                        tests,
+                                        dockerfile_path,
+                                        service_config.config['docker_options'],
+                                        self.__docker_manager,
+                                        service_config.config['develop_command'],
                                         self.__log_directory)
         return service

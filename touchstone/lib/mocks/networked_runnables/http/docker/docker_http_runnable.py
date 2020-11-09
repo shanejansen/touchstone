@@ -32,8 +32,9 @@ class DockerHttpRunnable(INetworkedRunnable, IHttpBehavior):
         run_result = self.__docker_manager.run_background_image('holomekc/wiremock-gui:2.25.1', port=8080,
                                                                 exposed_port=9090)
         self.__docker_network.set_container_id(run_result.container_id)
-        self.__docker_network.set_port(run_result.port)
-        self.__docker_network.set_ui_port(run_result.ui_port)
+        self.__docker_network.set_internal_port(run_result.internal_port)
+        self.__docker_network.set_external_port(run_result.external_port)
+        self.__docker_network.set_ui_port(run_result.external_port)
         self.__docker_network.set_ui_endpoint('/__admin/webapp')
         self.__docker_network.set_prefix('http://')
 

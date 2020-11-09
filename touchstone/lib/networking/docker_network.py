@@ -5,7 +5,8 @@ class DockerNetwork(INetwork):
     def __init__(self):
         self.__external_host = 'localhost'
         self.__container_id = None
-        self.__port = None
+        self.__internal_port = None
+        self.__external_port = None
         self.__ui_port = None
         self.__ui_endpoint = ''
         self.__prefix = ''
@@ -25,11 +26,17 @@ class DockerNetwork(INetwork):
     def set_container_id(self, container_id: str):
         self.__container_id = container_id
 
-    def port(self) -> int:
-        return self.__port
+    def internal_port(self) -> int:
+        return self.__internal_port
 
-    def set_port(self, port: int):
-        self.__port = port
+    def set_internal_port(self, internal_port: int):
+        self.__internal_port = internal_port
+
+    def external_port(self) -> int:
+        return self.__external_port
+
+    def set_external_port(self, external_port: int):
+        self.__external_port = external_port
 
     def set_ui_port(self, ui_port: int):
         self.__ui_port = ui_port
@@ -56,11 +63,10 @@ class DockerNetwork(INetwork):
         self.__password = password
 
     def internal_url(self) -> str:
-        return f'{self.__prefix + self.__container_id}:{self.__port}{self.__endpoint}'
+        return f'{self.__prefix + self.__container_id}:{self.__internal_port}{self.__endpoint}'
 
     def external_url(self) -> str:
-        return f'{self.__prefix + self.__external_host}:{self.__port}{self.__endpoint}'
+        return f'{self.__prefix + self.__external_host}:{self.__external_port}{self.__endpoint}'
 
     def ui_url(self) -> str:
-        port = self.__ui_port if self.__ui_port else self.__port
-        return f'http://{self.__external_host}:{port}{self.__ui_endpoint}'
+        return f'http://{self.__external_host}:{self.__ui_port}{self.__ui_endpoint}'

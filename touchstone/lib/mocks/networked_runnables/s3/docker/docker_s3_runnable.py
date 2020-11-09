@@ -47,7 +47,9 @@ class DockerS3Runnable(INetworkedRunnable, IS3Behavior):
                                                                                       'MINIO_SECRET_KEY',
                                                                                       self.__PASSWORD)])
         self.__docker_network.set_container_id(run_result.container_id)
-        self.__docker_network.set_port(run_result.port)
+        self.__docker_network.set_internal_port(run_result.internal_port)
+        self.__docker_network.set_external_port(run_result.external_port)
+        self.__docker_network.set_ui_port(run_result.external_port)
         self.__docker_network.set_ui_endpoint('/minio')
         self.__docker_network.set_username(self.__USERNAME)
         self.__docker_network.set_password(self.__PASSWORD)

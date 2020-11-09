@@ -5,7 +5,6 @@ class TouchstoneConfig:
     def __init__(self, root):
         self.config: dict = {
             'root': root,
-            'host': 'localhost',
             'services': [],
             'mocks': []
         }

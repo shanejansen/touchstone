@@ -36,14 +36,14 @@ class DockerMysqlRunnable(INetworkedRunnable, IMysqlBehavior):
 
     def initialize(self):
         connection = pymysql.connect(host=self.__docker_network.external_host(),
-                                     port=self.__docker_network.port(),
+                                     port=self.__docker_network.external_port(),
                                      user=self.__USERNAME,
                                      password=self.__PASSWORD,
                                      charset='utf8mb4',
                                      autocommit=True,
                                      cursorclass=pymysql.cursors.DictCursor)
         cursor = connection.cursor()
-        convert_camel_to_snake = self.__configurer.get_config()['convertCamelToSnakeCase']
+        convert_camel_to_snake = self.__configurer.get_config()['camel_to_snake']
         self.__setup.set_cursor(cursor)
         self.__setup.set_convert_camel_to_snake(convert_camel_to_snake)
         self.__verify.set_cursor(cursor)
@@ -63,7 +63,8 @@ class DockerMysqlRunnable(INetworkedRunnable, IMysqlBehavior):
                                                                             self.__docker_network.internal_host())])
             self.__ui_container_id = ui_run_result.container_id
             self.__docker_network.set_ui_port(ui_run_result.ui_port)
-        self.__docker_network.set_port(run_result.port)
+        self.__docker_network.set_internal_port(run_result.internal_port)
+        self.__docker_network.set_external_port(run_result.external_port)
         self.__docker_network.set_username(self.__USERNAME)
         self.__docker_network.set_password(self.__PASSWORD)
 
@@ -74,7 +75,7 @@ class DockerMysqlRunnable(INetworkedRunnable, IMysqlBehavior):
             self.__docker_manager.stop_container(self.__ui_container_id)
 
     def reset(self):
-        if self.__configurer.get_config()['snapshotDatabases']:
+        if self.__configurer.get_config()['snapshot_databases']:
             self.__setup.recreate_databases()
             for database in self.__mysql_context.databases:
                 subprocess.run(f'docker exec {self.__docker_network.container_id()} sh -c "mysql -u {self.__USERNAME} '
@@ -84,7 +85,7 @@ class DockerMysqlRunnable(INetworkedRunnable, IMysqlBehavior):
             self.__setup.init(self.__defaults_configurer.get_config())
 
     def services_available(self):
-        if self.__configurer.get_config()['snapshotDatabases']:
+        if self.__configurer.get_config()['snapshot_databases']:
             for database in self.__mysql_context.databases:
                 subprocess.run(
                     f'docker exec {self.__docker_network.container_id()} sh -c "mysqldump -u {self.__USERNAME} '
@@ -94,7 +95,7 @@ class DockerMysqlRunnable(INetworkedRunnable, IMysqlBehavior):
     def is_healthy(self) -> bool:
         try:
             pymysql.connect(host=self.__docker_network.external_host(),
-                            port=self.__docker_network.port(),
+                            port=self.__docker_network.external_port(),
                             user=self.__USERNAME,
                             password=self.__PASSWORD)
             return True

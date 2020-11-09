@@ -36,7 +36,7 @@ class IRabbitmqVerify(object):
 
 class IRabbitmqBehavior(object):
     DEFAULT_CONFIG = {
-        'autoCreate': True
+        'auto_create': True
     }
 
     @abc.abstractmethod

@@ -27,7 +27,7 @@ class DockerMongodbRunnable(INetworkedRunnable, IMongodbBehavior):
         return self.__docker_network
 
     def initialize(self):
-        mongo_client = pymongo.MongoClient(self.__docker_network.external_host(), self.__docker_network.port())
+        mongo_client = pymongo.MongoClient(self.__docker_network.external_host(), self.__docker_network.external_port())
         self.__setup.set_mongo_client(mongo_client)
         self.__verify.set_mongo_client(mongo_client)
         self.__setup.init(self.__defaults_configurer.get_config())
@@ -40,12 +40,13 @@ class DockerMongodbRunnable(INetworkedRunnable, IMongodbBehavior):
                                                                        ui_port=8081,
                                                                        environment_vars=[
                                                                            ('ME_CONFIG_MONGODB_PORT',
-                                                                            run_result.port),
+                                                                            run_result.external_port),
                                                                            ('ME_CONFIG_MONGODB_SERVER',
                                                                             self.__docker_network.internal_host())])
             self.__ui_container_id = ui_run_result.container_id
             self.__docker_network.set_ui_port(ui_run_result.ui_port)
-        self.__docker_network.set_port(run_result.port)
+        self.__docker_network.set_internal_port(run_result.internal_port)
+        self.__docker_network.set_external_port(run_result.external_port)
 
     def stop(self):
         if self.__docker_network.container_id():
@@ -61,7 +62,7 @@ class DockerMongodbRunnable(INetworkedRunnable, IMongodbBehavior):
 
     def is_healthy(self) -> bool:
         try:
-            client = pymongo.MongoClient(self.__docker_network.external_host(), self.__docker_network.port())
+            client = pymongo.MongoClient(self.__docker_network.external_host(), self.__docker_network.external_port())
             status = client.admin.command('serverStatus')['ok']
             return status == 1.0
         except Exception:

@@ -30,7 +30,6 @@ class Bootstrap(object):
                                         touchstone_config.config['mocks'])
         self.services = self.__build_services(is_dev_mode,
                                               touchstone_config.config['root'],
-                                              touchstone_config.config['host'],
                                               touchstone_config.config['services'],
                                               self.mocks, log_directory)
 
@@ -57,11 +56,11 @@ class Bootstrap(object):
             mocks.register_mock(mock)
         return mocks
 
-    def __build_services(self, is_dev_mode, root, host, user_service_configs, mocks, log_directory) -> Services:
+    def __build_services(self, is_dev_mode, root, user_service_configs, mocks, log_directory) -> Services:
         services = Services()
         service_factory = ServiceFactory(is_dev_mode, root, self.docker_manager, log_directory)
         for user_service_config in user_service_configs:
-            service_config = ServiceConfig(host)
+            service_config = ServiceConfig()
             service_config.merge(user_service_config)
             tests_path = os.path.abspath(os.path.join(root, service_config.config['tests']))
             tests = Tests(mocks, services, tests_path)

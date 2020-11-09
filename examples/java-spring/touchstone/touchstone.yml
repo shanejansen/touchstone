@@ -1,5 +1,5 @@
 ---
-touchstone-version: 1.2.1
+touchstone_version: 1.2.1
 services:
   - name: my-app
     availability_endpoint: /actuator/health
@@ -7,6 +7,6 @@ services:
 mocks:
   http:
   rabbitmq:
-    autoCreate: False
+    auto_create: False
   mongodb:
   mysql:

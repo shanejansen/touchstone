@@ -62,7 +62,7 @@ class Mocks(object):
             if isinstance(mock, NetworkedMock):
                 name = mock.get_name().upper()
                 envs.append((f'TS_{name}_HOST', mock.get_network().internal_host()))
-                envs.append((f'TS_{name}_PORT', mock.get_network().port()))
+                envs.append((f'TS_{name}_PORT', mock.get_network().internal_port()))
                 envs.append((f'TS_{name}_URL', mock.get_network().internal_url()))
                 envs.append((f'TS_{name}_USERNAME', mock.get_network().username()))
                 envs.append((f'TS_{name}_PASSWORD', mock.get_network().password()))

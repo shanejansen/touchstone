@@ -12,7 +12,7 @@ def execute():
     open(os.path.join('touchstone', 'tests', '__init__.py'), 'a').close()
     with open(os.path.join('touchstone', 'touchstone.yml'), 'w', encoding='utf-8') as file:
         data = f"""---
-touchstone-version: {__version__}
+touchstone_version: {__version__}
 services:
   - name: my-app
     port: 8080

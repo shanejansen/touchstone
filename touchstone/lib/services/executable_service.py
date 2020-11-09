@@ -10,12 +10,13 @@ from touchstone.lib.tests import Tests
 
 
 class ExecutableService(IService, ITestable, IExecutable):
-    def __init__(self, name: str, is_dev_mode: bool, tests: Tests, dockerfile_path: str, docker_manager: DockerManager,
-                 develop_command: str, log_directory: Optional[str]):
+    def __init__(self, name: str, is_dev_mode: bool, tests: Tests, dockerfile_path: str, docker_options: Optional[str],
+                 docker_manager: DockerManager, develop_command: str, log_directory: Optional[str]):
         self.__name = name
         self.__is_dev_mode = is_dev_mode
         self.__tests = tests
         self.__dockerfile_path = dockerfile_path
+        self.__docker_options = docker_options
         self.__docker_manager = docker_manager
         self.__develop_command = develop_command
         self.__log_directory = log_directory
@@ -43,7 +44,7 @@ class ExecutableService(IService, ITestable, IExecutable):
                 self.__log('Building and running Dockerfile...')
                 tag = self.__docker_manager.build_dockerfile(self.__dockerfile_path)
                 self.__docker_manager.run_foreground_image(tag, '"$(pwd)"/touchstone/io:/app/touchstone/io',
-                                                           environment_vars, log_path)
+                                                           environment_vars, log_path, self.__docker_options)
             else:
                 self.__log('Service could not be executed. A Dockerfile was not supplied. Check your "touchstone.yml".')
 

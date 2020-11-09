@@ -34,7 +34,7 @@ class DockerRabbitmqRunnable(INetworkedRunnable, IRabbitmqBehavior):
     def initialize(self):
         connection_params = pika.ConnectionParameters(
             host=self.__docker_network.external_host(),
-            port=self.__docker_network.port(),
+            port=self.__docker_network.external_port(),
             credentials=pika.PlainCredentials(self.__USERNAME, self.__PASSWORD),
             heartbeat=0
         )
@@ -43,14 +43,15 @@ class DockerRabbitmqRunnable(INetworkedRunnable, IRabbitmqBehavior):
         self.__setup.set_channel(channel)
         self.__setup.set_connection_params(connection_params)
         self.__verify.set_blocking_channel(channel)
-        if self.__configurer.get_config()['autoCreate']:
+        if self.__configurer.get_config()['auto_create']:
             self.__setup.create_all(self.__defaults_configurer.get_config())
 
     def start(self):
         run_result = self.__docker_manager.run_background_image('rabbitmq:3.7.22-management-alpine', port=5672,
                                                                 ui_port=15672)
         self.__docker_network.set_container_id(run_result.container_id)
-        self.__docker_network.set_port(run_result.port)
+        self.__docker_network.set_internal_port(run_result.internal_port)
+        self.__docker_network.set_external_port(run_result.external_port)
         self.__docker_network.set_ui_port(run_result.ui_port)
         self.__docker_network.set_username(self.__USERNAME)
         self.__docker_network.set_password(self.__PASSWORD)
@@ -64,7 +65,7 @@ class DockerRabbitmqRunnable(INetworkedRunnable, IRabbitmqBehavior):
         self.__setup.purge_queues()
 
     def services_available(self):
-        if not self.__configurer.get_config()['autoCreate']:
+        if not self.__configurer.get_config()['auto_create']:
             self.__setup.create_shadow_queues(self.__defaults_configurer.get_config())
 
     def is_healthy(self) -> bool:

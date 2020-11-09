@@ -9,9 +9,10 @@ from touchstone.lib import exceptions
 
 
 class RunResult(object):
-    def __init__(self, container_id, port, ui_port=None):
+    def __init__(self, container_id, internal_port, external_port, ui_port):
         self.container_id = container_id
-        self.port = port
+        self.internal_port = internal_port
+        self.external_port = external_port
         self.ui_port = ui_port
 
 
@@ -35,7 +36,7 @@ class DockerManager(object):
         return tag
 
     def run_background_image(self, image: str, port: int = None, exposed_port: int = None, ui_port: int = None,
-                             environment_vars: List[Tuple[str, str]] = []) -> RunResult:
+                             environment_vars: List[Tuple[str, str]] = [], options: str = None) -> RunResult:
         exposed_port = port if not exposed_port else exposed_port
         self.__create_network()
 
@@ -43,24 +44,29 @@ class DockerManager(object):
         if len(environment_vars) != 0:
             additional_params += ' '
             additional_params += self.__build_env_str(environment_vars)
+        if options:
+            additional_params += ' '
+            additional_params += options
 
         container_id = self.__run_image(additional_params, image)
 
         # Extract the auto-discovered ports
         exposed_port = self.__extract_port_mapping(container_id, port)
         ui_port = self.__extract_port_mapping(container_id, ui_port)
-        ui_port = exposed_port if not ui_port else ui_port
 
         self.__containers.append(container_id)
-        return RunResult(container_id, exposed_port, ui_port)
+        return RunResult(container_id, port, exposed_port, ui_port)
 
     def run_foreground_image(self, image: str, bind_mount: str, environment_vars: List[Tuple[str, str]] = [],
-                             log_path: str = None):
+                             log_path: str = None, options: str = None):
         self.__create_network()
         additional_params = f'-v {bind_mount}'
         if len(environment_vars) != 0:
             additional_params += ' '
             additional_params += self.__build_env_str(environment_vars)
+        if options:
+            additional_params += ' '
+            additional_params += options
         self.__execute_image(image, additional_params, log_path)
 
     def __create_network(self):

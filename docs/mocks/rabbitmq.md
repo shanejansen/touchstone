@@ -11,7 +11,7 @@ Used to mock a Rabbit MQ dependency.
  
  
 ## Configuration
- * `autoCreate` - Default: True. If set to False, queues and exchanges will not be created by Touchstone and should be created by the service instead.
+ * `auto_create` - Default: True. If set to False, queues and exchanges will not be created by Touchstone and should be created by the service instead.
 
 
 ## Defaults Example

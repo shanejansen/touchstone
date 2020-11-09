@@ -29,7 +29,7 @@ def sanity_check_passes() -> bool:
     versions_match = False
     with open(touchstone_yml_path, 'r') as file:
         touchstone_config = yaml.safe_load(file)
-        given_version = touchstone_config.get('touchstone-version')
+        given_version = touchstone_config.get('touchstone_version')
         if given_version:
             split_given_version = str.split(given_version, '.')
             split_current_version = str.split(__version__, '.')

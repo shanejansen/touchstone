@@ -3,14 +3,14 @@ from touchstone.lib import exceptions
 
 
 class ServiceConfig(object):
-    def __init__(self, host):
+    def __init__(self):
         self.config: dict = {
             'type': 'networked',
             'name': 'unnamed-service',
             'tests': './tests',
-            'host': host,
             'port': 8080,
             'dockerfile': None,
+            'docker_options': None,
             'availability_endpoint': '',
             'num_retries': 20,
             'seconds_between_retries': 5,

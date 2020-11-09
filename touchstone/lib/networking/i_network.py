@@ -11,7 +11,11 @@ class INetwork(object):
         pass
 
     @abc.abstractmethod
-    def port(self) -> int:
+    def internal_port(self) -> int:
+        pass
+
+    @abc.abstractmethod
+    def external_port(self) -> int:
         pass
 
     @abc.abstractmethod

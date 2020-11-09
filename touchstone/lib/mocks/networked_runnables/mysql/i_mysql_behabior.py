@@ -11,14 +11,14 @@ class IMysqlSetup(object):
     @abc.abstractmethod
     def insert_row(self, database: str, table: str, data: dict):
         """Inserts a dictionary of key-value pairs into the given database and table. If the config option,
-        "convertCamelToSnakeCase" is set (default True), the dictionary keys will be converted from camel case to
+        "camel_to_snake" is set (default True), the dictionary keys will be converted from camel case to
         snake case."""
         pass
 
     @abc.abstractmethod
     def insert_rows(self, database: str, table: str, data: List[dict]):
         """Inserts a list of dictionaries of key-value pairs into the given database and table. If the config option,
-        "convertCamelToSnakeCase" is set (default True), the dictionary keys will be converted from camel case to
+        "camel_to_snake" is set (default True), the dictionary keys will be converted from camel case to
         snake case."""
         pass
 
@@ -38,8 +38,8 @@ class IMysqlVerify(object):
 
 class IMysqlBehavior(object):
     DEFAULT_CONFIG = {
-        'convertCamelToSnakeCase': True,
-        'snapshotDatabases': False
+        'camel_to_snake': True,
+        'snapshot_databases': False
     }
 
     @abc.abstractmethod

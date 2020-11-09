@@ -50,13 +50,12 @@ After running `touchstone init`, a new directory will be created with the follow
 ### `/touchstone.yml`
 [Example](./examples/java-spring/touchstone/touchstone.yml)  
 Your services and their monitored dependencies are defined here. Default values should be enough in most cases.
- * `host:` - Default: localhost. The host where your services/Docker are running.
  * `services:` - Each service included in your Touchstone tests is defined here.
    * `name:` - Default: unnamed-service. The name of the service.
    * `tests:` - Default: ./tests. The path to Touchstone tests for this service.
-   * `host:` - Default: parent host. Fine-grained host control per service.
    * `port:` - Default: 8080. The port used for this service.
    * `dockerfile:` - Default: N/A. Used to containerize the service during `touchstone run`. If you are only running Touchstone locally, this can be omitted.
+   * `docker_options` - Default: N/A. Additional [Docker options](https://docs.docker.com/engine/reference/commandline/run/#options) to apply to your container.
    * `availability_endpoint:` - Default: N/A. Used to determine when the service is healthy so tests can be executed. A HTTP status `2xx` must be returned from the endpoint to be considered healthy.
    * `num_retries:` - Default: 20. The number of times Touchstone will try to successfully call the `availability_endpoint`.
    * `seconds_between_retries:` - Default: 5. The number of seconds between each retry.
