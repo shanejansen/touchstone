@@ -2,6 +2,9 @@ import os
 from typing import Optional
 
 from touchstone.lib.configs.service_config import ServiceConfig
+from touchstone.lib.health_checks.blocking_health_check import BlockingHealthCheck
+from touchstone.lib.health_checks.docker_health_check import DockerHealthCheck
+from touchstone.lib.health_checks.http_health_check import HttpHealthCheck
 from touchstone.lib.managers.docker_manager import DockerManager
 from touchstone.lib.networking.docker_network import DockerNetwork
 from touchstone.lib.services.executable_service import ExecutableService
@@ -25,6 +28,8 @@ class ServiceFactory(object):
         service: Optional[IService] = None
 
         if service_config.config['type'] == 'networked':
+            health_check = HttpHealthCheck() if service_config.config[
+                                                    'availability_endpoint'] is not None else DockerHealthCheck()
             service = NetworkedService(service_config.config['name'],
                                        tests,
                                        dockerfile_path,
@@ -32,10 +37,12 @@ class ServiceFactory(object):
                                        self.__docker_manager,
                                        service_config.config['port'],
                                        service_config.config['availability_endpoint'],
-                                       service_config.config['num_retries'],
-                                       service_config.config['seconds_between_retries'],
                                        self.__log_directory,
-                                       DockerNetwork())
+                                       DockerNetwork(),
+                                       health_check,
+                                       BlockingHealthCheck(service_config.config['seconds_between_retries'],
+                                                           service_config.config['num_retries'],
+                                                           health_check))
         elif service_config.config['type'] == 'executable':
             service = ExecutableService(service_config.config['name'],
                                         self.__is_dev_mode,

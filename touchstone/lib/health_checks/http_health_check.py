@@ -21,9 +21,9 @@ class HttpHealthCheck(IHealthCheckable):
             code = urllib.request.urlopen(self.__url).getcode()
             passed = code % 200 < 100
             if passed:
-                common.logger.log(f'HTTP health check passed for: {self.__url}')
+                common.logger.debug(f'HTTP health check passed for: {self.__url}')
             else:
-                common.logger.log(f'HTTP health check failed for: {self.__url}')
+                common.logger.debug(f'HTTP health check failed for: {self.__url}')
             return passed
         except (urllib.error.URLError, ConnectionResetError):
             return False

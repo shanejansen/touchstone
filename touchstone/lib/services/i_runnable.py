@@ -14,3 +14,7 @@ class IRunnable(object):
     @abc.abstractmethod
     def is_running(self) -> bool:
         pass
+
+    @abc.abstractmethod
+    def wait_until_healthy(self):
+        pass

@@ -33,7 +33,7 @@ class Services(IServiceExecutor):
                 service.start(self.__environment_vars)
             self.__services_running = True
             for service in runnables:
-                service.wait_for_availability()
+                service.wait_until_healthy()
             print('Finished starting services.\n')
 
     def stop(self):

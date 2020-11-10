@@ -1,12 +1,11 @@
 import os
-import time
-import urllib.error
-import urllib.request
 from typing import List, Tuple, Optional
 
 from touchstone.lib import exceptions
 from touchstone.lib.health_checks.blocking_health_check import BlockingHealthCheck
+from touchstone.lib.health_checks.docker_health_check import DockerHealthCheck
 from touchstone.lib.health_checks.http_health_check import HttpHealthCheck
+from touchstone.lib.health_checks.i_health_checkable import IHealthCheckable
 from touchstone.lib.managers.docker_manager import DockerManager
 from touchstone.lib.networking.docker_network import DockerNetwork
 from touchstone.lib.services.i_runnable import IRunnable
@@ -17,9 +16,8 @@ from touchstone.lib.tests import Tests
 
 class NetworkedService(IService, ITestable, IRunnable):
     def __init__(self, name: str, tests: Tests, dockerfile_path: Optional[str], docker_options: Optional[str],
-                 docker_manager: DockerManager, port: int, availability_endpoint: str, num_retries: int,
-                 seconds_between_retries: int, log_directory: Optional[str], docker_network: DockerNetwork,
-                 http_health_check: Optional[HttpHealthCheck],
+                 docker_manager: DockerManager, port: int, availability_endpoint: str, log_directory: Optional[str],
+                 docker_network: DockerNetwork, health_check: IHealthCheckable,
                  blocking_health_check: BlockingHealthCheck):
         self.__name = name
         self.__tests = tests
@@ -28,11 +26,9 @@ class NetworkedService(IService, ITestable, IRunnable):
         self.__docker_manager = docker_manager
         self.__port = port
         self.__availability_endpoint = availability_endpoint
-        self.__num_retries = num_retries
-        self.__seconds_between_retries = seconds_between_retries
         self.__log_directory = log_directory
         self.__docker_network = docker_network
-        self.__http_health_check = http_health_check
+        self.__health_check = health_check
         self.__blocking_health_check = blocking_health_check
 
     def get_name(self):
@@ -66,28 +62,14 @@ class NetworkedService(IService, ITestable, IRunnable):
             self.__docker_manager.stop_container(self.__docker_network.container_id(), log_path)
             self.__docker_network.set_container_id(None)
 
-    def wait_for_availability(self):
-        full_endpoint = self.url() + self.__availability_endpoint
-        self.__log(f'Attempting to connect to availability endpoint {full_endpoint}')
-        for retry_num in range(self.__num_retries):
-            try:
-                code = urllib.request.urlopen(full_endpoint).getcode()
-                if code % 200 < 100:
-                    self.__log('Available\n')
-                else:
-                    self.__log(f'Availability endpoint returned non-2xx: "{code}"\n')
-                return
-            except (urllib.error.URLError, ConnectionResetError):
-                self.__log(f'Not available. Retry {retry_num + 1} of {self.__num_retries}')
-                time.sleep(self.__seconds_between_retries)
-        raise exceptions.ServiceException('Could not connect to service\'s availability endpoint.')
-
     def is_running(self) -> bool:
         return self.__docker_network.container_id() is not None
 
     def wait_until_healthy(self):
-        if self.__http_health_check:
-            self.__http_health_check.set_url(self.url() + self.__availability_endpoint)
+        if isinstance(self.__health_check, HttpHealthCheck):
+            self.__health_check.set_url(self.url() + self.__availability_endpoint)
+        if isinstance(self.__health_check, DockerHealthCheck):
+            self.__health_check.set_container_id(self.__docker_network.container_id())
         is_healthy = self.__blocking_health_check.wait_until_healthy()
         if not is_healthy:
             raise exceptions.ServiceException('Could not connect to service\'s availability endpoint.')

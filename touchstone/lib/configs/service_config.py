@@ -11,7 +11,7 @@ class ServiceConfig(object):
             'port': 8080,
             'dockerfile': None,
             'docker_options': None,
-            'availability_endpoint': '',
+            'availability_endpoint': None,
             'num_retries': 20,
             'seconds_between_retries': 5,
             'develop_command': ''
