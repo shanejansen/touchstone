@@ -1,9 +1,9 @@
 import pika
 
 from touchstone.lib import exceptions
+from touchstone.lib.health_checks.http_health_check import HttpHealthCheck
 from touchstone.lib.managers.docker_manager import DockerManager
 from touchstone.lib.mocks.configurers.i_configurable import IConfigurable
-from touchstone.lib.mocks.health_checks.i_url_health_checkable import IUrlHealthCheckable
 from touchstone.lib.mocks.networked_runnables.i_networked_runnable import INetworkedRunnable
 from touchstone.lib.mocks.networked_runnables.rabbitmq.docker.docker_rabbitmq_setup import DockerRabbitmqSetup
 from touchstone.lib.mocks.networked_runnables.rabbitmq.docker.docker_rabbitmq_verify import DockerRabbitmqVerify
@@ -17,7 +17,7 @@ class DockerRabbitmqRunnable(INetworkedRunnable, IRabbitmqBehavior):
     __USERNAME = 'guest'
     __PASSWORD = 'guest'
 
-    def __init__(self, defaults_configurer: IConfigurable, configurer: IConfigurable, health_check: IUrlHealthCheckable,
+    def __init__(self, defaults_configurer: IConfigurable, configurer: IConfigurable, health_check: HttpHealthCheck,
                  setup: DockerRabbitmqSetup, verify: DockerRabbitmqVerify, docker_manager: DockerManager,
                  docker_network: DockerNetwork):
         self.__defaults_configurer = defaults_configurer

@@ -5,6 +5,8 @@ import urllib.request
 from typing import List, Tuple, Optional
 
 from touchstone.lib import exceptions
+from touchstone.lib.health_checks.blocking_health_check import BlockingHealthCheck
+from touchstone.lib.health_checks.http_health_check import HttpHealthCheck
 from touchstone.lib.managers.docker_manager import DockerManager
 from touchstone.lib.networking.docker_network import DockerNetwork
 from touchstone.lib.services.i_runnable import IRunnable
@@ -16,7 +18,9 @@ from touchstone.lib.tests import Tests
 class NetworkedService(IService, ITestable, IRunnable):
     def __init__(self, name: str, tests: Tests, dockerfile_path: Optional[str], docker_options: Optional[str],
                  docker_manager: DockerManager, port: int, availability_endpoint: str, num_retries: int,
-                 seconds_between_retries: int, log_directory: Optional[str], docker_network: DockerNetwork):
+                 seconds_between_retries: int, log_directory: Optional[str], docker_network: DockerNetwork,
+                 http_health_check: Optional[HttpHealthCheck],
+                 blocking_health_check: BlockingHealthCheck):
         self.__name = name
         self.__tests = tests
         self.__dockerfile_path = dockerfile_path
@@ -28,6 +32,8 @@ class NetworkedService(IService, ITestable, IRunnable):
         self.__seconds_between_retries = seconds_between_retries
         self.__log_directory = log_directory
         self.__docker_network = docker_network
+        self.__http_health_check = http_health_check
+        self.__blocking_health_check = blocking_health_check
 
     def get_name(self):
         return self.__name
@@ -78,6 +84,13 @@ class NetworkedService(IService, ITestable, IRunnable):
 
     def is_running(self) -> bool:
         return self.__docker_network.container_id() is not None
+
+    def wait_until_healthy(self):
+        if self.__http_health_check:
+            self.__http_health_check.set_url(self.url() + self.__availability_endpoint)
+        is_healthy = self.__blocking_health_check.wait_until_healthy()
+        if not is_healthy:
+            raise exceptions.ServiceException('Could not connect to service\'s availability endpoint.')
 
     def url(self):
         port = self.__docker_network.external_port() if self.is_running() else self.__port

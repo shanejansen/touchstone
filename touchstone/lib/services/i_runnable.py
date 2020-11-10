@@ -12,9 +12,5 @@ class IRunnable(object):
         pass
 
     @abc.abstractmethod
-    def wait_for_availability(self):
-        pass
-
-    @abc.abstractmethod
     def is_running(self) -> bool:
         pass

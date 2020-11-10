@@ -1,9 +1,9 @@
 from minio import Minio
 
 from touchstone.lib import exceptions
+from touchstone.lib.health_checks.http_health_check import HttpHealthCheck
 from touchstone.lib.managers.docker_manager import DockerManager
 from touchstone.lib.mocks.configurers.i_configurable import IConfigurable
-from touchstone.lib.mocks.health_checks.i_url_health_checkable import IUrlHealthCheckable
 from touchstone.lib.mocks.networked_runnables.i_networked_runnable import INetworkedRunnable
 from touchstone.lib.mocks.networked_runnables.s3.docker.docker_s3_setup import DockerS3Setup
 from touchstone.lib.mocks.networked_runnables.s3.docker.docker_s3_verify import DockerS3Verify
@@ -16,7 +16,7 @@ class DockerS3Runnable(INetworkedRunnable, IS3Behavior):
     __USERNAME = 'admin123'
     __PASSWORD = 'admin123'
 
-    def __init__(self, defaults_configurer: IConfigurable, base_objects_path: str, health_check: IUrlHealthCheckable,
+    def __init__(self, defaults_configurer: IConfigurable, base_objects_path: str, health_check: HttpHealthCheck,
                  setup: DockerS3Setup, verify: DockerS3Verify, docker_manager: DockerManager,
                  docker_network: DockerNetwork):
         self.__defaults_configurer = defaults_configurer

@@ -1,7 +1,7 @@
 from touchstone.lib import exceptions
+from touchstone.lib.health_checks.http_health_check import HttpHealthCheck
 from touchstone.lib.managers.docker_manager import DockerManager
 from touchstone.lib.mocks.configurers.i_configurable import IConfigurable
-from touchstone.lib.mocks.health_checks.i_url_health_checkable import IUrlHealthCheckable
 from touchstone.lib.mocks.networked_runnables.http.docker.docker_http_setup import DockerHttpSetup
 from touchstone.lib.mocks.networked_runnables.http.docker.docker_http_verify import DockerHttpVerify
 from touchstone.lib.mocks.networked_runnables.http.i_http_behavior import IHttpBehavior, IHttpSetup, IHttpVerify
@@ -11,7 +11,7 @@ from touchstone.lib.networking.i_network import INetwork
 
 
 class DockerHttpRunnable(INetworkedRunnable, IHttpBehavior):
-    def __init__(self, defaults_configurer: IConfigurable, health_check: IUrlHealthCheckable, setup: DockerHttpSetup,
+    def __init__(self, defaults_configurer: IConfigurable, health_check: HttpHealthCheck, setup: DockerHttpSetup,
                  verify: DockerHttpVerify, docker_manager: DockerManager, docker_network: DockerNetwork):
         self.__defaults_configurer = defaults_configurer
         self.__health_check = health_check

@@ -1,9 +1,8 @@
-import time
 from typing import List, Tuple
 
-from touchstone import common
 from touchstone.lib import exceptions
-from touchstone.lib.mocks.health_checks.i_health_checkable import IHealthCheckable
+from touchstone.lib.health_checks.blocking_health_check import BlockingHealthCheck
+from touchstone.lib.health_checks.i_health_checkable import IHealthCheckable
 from touchstone.lib.mocks.mockables.i_mockable import IMockable
 from touchstone.lib.mocks.mockables.networked_mock import NetworkedMock
 from touchstone.lib.mocks.networked_runnables.http.i_http_behavior import IHttpBehavior
@@ -82,17 +81,8 @@ class Mocks(object):
         for mock in self.__registered_mocks:
             health_checkable = mock
             if isinstance(health_checkable, IHealthCheckable):
-                attempt = 0
-                healthy = False
-                while not healthy and attempt is not 10:
-                    attempt += 1
-                    common.logger.debug(
-                        f'Waiting for mock: {mock.get_name()} to become healthy. Attempt {attempt} of 10.')
-                    if health_checkable.is_healthy():
-                        healthy = True
-                        attempt = 0
-                    else:
-                        time.sleep(5)
-                if attempt is 10:
+                blocking_health_check = BlockingHealthCheck(5, 10, health_checkable)
+                is_healthy = blocking_health_check.wait_until_healthy()
+                if not is_healthy:
                     raise exceptions.MockException(
                         f'Mock {mock.get_pretty_name()} never became healthy and timed out on initialization.')

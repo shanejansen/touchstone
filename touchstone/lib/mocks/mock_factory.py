@@ -1,10 +1,10 @@
 import os
 from typing import Optional
 
+from touchstone.lib.health_checks.http_health_check import HttpHealthCheck
 from touchstone.lib.managers.docker_manager import DockerManager
 from touchstone.lib.mocks.configurers.BasicConfigurer import BasicConfigurer
 from touchstone.lib.mocks.configurers.FileConfigurer import FileConfigurer
-from touchstone.lib.mocks.health_checks.http_health_check import HttpHealthCheck
 from touchstone.lib.mocks.mockables.basic_mock import BasicMock
 from touchstone.lib.mocks.mockables.i_mockable import IMockable
 from touchstone.lib.mocks.mockables.networked_mock import NetworkedMock

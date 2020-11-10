@@ -1,5 +1,5 @@
 from touchstone.lib import exceptions
-from touchstone.lib.mocks.health_checks.i_health_checkable import IHealthCheckable
+from touchstone.lib.health_checks.i_health_checkable import IHealthCheckable
 from touchstone.lib.mocks.mockables.i_mockable import IMockable
 from touchstone.lib.mocks.networked_runnables.i_networked_runnable import INetworkedRunnable
 from touchstone.lib.mocks.runnables.i_runnable import IRunnable
