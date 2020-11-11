@@ -52,11 +52,12 @@ After running `touchstone init`, a new directory will be created with the follow
 Your services and their monitored dependencies are defined here. Default values should be enough in most cases.
  * `services:` - Each service included in your Touchstone tests is defined here.
    * `name:` - Default: unnamed-service. The name of the service.
+   * `type:` - Default: networked. The type of service under test. Allowed values: networked, executable
    * `tests:` - Default: ./tests. The path to Touchstone tests for this service.
    * `port:` - Default: 8080. The port used for this service.
    * `dockerfile:` - Default: N/A. Used to containerize the service during `touchstone run`. If you are only running Touchstone locally, this can be omitted.
    * `docker_options` - Default: N/A. Additional [Docker options](https://docs.docker.com/engine/reference/commandline/run/#options) to apply to your container.
-   * `availability_endpoint:` - Default: N/A. Used to determine when the service is healthy so tests can be executed. A HTTP status `2xx` must be returned from the endpoint to be considered healthy.
+   * `availability_endpoint:` - Default: N/A. By default, Touchstone runs a Docker health check to determine the services' health. Supply this value to use URL based health checking. A HTTP status `2xx` must be returned from the endpoint to be considered healthy.
    * `num_retries:` - Default: 20. The number of times Touchstone will try to successfully call the `availability_endpoint`.
    * `seconds_between_retries:` - Default: 5. The number of seconds between each retry.
  * `mocks:` - Each mock dependency your service(s) are being tested against.
@@ -124,7 +125,7 @@ def when(self, given) -> object:
 [Example](./examples/python-spark/touchstone/tests/test_csv_matches.py)
 
 ## Docker-In-Docker
-Some CI pipelines utilize Docker-in-Docker (DinD) to run their tests. If Touchstone is running using DinD, the network must point to the host:
-```
+Some CI pipelines utilize Docker-in-Docker (DinD) to run tests. If Touchstone is running using DinD, the network must point to the host:
+```commandline
 docker run --network="host" -v /var/run/docker.sock:/var/run/docker.sock your-touchstone-image
 ```

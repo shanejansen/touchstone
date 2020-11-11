@@ -19,8 +19,9 @@ class DockerHealthCheck(IHealthCheckable):
             raise exceptions.MockException('Container ID must be set before checking health.')
         try:
             common.logger.debug(f'Executing Docker health check for container ID: {self.__container_id}')
-            command = f'docker inspect {{TODO}} {self.__container_id}'
-            passed = subprocess.run(command, shell=True) == 'success'
+            passed = 'healthy' in str(
+                subprocess.run(['docker', 'inspect', "--format='{{.State.Health.Status}}'", self.__container_id],
+                               stdout=subprocess.PIPE).stdout, encoding='utf-8')
             if passed:
                 common.logger.debug(f'Docker health check passed for container ID: {self.__container_id}')
             else:

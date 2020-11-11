@@ -4,7 +4,6 @@ services:
   - name: my-app
     port: 8080
     dockerfile: ../Dockerfile
-    availability_endpoint: ''
 mocks:
   http:
   rabbitmq:
