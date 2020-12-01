@@ -111,7 +111,7 @@ When running via `touchstone develop`, dev ports for each mock are used. When ru
  * `TS_{MOCK_NAME}_USERNAME` - Username for authenticating with the mock.
  * `TS_{MOCK_NAME}_PASSWORD` - Password for authenticating with the mock.
  
-## Testing Non-Services (Executables)
+## Testing Executables
 Touchstone can also be used to test non-service based applications. This includes applications that can be invoked via the command line, like Spark jobs, for example. A Python Spark job tested with Touchstone can be found [here](./examples/python-spark).
 
 To define a service as executable, set its type to `executable` in your `touchstone.yml`. The supplied Dockerfile will be ran as the executable service. You can also supply a `develop_command` which will be used when running Touchstone in develop mode. [Example](./examples/python-spark/touchstone/touchstone.yml)
