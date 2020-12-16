@@ -27,6 +27,28 @@ class TestValidation(TestCase):
         # Then
         self.assertTrue(result)
 
+    def test_matches_MatchingANYWithList_ReturnsTrue(self):
+        # Given
+        expected = {'foo': [{'bar': validation.ANY}]}
+        actual = {'foo': [{'bar': 'buzz'}]}
+
+        # When
+        result = validation.matches(expected, actual)
+
+        # Then
+        self.assertTrue(result)
+
+    def test_matches_MatchingANYWithNestedList_ReturnsTrue(self):
+        # Given
+        expected = [{'bar': [{'bazz': validation.ANY}]}]
+        actual = [{'bar': [{'bazz': 'buzz'}]}]
+
+        # When
+        result = validation.matches(expected, actual)
+
+        # Then
+        self.assertTrue(result)
+
     def test_matches_NonMatchingStrings_ReturnsFalse(self):
         # Given
         expected = 'foo'

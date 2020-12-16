@@ -1,3 +1,4 @@
+import json
 from typing import List
 
 from pymongo import MongoClient
@@ -29,6 +30,9 @@ class DockerMongodbSetup(IMongodbSetup):
                 mongo_collection = mongo_database.get_collection(collection['name'])
                 self.__mongo_context.add_collection(database_name, collection['name'])
                 for document in collection.get('documents', []):
+                    # Supports multi-line documents
+                    if isinstance(document, str):
+                        document = json.loads(document)
                     mongo_collection.insert_one(document)
 
     def command(self, database: str, command: dict):

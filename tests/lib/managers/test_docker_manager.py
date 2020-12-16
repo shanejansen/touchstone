@@ -13,7 +13,7 @@ class TestDockerManager(TestCase):
     @mock.patch('touchstone.lib.managers.docker_manager.subprocess')
     def test_buildDockerfile_CommandReturnsNon0_exceptionRaised(self, mock_subprocess: Mock):
         # Given
-        dockerfile_path = '../'
+        dockerfile_path = '../../'
         mock_subprocess.run.return_value = Mock(**{'returncode': 1})
 
         # Then
