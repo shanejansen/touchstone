@@ -1,4 +1,4 @@
-ANY = 'TS_ANY'
+ANY = object()
 
 
 def __equals(expected, actual) -> bool:
