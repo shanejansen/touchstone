@@ -4,6 +4,11 @@ services:
   - name: my-app
     port: 8080
     dockerfile: ../Dockerfile
+  - name: supporting-app
+    docker_image: nginx
+    port: 80
+    availability_endpoint: /
+    tests: null
 mocks:
   http:
   rabbitmq:

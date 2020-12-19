@@ -53,7 +53,7 @@ Your services and their monitored dependencies are defined here. Default values 
  * `services:` - Each service included in your Touchstone tests is defined here.
    * `name:` - Default: unnamed-service. The name of the service.
    * `type:` - Default: networked. The type of service under test. Allowed values: networked, executable
-   * `tests:` - Default: ./tests. The path to Touchstone tests for this service.
+   * `tests:` - Default: ./tests. The path to Touchstone tests for this service. Use `null` if this is a "supporting" service skipping tests.
    * `port:` - Default: 8080. The port used for this service.
    * `dockerfile:` - Default: N/A. Used to containerize the service during `touchstone run`. If you are only running Touchstone locally, this can be omitted.
    * `docker_image` - Default: N/A. An alternative to `dockerfile`. A Docker image used to containerize the service during `touchstone run`.

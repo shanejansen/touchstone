@@ -64,8 +64,11 @@ class Bootstrap(object):
             service_config = ServiceConfig()
             service_config.merge(user_service_config)
             service_config.verify()
-            tests_path = os.path.abspath(os.path.join(root, service_config.config['tests']))
-            tests = Tests(mocks, services, tests_path)
+            if service_config.config['tests'] is None:
+                tests = None
+            else:
+                tests_path = os.path.abspath(os.path.join(root, service_config.config['tests']))
+                tests = Tests(mocks, services, tests_path)
             service = service_factory.get_service(service_config, tests)
             services.add_service(service)
         return services

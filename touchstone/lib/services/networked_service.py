@@ -14,7 +14,7 @@ from touchstone.lib.tests import Tests
 
 
 class NetworkedService(IService, ITestable, IRunnable):
-    def __init__(self, name: str, tests: Tests, dockerfile_path: Optional[str], docker_image: Optional[str],
+    def __init__(self, name: str, tests: Optional[Tests], dockerfile_path: Optional[str], docker_image: Optional[str],
                  docker_options: Optional[str], docker_manager: DockerManager, port: int, availability_endpoint: str,
                  log_directory: Optional[str], docker_network: DockerNetwork,
                  blocking_health_check: BlockingHealthCheck):
@@ -34,9 +34,13 @@ class NetworkedService(IService, ITestable, IRunnable):
         return self.__name
 
     def run_test(self, file_name, test_name) -> bool:
+        if not self.__tests:
+            return True
         return self.__tests.run(file_name, test_name, self.url())
 
     def run_all_tests(self) -> bool:
+        if not self.__tests:
+            return True
         self.__log('Running all tests...')
         did_pass = self.__tests.run_all(self.url())
         self.__log('Finished running all tests.\n')

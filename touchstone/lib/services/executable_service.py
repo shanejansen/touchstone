@@ -11,7 +11,7 @@ from touchstone.lib.tests import Tests
 
 
 class ExecutableService(IService, ITestable, IExecutable):
-    def __init__(self, name: str, is_dev_mode: bool, tests: Tests, dockerfile_path: Optional[str],
+    def __init__(self, name: str, is_dev_mode: bool, tests: Optional[Tests], dockerfile_path: Optional[str],
                  docker_image: Optional[str], docker_options: Optional[str], docker_manager: DockerManager,
                  develop_command: str, log_directory: Optional[str]):
         self.__name = name
@@ -28,9 +28,13 @@ class ExecutableService(IService, ITestable, IExecutable):
         return self.__name
 
     def run_test(self, file_name, test_name) -> bool:
+        if not self.__tests:
+            return True
         return self.__tests.run(file_name, test_name)
 
     def run_all_tests(self) -> bool:
+        if not self.__tests:
+            return True
         self.__log('Running all tests...')
         did_pass = self.__tests.run_all()
         self.__log('Finished running all tests.\n')

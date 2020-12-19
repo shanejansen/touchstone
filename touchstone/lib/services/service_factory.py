@@ -21,7 +21,7 @@ class ServiceFactory(object):
         self.__docker_manager = docker_manager
         self.__log_directory = log_directory
 
-    def get_service(self, service_config: ServiceConfig, tests: Tests) -> Optional[IService]:
+    def get_service(self, service_config: ServiceConfig, tests: Optional[Tests]) -> Optional[IService]:
         dockerfile_path = None
         if service_config.config['dockerfile']:
             dockerfile_path = os.path.abspath(os.path.join(self.__root, service_config.config['dockerfile']))
