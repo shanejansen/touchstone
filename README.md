@@ -56,6 +56,7 @@ Your services and their monitored dependencies are defined here. Default values 
    * `tests:` - Default: ./tests. The path to Touchstone tests for this service.
    * `port:` - Default: 8080. The port used for this service.
    * `dockerfile:` - Default: N/A. Used to containerize the service during `touchstone run`. If you are only running Touchstone locally, this can be omitted.
+   * `docker_image` - Default: N/A. An alternative to `dockerfile`. A Docker image used to containerize the service during `touchstone run`.
    * `docker_options` - Default: N/A. Additional [Docker options](https://docs.docker.com/engine/reference/commandline/run/#options) to apply to your container.
    * `availability_endpoint:` - Default: N/A. By default, Touchstone runs a Docker health check to determine the services' health. Supply this value to use URL based health checking. A HTTP status `2xx` must be returned from the endpoint to be considered healthy.
    * `num_retries:` - Default: 20. The number of times Touchstone will try to successfully call the `availability_endpoint`.
@@ -114,7 +115,7 @@ When running via `touchstone develop`, dev ports for each mock are used. When ru
 ## Testing Executables
 Touchstone can also be used to test non-service based applications. This includes applications that can be invoked via the command line, like Spark jobs, for example. A Python Spark job tested with Touchstone can be found [here](./examples/python-spark).
 
-To define a service as executable, set its type to `executable` in your `touchstone.yml`. The supplied Dockerfile will be ran as the executable service. You can also supply a `develop_command` which will be used when running Touchstone in develop mode. [Example](./examples/python-spark/touchstone/touchstone.yml)
+To define a service as executable, set its type to `executable` in your `touchstone.yml`. The supplied Dockerfile or Docker image will be ran as the executable service. You can also supply a `develop_command` which will be used when running Touchstone in develop mode. [Example](./examples/python-spark/touchstone/touchstone.yml)
 
 In your Touchstone tests, the executable service can be triggered using the following API:
 ```python

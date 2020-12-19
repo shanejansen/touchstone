@@ -11,20 +11,19 @@ class TestService(TestCase):
     def setUp(self) -> None:
         self.mock_tests = Mock()
         self.mock_docker_manager = Mock()
-        self.mock_health_check = Mock()
         self.mock_blocking_health_check = Mock()
 
     def test_start_dockerfileNotSet_exceptionRaised(self):
         # Given
-        service = NetworkedService('', self.mock_tests, None, None, self.mock_docker_manager, 0, '', None,
-                                   DockerNetwork(), self.mock_health_check, self.mock_blocking_health_check)
+        service = NetworkedService('', self.mock_tests, None, None, None, self.mock_docker_manager, 0, '', None,
+                                   DockerNetwork(), self.mock_blocking_health_check)
 
         # Then
         self.assertRaises(exceptions.ServiceException, service.start, [])
 
     def test_stop_serviceIsRunning_serviceStops(self):
-        service = NetworkedService('', self.mock_tests, '', None, self.mock_docker_manager, 0, '', None,
-                                   DockerNetwork(), self.mock_health_check, self.mock_blocking_health_check)
+        service = NetworkedService('', self.mock_tests, '', None, None, self.mock_docker_manager, 0, '', None,
+                                   DockerNetwork(), self.mock_blocking_health_check)
 
         # When
         service.start([])

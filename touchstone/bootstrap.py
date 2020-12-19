@@ -38,6 +38,7 @@ class Bootstrap(object):
         path = os.path.join(root, 'touchstone.yml')
         with open(path, 'r') as file:
             config.merge(yaml.safe_load(file))
+        config.verify()
         return config
 
     def __build_mocks(self, is_dev_mode, root, configs) -> Mocks:
@@ -62,6 +63,7 @@ class Bootstrap(object):
         for user_service_config in user_service_configs:
             service_config = ServiceConfig()
             service_config.merge(user_service_config)
+            service_config.verify()
             tests_path = os.path.abspath(os.path.join(root, service_config.config['tests']))
             tests = Tests(mocks, services, tests_path)
             service = service_factory.get_service(service_config, tests)

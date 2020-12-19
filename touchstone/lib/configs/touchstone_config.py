@@ -1,4 +1,5 @@
 from touchstone import common
+from touchstone.lib import exceptions
 
 
 class TouchstoneConfig:
@@ -11,7 +12,9 @@ class TouchstoneConfig:
 
     def merge(self, other: dict):
         self.config = common.dict_merge(self.config, other)
-        if not self.config['services']:
-            self.config['services'] = []
-        if not self.config['mocks']:
-            self.config['mocks'] = []
+
+    def verify(self):
+        if self.config['services'] is None:
+            raise exceptions.TouchstoneException(f'"services" has not been set. Check your "touchstone.yml".')
+        if self.config['mocks'] is None:
+            raise exceptions.TouchstoneException(f'"mocks" has not been set. Check your "touchstone.yml".')
