@@ -22,7 +22,7 @@ def execute(should_log_services=False):
             if command == 'help':
                 __print_help()
             elif command == 'run':
-                bootstrap.mocks.services_became_available()
+                bootstrap.ts_context.trigger_services_available()
                 tests_did_pass = bootstrap.services.run_all_tests()
                 if tests_did_pass:
                     print('All Touchstone tests passed successfully!')
@@ -31,13 +31,13 @@ def execute(should_log_services=False):
             elif re.search('run \\S* \\S* \\S*', command):
                 command = command.lower()
                 parts = command.split(' ')
-                bootstrap.mocks.services_became_available()
+                bootstrap.ts_context.trigger_services_available()
                 bootstrap.services.run_test(parts[1], parts[2], parts[3])
             elif command == 'services start':
                 try:
                     bootstrap.services.add_environment_vars(bootstrap.mocks.environment_vars())
                     bootstrap.services.start()
-                    bootstrap.mocks.services_became_available()
+                    bootstrap.ts_context.trigger_services_available()
                 except KeyboardInterrupt:
                     bootstrap.services.stop()
             elif command == 'services stop':

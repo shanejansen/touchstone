@@ -1,7 +1,7 @@
 import abc
 
-from touchstone.lib.mocks.mocks import Mocks
-from touchstone.lib.services.i_service_executor import IServiceExecutor
+from touchstone.lib.nodes.mocks.mocks import Mocks
+from touchstone.lib.nodes.services.i_service_executor import IServiceExecutor
 
 
 class TouchstoneTest(object):
