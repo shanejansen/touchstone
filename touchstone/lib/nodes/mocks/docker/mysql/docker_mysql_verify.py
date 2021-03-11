@@ -1,6 +1,7 @@
 from pymysql.cursors import Cursor
 
 from touchstone import common
+from touchstone.helpers import validation
 from touchstone.lib.nodes.mocks.behaviors.i_mysql_behabior import IMysqlVerify
 from touchstone.lib.nodes.mocks.docker.mysql.docker_mysql_context import DockerMysqlContext
 
@@ -24,15 +25,19 @@ class DockerMysqlVerify(IMysqlVerify):
         if self.__convert_camel_to_snake:
             where_conditions = common.to_snake(where_conditions)
         where = []
+        user_values = {}
         for key, value in where_conditions.items():
             if value is None:
-                where.append(f'{key} is NULL')
+                where.append(f'{key} IS NULL')
+            elif value is validation.ANY:
+                where.append(f'{key} IS NOT NULL')
             else:
                 where.append(f'{key}=%({key})s')
+                user_values[key] = value
         sql = f"SELECT COUNT(*) FROM {table} WHERE {' AND '.join(where)}"
         common.logger.debug(f'Executing: {sql}')
         self.__cursor.execute(f'USE {database}')
-        self.__cursor.execute(sql, where_conditions)
+        self.__cursor.execute(sql, user_values)
         num_rows = self.__cursor.fetchone()['COUNT(*)']
 
         if not num_expected and num_rows != 0:
