@@ -66,16 +66,14 @@ class DockerRabbitmqSetup(IRabbitmqSetup):
                 routing_key = queue.get('routingKey', '')
                 self.__create_queue(queue['name'], exchange['name'], routing_key)
                 self.__create_shadow_queue(queue['name'], exchange['name'], routing_key)
-        if not self.__message_consumer.is_alive():
-            self.__message_consumer.start()
+        self.__start_listener()
 
     def create_shadow_queues(self, defaults: dict):
         for exchange in defaults.get('exchanges', []):
             for queue in exchange.get('queues', []):
                 routing_key = queue.get('routingKey', '')
                 self.__create_shadow_queue(queue['name'], exchange['name'], routing_key)
-        if not self.__message_consumer.is_alive():
-            self.__message_consumer.start()
+        self.__start_listener()
 
     def stop_listening(self):
         def callback():
@@ -93,6 +91,10 @@ class DockerRabbitmqSetup(IRabbitmqSetup):
 
     def publish_json(self, exchange: str, payload: dict, routing_key: str = '', headers: dict = None):
         self.publish(exchange, json.dumps(payload), routing_key, 'application/json', headers)
+
+    def __start_listener(self):
+        if not self.__message_consumer.is_alive() and (self.__queues or self.__shadow_queues):
+            self.__message_consumer.start()
 
     def __create_exchange(self, name: str, exchange_type: str = 'direct'):
         if name not in self.__exchanges:
