@@ -3,7 +3,9 @@ name: Touchstone Tests
 on:
   push:
     branches:
-      - 'develop'
+      - 'master'
+      - 'hotfix/**'
+      - 'release/**'
 
 jobs:
   build:
