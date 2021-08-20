@@ -108,7 +108,7 @@ class DockerRabbitmqSetup(IRabbitmqSetup):
             self.__queues.append(name)
 
     def __create_shadow_queue(self, name: str, exchange: str, routing_key: str = ''):
-        name = name + '.ts-shadow'
+        name = f'{name}-{routing_key}.ts-shadow'
         if name not in self.__shadow_queues:
             self.__channel.queue_declare(name)
             self.__channel.queue_bind(name, exchange, routing_key=routing_key)

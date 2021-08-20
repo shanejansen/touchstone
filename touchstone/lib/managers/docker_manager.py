@@ -122,7 +122,9 @@ class DockerManager(object):
                      encoding='utf-8')
         for line in result.splitlines():
             found_port = int(re.search('.+?(?=/)', line).group())
-            new_port = int(re.search('(?<=0.0.0.0:)\\d*', line).group())
+            new_port = re.search('(?<=0.0.0.0:)\\d*', line)
+            if new_port:
+                new_port = int(new_port.group())
             if found_port == given_port:
                 return new_port
         return given_port

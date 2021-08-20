@@ -64,3 +64,19 @@ class JsonPayloadPublished(TouchstoneTest):
 
     def then(self, given, result) -> bool:
         return self.mocks.rabbitmq.verify().payload_published_json('default-direct.exchange', given, 'foo')
+
+
+class SameExchangeDifferentRoutingKeys(TouchstoneTest):
+    def processing_period(self) -> float:
+        return 0.5
+
+    def given(self) -> object:
+        pass
+
+    def when(self, given) -> object:
+        self.mocks.rabbitmq.setup().publish('my-exchange', 'foo', 'route.b')
+        self.mocks.rabbitmq.setup().publish('my-exchange', 'foo', 'route.b')
+        return None
+
+    def then(self, given, result) -> bool:
+        return self.mocks.rabbitmq.verify().messages_published('my-exchange', num_expected=2, routing_key='route.b')
