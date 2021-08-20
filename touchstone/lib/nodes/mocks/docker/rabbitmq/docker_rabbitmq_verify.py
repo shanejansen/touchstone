@@ -21,7 +21,7 @@ class DockerRabbitmqVerify(IRabbitmqVerify):
         if not self.__rmq_context.exchange_is_tracked(exchange, routing_key):
             return False
         num_messages = self.__rmq_context.messages_published(exchange, routing_key)
-        if not num_expected and num_messages != 0:
+        if num_expected is None and num_messages != 0:
             return True
         return validation.matches(num_expected, num_messages)
 

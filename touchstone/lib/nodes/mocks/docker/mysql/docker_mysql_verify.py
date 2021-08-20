@@ -40,7 +40,7 @@ class DockerMysqlVerify(IMysqlVerify):
         self.__cursor.execute(sql, user_values)
         num_rows = self.__cursor.fetchone()['COUNT(*)']
 
-        if not num_expected and num_rows != 0:
+        if num_expected is None and num_rows != 0:
             return True
         if num_expected == num_rows:
             return True

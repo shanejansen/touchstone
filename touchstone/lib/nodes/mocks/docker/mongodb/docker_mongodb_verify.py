@@ -21,7 +21,7 @@ class DockerMongodbVerify(IMongodbVerify):
             .get_collection(collection) \
             .count_documents(document)
 
-        if not num_expected and num_documents != 0:
+        if num_expected is None and num_documents != 0:
             return True
         if num_expected == num_documents:
             return True
