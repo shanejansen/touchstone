@@ -18,7 +18,8 @@ class DockerMongodbSetup(IMongodbSetup):
     def init(self, defaults: dict):
         for database in self.__mongo_context.databases():
             mongo_database = self.__mongo_client.get_database(database)
-            for collection in self.__mongo_context.collections(database):
+            collections = mongo_database.list_collection_names(filter={"name": {"$regex": r"^(?!system\\.)"}})
+            for collection in collections:
                 mongo_database.drop_collection(collection)
         self.__mongo_context.clear()
 
