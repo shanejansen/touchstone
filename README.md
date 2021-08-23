@@ -86,23 +86,34 @@ class UpdateUser(TouchstoneTest):
         return result # The response from our service could be returned here for additional validation in "then"
 
     def then(self, given, result) -> bool:
-        return self.mocks.mongodb.verify().document_exists('my_db', 'users', given)
+       return self.mocks.mongodb.verify().document_exists('my_db', 'users', given)
 ```
+
 Important APIs:
- * `self.mocks` - Hook into Touchstone managed mock dependencies.
- * `self.service_url` - The service under test's URL. Useful for calling RESTful endpoints on the service under test.
- * `touchstone.helpers.validation` - Contains methods for easily validating test results. `validation.ANY` can be used to accept any value which is useful when the expected value is unknown. This only works when validating dicts or JSON.
- * `touchstone.helpers.http` - Contains methods for easily making HTTP requests. Contains helper methods for making JSON CRUD requests.
+
+* `self.mocks` - Hook into Touchstone managed mock dependencies.
+* `self.service_url` - The service under test's URL. Useful for calling RESTful endpoints on the service under test.
+* `touchstone.helpers.validation` - Contains methods for easily validating test results. `validation.ANY` can be used to
+  accept any value which is useful when the expected value is unknown. This only works when validating dicts or JSON.
+* `touchstone.helpers.http` - Contains methods for easily making HTTP requests. Contains helper methods for making JSON
+  CRUD requests.
+
+### Referencing Services
+
+When writing E2E tests, it is often needed for services to communicate with each other via HTTP. When running
+in `touchstone run` mode, use the name + port of the desired service specified in your `touchstone.yml` file. For
+example, foo-app might make a call to `bar-app:8080/some-endpoint`.
 
 ## Mocks
- * [HTTP](./docs/mocks/http.md)
- * [Mongo DB](./docs/mocks/mongodb.md)
- * [MySQL](./docs/mocks/mysql.md)
- * [Rabbit MQ](./docs/mocks/rabbitmq.md)
- * [S3](./docs/mocks/s3.md)
- * [Filesystem](./docs/mocks/filesystem.md)
- * [Add one!](./docs/add-mock.md)
- 
+
+* [HTTP](./docs/mocks/http.md)
+* [Mongo DB](./docs/mocks/mongodb.md)
+* [MySQL](./docs/mocks/mysql.md)
+* [Rabbit MQ](./docs/mocks/rabbitmq.md)
+* [S3](./docs/mocks/s3.md)
+* [Filesystem](./docs/mocks/filesystem.md)
+* [Add one!](./docs/add-mock.md)
+
 If a specific mock is not supported, consider building your service independent of the implementation layer. For example, if you have a dependency on PostgreSQL, use the MySQL mock as your database implementation during testing.
  
 When running via `touchstone develop`, dev ports for each mock are used. When running touchstone via `touchstone run`, ports are automatically discovered and available to your service containers via the following environment variables:

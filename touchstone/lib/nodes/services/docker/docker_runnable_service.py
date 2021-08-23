@@ -62,6 +62,7 @@ class DockerRunnableService(IService, ITestable, IRunnable, INetworkable):
             docker_artifact = self.__docker_image
         run_result = self.__docker_manager.run_background_image(docker_artifact, self.__port,
                                                                 environment_vars=environment_vars,
+                                                                hostname=self.__name,
                                                                 options=self.__docker_options)
         self.__docker_network.set_container_id(run_result.container_id)
         self.__docker_network.set_external_port(run_result.external_port)
