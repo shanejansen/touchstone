@@ -4,5 +4,9 @@ databases:
     collections:
       - name: users
         documents:
-          - {"firstName": "John", "lastName": "Smith"}
-          - {"firstName": "Jane", "lastName": "Brown"}
+          - { "firstName": "John", "lastName": "Smith" }
+          - >
+            {
+                "firstName": "Jane",
+                "lastName": "Brown"
+            }

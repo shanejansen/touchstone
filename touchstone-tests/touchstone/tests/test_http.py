@@ -112,7 +112,7 @@ class Delete(TouchstoneTest):
 
 class WildcardMatches(TouchstoneTest):
     def given(self) -> object:
-        self.mocks.http.setup().get('/some-endpoint/([a-z]*)/bar', 'hello http!')
+        self.mocks.http.setup().get('/some-endpoint/([a-z]*)/bar', 'hello http!', url_pattern=True)
         return None
 
     def when(self, given) -> object:

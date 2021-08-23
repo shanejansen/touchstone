@@ -1,10 +1,23 @@
-ANY = 'TS_ANY'
+ANY = object()
 
 
 def __equals(expected, actual) -> bool:
     if expected == ANY:
         return True
     return expected == actual
+
+
+def __equals_list(expected: list, actual: list) -> bool:
+    if len(expected) != len(actual):
+        return False
+    for item in expected:
+        if isinstance(item, dict):
+            for actual_item in actual:
+                if isinstance(actual_item, dict) and not __equals_dict(item, actual_item):
+                    return False
+        elif not __equals(item, actual):
+            return False
+    return True
 
 
 def __equals_dict(expected: dict, actual: dict) -> bool:
@@ -16,6 +29,9 @@ def __equals_dict(expected: dict, actual: dict) -> bool:
         if isinstance(v, dict):
             if not __equals_dict(v, actual[k]):
                 return False
+        elif isinstance(v, list):
+            if not __equals_list(v, actual[k]):
+                return False
         elif not __equals(v, actual[k]):
             return False
     return True
@@ -24,6 +40,8 @@ def __equals_dict(expected: dict, actual: dict) -> bool:
 def matches(expected, actual, quiet: bool = False) -> bool:
     if isinstance(expected, dict) and isinstance(actual, dict):
         result = __equals_dict(expected, actual)
+    elif isinstance(expected, list) and isinstance(actual, list):
+        result = __equals_list(expected, actual)
     else:
         result = __equals(expected, actual)
     if not result and not quiet:

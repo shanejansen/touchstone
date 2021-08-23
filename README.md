@@ -53,9 +53,10 @@ Your services and their monitored dependencies are defined here. Default values 
  * `services:` - Each service included in your Touchstone tests is defined here.
    * `name:` - Default: unnamed-service. The name of the service.
    * `type:` - Default: networked. The type of service under test. Allowed values: networked, executable
-   * `tests:` - Default: ./tests. The path to Touchstone tests for this service.
+   * `tests:` - Default: ./tests. The path to Touchstone tests for this service. Use `null` if this is a "supporting" service skipping tests.
    * `port:` - Default: 8080. The port used for this service.
    * `dockerfile:` - Default: N/A. Used to containerize the service during `touchstone run`. If you are only running Touchstone locally, this can be omitted.
+   * `docker_image` - Default: N/A. An alternative to `dockerfile`. A Docker image used to containerize the service during `touchstone run`.
    * `docker_options` - Default: N/A. Additional [Docker options](https://docs.docker.com/engine/reference/commandline/run/#options) to apply to your container.
    * `availability_endpoint:` - Default: N/A. By default, Touchstone runs a Docker health check to determine the services' health. Supply this value to use URL based health checking. A HTTP status `2xx` must be returned from the endpoint to be considered healthy.
    * `num_retries:` - Default: 20. The number of times Touchstone will try to successfully call the `availability_endpoint`.
@@ -85,23 +86,34 @@ class UpdateUser(TouchstoneTest):
         return result # The response from our service could be returned here for additional validation in "then"
 
     def then(self, given, result) -> bool:
-        return self.mocks.mongodb.verify().document_exists('my_db', 'users', given)
+       return self.mocks.mongodb.verify().document_exists('my_db', 'users', given)
 ```
+
 Important APIs:
- * `self.mocks` - Hook into Touchstone managed mock dependencies.
- * `self.service_url` - The service under test's URL. Useful for calling RESTful endpoints on the service under test.
- * `touchstone.helpers.validation` - Contains methods for easily validating test results. `validation.ANY` can be used to accept any value which is useful when the expected value is unknown. This only works when validating dicts or JSON.
- * `touchstone.helpers.http` - Contains methods for easily making HTTP requests. Contains helper methods for making JSON CRUD requests.
+
+* `self.mocks` - Hook into Touchstone managed mock dependencies.
+* `self.service_url` - The service under test's URL. Useful for calling RESTful endpoints on the service under test.
+* `touchstone.helpers.validation` - Contains methods for easily validating test results. `validation.ANY` can be used to
+  accept any value which is useful when the expected value is unknown. This only works when validating dicts or JSON.
+* `touchstone.helpers.http` - Contains methods for easily making HTTP requests. Contains helper methods for making JSON
+  CRUD requests.
+
+### Referencing Services
+
+When writing E2E tests, it is often needed for services to communicate with each other via HTTP. When running
+in `touchstone run` mode, use the name + port of the desired service specified in your `touchstone.yml` file. For
+example, foo-app might make a call to `bar-app:8080/some-endpoint`.
 
 ## Mocks
- * [HTTP](./docs/mocks/http.md)
- * [Mongo DB](./docs/mocks/mongodb.md)
- * [MySQL](./docs/mocks/mysql.md)
- * [Rabbit MQ](./docs/mocks/rabbitmq.md)
- * [S3](./docs/mocks/s3.md)
- * [Filesystem](./docs/mocks/filesystem.md)
- * [Add one!](./docs/add-mock.md)
- 
+
+* [HTTP](./docs/mocks/http.md)
+* [Mongo DB](./docs/mocks/mongodb.md)
+* [MySQL](./docs/mocks/mysql.md)
+* [Rabbit MQ](./docs/mocks/rabbitmq.md)
+* [S3](./docs/mocks/s3.md)
+* [Filesystem](./docs/mocks/filesystem.md)
+* [Add one!](./docs/add-mock.md)
+
 If a specific mock is not supported, consider building your service independent of the implementation layer. For example, if you have a dependency on PostgreSQL, use the MySQL mock as your database implementation during testing.
  
 When running via `touchstone develop`, dev ports for each mock are used. When running touchstone via `touchstone run`, ports are automatically discovered and available to your service containers via the following environment variables:
@@ -114,7 +126,7 @@ When running via `touchstone develop`, dev ports for each mock are used. When ru
 ## Testing Executables
 Touchstone can also be used to test non-service based applications. This includes applications that can be invoked via the command line, like Spark jobs, for example. A Python Spark job tested with Touchstone can be found [here](./examples/python-spark).
 
-To define a service as executable, set its type to `executable` in your `touchstone.yml`. The supplied Dockerfile will be ran as the executable service. You can also supply a `develop_command` which will be used when running Touchstone in develop mode. [Example](./examples/python-spark/touchstone/touchstone.yml)
+To define a service as executable, set its type to `executable` in your `touchstone.yml`. The supplied Dockerfile or Docker image will be ran as the executable service. You can also supply a `develop_command` which will be used when running Touchstone in develop mode. [Example](./examples/python-spark/touchstone/touchstone.yml)
 
 In your Touchstone tests, the executable service can be triggered using the following API:
 ```python

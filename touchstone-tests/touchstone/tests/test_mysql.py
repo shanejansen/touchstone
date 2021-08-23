@@ -1,3 +1,4 @@
+from touchstone.helpers import validation
 from touchstone.lib.touchstone_test import TouchstoneTest
 
 mysql_database = 'myapp'
@@ -65,3 +66,22 @@ class NullValueInserted(TouchstoneTest):
 
     def then(self, given, result) -> bool:
         return self.mocks.mysql.verify().row_exists(mysql_database, mysql_table, given)
+
+
+class CheckNotNull(TouchstoneTest):
+    def given(self) -> object:
+        return {
+            'firstName': 'Foo',
+            'lastName': 'Bar'
+        }
+
+    def when(self, given) -> object:
+        self.mocks.mysql.setup().insert_row(mysql_database, mysql_table, given)
+        return None
+
+    def then(self, given, result) -> bool:
+        check = {
+            'firstName': 'Foo',
+            'lastName': validation.ANY
+        }
+        return self.mocks.mysql.verify().row_exists(mysql_database, mysql_table, check)

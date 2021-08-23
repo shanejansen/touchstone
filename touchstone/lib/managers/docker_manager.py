@@ -36,7 +36,8 @@ class DockerManager(object):
         return tag
 
     def run_background_image(self, image: str, port: int = None, exposed_port: int = None, ui_port: int = None,
-                             environment_vars: List[Tuple[str, str]] = [], options: str = None) -> RunResult:
+                             environment_vars: List[Tuple[str, str]] = [], hostname: str = None,
+                             options: str = None) -> RunResult:
         exposed_port = port if not exposed_port else exposed_port
         self.__create_network()
 
@@ -48,7 +49,7 @@ class DockerManager(object):
             additional_params += ' '
             additional_params += options
 
-        container_id = self.__run_image(additional_params, image)
+        container_id = self.__run_image(additional_params, image, hostname)
 
         # Extract the auto-discovered ports
         exposed_port = self.__extract_port_mapping(container_id, port)
@@ -93,9 +94,11 @@ class DockerManager(object):
             additional_params += f' -e {var}="{value}"'
         return additional_params[1:]
 
-    def __run_image(self, additional_params: str, image: str) -> str:
+    def __run_image(self, additional_params: str, image: str, hostname: str = None) -> str:
         container_id = uuid.uuid4().hex
         command = f'docker run --rm -d --network {self.__network} '
+        if hostname:
+            command += f'--hostname {hostname} '
         command += f'--name {container_id} {additional_params} {image}'
         common.logger.debug(f'Running container with command: {command}')
         result = subprocess.run(command, shell=True, stdout=subprocess.DEVNULL)

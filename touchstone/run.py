@@ -14,7 +14,7 @@ def execute(should_log_services=False):
         bootstrap.mocks.start()
         bootstrap.services.add_environment_vars(bootstrap.mocks.environment_vars())
         bootstrap.services.start()
-        bootstrap.mocks.services_became_available()
+        bootstrap.ts_context.trigger_services_available()
         tests_did_pass = bootstrap.services.run_all_tests()
         if tests_did_pass:
             print('All Touchstone tests passed successfully!')

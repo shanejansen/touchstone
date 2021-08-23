@@ -18,3 +18,12 @@ exchanges:
         routingKey: foo
       - name: default-topic2.queue
         routingKey: bar
+  - name: my-exchange
+    type: direct
+    queues:
+      - name: all
+        routingKey: route.a
+      - name: all
+        routingKey: route.b
+      - name: all
+        routingKey: route.c

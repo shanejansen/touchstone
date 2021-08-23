@@ -9,6 +9,9 @@ class BlockingHealthCheck(object):
         self.__num_retries = num_retries
         self.__target = target
 
+    def get_target(self) -> IHealthCheckable:
+        return self.__target
+
     def wait_until_healthy(self) -> bool:
         for retry_num in range(self.__num_retries):
             if self.__target.is_healthy():
