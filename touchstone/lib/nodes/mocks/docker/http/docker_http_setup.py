@@ -34,13 +34,13 @@ class DockerHttpSetup(IHttpSetup):
         for request in defaults.get('requests', []):
             self.__submit_mock(request)
 
-    def get(self, endpoint: str, response: str, response_status: int = 200,
+    def get(self, endpoint: str, response: str, response_status: int = 200, url_pattern: bool = False,
             response_headers: dict = {'Content-Type': 'application/json'}):
         self.__check_mock_response_type(response)
         mock = {
             'request': {
                 'method': 'GET',
-                'urlPattern': endpoint
+                self.__get_url_type(url_pattern): endpoint
             },
             'response': {
                 'status': response_status,
@@ -50,13 +50,13 @@ class DockerHttpSetup(IHttpSetup):
         }
         self.__submit_mock(mock)
 
-    def post(self, endpoint: str, response: str, response_status: int = 200,
+    def post(self, endpoint: str, response: str, response_status: int = 200, url_pattern: bool = False,
              response_headers: dict = {'Content-Type': 'application/json'}):
         self.__check_mock_response_type(response)
         mock = {
             'request': {
                 'method': 'POST',
-                'urlPattern': endpoint
+                self.__get_url_type(url_pattern): endpoint
             },
             'response': {
                 'status': response_status,
@@ -66,13 +66,13 @@ class DockerHttpSetup(IHttpSetup):
         }
         self.__submit_mock(mock)
 
-    def put(self, endpoint: str, response: str, response_status: int = 200,
+    def put(self, endpoint: str, response: str, response_status: int = 200, url_pattern: bool = False,
             response_headers: dict = {'Content-Type': 'application/json'}):
         self.__check_mock_response_type(response)
         mock = {
             'request': {
                 'method': 'PUT',
-                'urlPattern': endpoint
+                self.__get_url_type(url_pattern): endpoint
             },
             'response': {
                 'status': response_status,
@@ -82,13 +82,13 @@ class DockerHttpSetup(IHttpSetup):
         }
         self.__submit_mock(mock)
 
-    def delete(self, endpoint: str, response: str, response_status: int = 200,
+    def delete(self, endpoint: str, response: str, response_status: int = 200, url_pattern: bool = False,
                response_headers: dict = {'Content-Type': 'application/json'}):
         self.__check_mock_response_type(response)
         mock = {
             'request': {
                 'method': 'DELETE',
-                'urlPattern': endpoint
+                self.__get_url_type(url_pattern): endpoint
             },
             'response': {
                 'status': response_status,
@@ -97,6 +97,11 @@ class DockerHttpSetup(IHttpSetup):
             }
         }
         self.__submit_mock(mock)
+
+    def __get_url_type(self, url_pattern: bool):
+        if url_pattern:
+            return 'urlPattern'
+        return 'url'
 
     def __check_mock_response_type(self, response):
         if type(response) is not str:

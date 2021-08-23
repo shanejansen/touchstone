@@ -5,25 +5,25 @@ from touchstone.lib.nodes.mocks.behaviors.i_behavior import IBehavior
 
 class IHttpSetup(object):
     @abc.abstractmethod
-    def get(self, endpoint: str, response: str, response_status: int = 200,
+    def get(self, endpoint: str, response: str, response_status: int = 200, url_pattern: bool = False,
             response_headers: dict = {'Content-Type': 'application/json'}):
         """Returns the given response when a GET request is made to the given endpoint."""
         pass
 
     @abc.abstractmethod
-    def post(self, endpoint: str, response: str, response_status: int = 200,
+    def post(self, endpoint: str, response: str, response_status: int = 200, url_pattern: bool = False,
              response_headers: dict = {'Content-Type': 'application/json'}):
         """Returns the given response when a POST request is made to the given endpoint."""
         pass
 
     @abc.abstractmethod
-    def put(self, endpoint: str, response: str, response_status: int = 200,
+    def put(self, endpoint: str, response: str, response_status: int = 200, url_pattern: bool = False,
             response_headers: dict = {'Content-Type': 'application/json'}):
         """Returns the given response when a PUT request is made to the given endpoint."""
         pass
 
     @abc.abstractmethod
-    def delete(self, endpoint: str, response: str, response_status: int = 200,
+    def delete(self, endpoint: str, response: str, response_status: int = 200, url_pattern: bool = False,
                response_headers: dict = {'Content-Type': 'application/json'}):
         """Returns the given response when a DELETE request is made to the given endpoint."""
         pass
