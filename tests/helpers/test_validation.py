@@ -156,6 +156,36 @@ class TestValidation(TestCase):
         # Then
         self.assertFalse(result)
 
+    def test_matches_NonMatchingDictValueTypesExpectListActualDict_ReturnsFalse(self):
+        # Given
+        expected = {
+            'foo': ['bar']
+        }
+        actual = {
+            'foo': {'bar': 'bar'}
+        }
+
+        # When
+        result = validation.matches(expected, actual)
+
+        # Then
+        self.assertFalse(result)
+
+    def test_matches_NonMatchingDictValueTypesExpectDictActualList_ReturnsFalse(self):
+        # Given
+        expected = {
+            'foo': {'bar': 'bar'}
+        }
+        actual = {
+            'foo': ['bar']
+        }
+
+        # When
+        result = validation.matches(expected, actual)
+
+        # Then
+        self.assertFalse(result)
+
     def test_matches_MatchingNestedDict_ReturnsTrue(self):
         # Given
         expected = {
