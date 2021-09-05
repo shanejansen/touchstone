@@ -120,4 +120,4 @@ class WildcardMatches(TouchstoneTest):
         return None
 
     def then(self, given, result) -> bool:
-        return self.mocks.http.verify().get_called('/some-endpoint/foo/bar')
+        return self.mocks.http.verify().get_called('/some-endpoint/([a-z]*)/bar', url_pattern=True)
