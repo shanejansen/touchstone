@@ -27,13 +27,7 @@ def __equals_dict(expected: dict, actual: dict) -> bool:
     for k, v in expected.items():
         if k not in actual:
             return False
-        if isinstance(v, dict):
-            if not __equals_dict(v, actual[k]):
-                return False
-        elif isinstance(v, list):
-            if not __equals_list(v, actual[k]):
-                return False
-        elif not __equals(v, actual[k]):
+        if not matches(v, actual[k], quiet = True):
             return False
     return True
 
