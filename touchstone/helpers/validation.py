@@ -10,12 +10,13 @@ def __equals(expected, actual) -> bool:
 def __equals_list(expected: list, actual: list) -> bool:
     if len(expected) != len(actual):
         return False
-    for item in expected:
-        if isinstance(item, dict):
-            for actual_item in actual:
-                if isinstance(actual_item, dict) and not __equals_dict(item, actual_item):
-                    return False
-        elif not __equals(item, actual):
+    for expected_item in expected:
+        expected_item_in_actual = False
+        for actual_item in actual:
+            if matches(expected_item, actual_item, quiet = True):
+                expected_item_in_actual = True
+                break
+        if not expected_item_in_actual:
             return False
     return True
 
