@@ -115,6 +115,39 @@ class TestValidation(TestCase):
         # Then
         self.assertTrue(result)
 
+    def test_matches_MatchingListWithANY_ReturnsTrue(self):
+        # Given
+        expected = ['foo', validation.ANY, 'bar']
+        actual = ['foo', 'bazz', 'bar']
+
+        # When
+        result = validation.matches(expected, actual)
+
+        # Then
+        self.assertTrue(result)
+
+    def test_matches_NonMatchingListWithANY_ReturnsFalse(self):
+        # Given
+        expected = ['foo', validation.ANY, 'bar']
+        actual = ['foo', 'bazz', 'buzz']
+
+        # When
+        result = validation.matches(expected, actual)
+
+        # Then
+        self.assertFalse(result)
+
+    def test_matches_MatchingListWithMultipleANY_ReturnsTrue(self):
+        # Given
+        expected = ['foo', validation.ANY, validation.ANY]
+        actual = ['foo', 'bazz', 'bar']
+
+        # When
+        result = validation.matches(expected, actual)
+
+        # Then
+        self.assertTrue(result)
+
     def test_matches_NonMatchingStrings_ReturnsFalse(self):
         # Given
         expected = 'foo'
