@@ -49,6 +49,72 @@ class TestValidation(TestCase):
         # Then
         self.assertTrue(result)
 
+    def test_matches_MatchingListOfStrings_ReturnsTrue(self):
+        # Given
+        expected = ['foo']
+        actual = ['foo']
+
+        # When
+        result = validation.matches(expected, actual)
+
+        # Then
+        self.assertTrue(result)
+
+    def test_matches_MatchingListOfDicts_ReturnsTrue(self):
+        # Given
+        expected = [{'foo': 'bar'}]
+        actual = [{'foo': 'bar'}]
+
+        # When
+        result = validation.matches(expected, actual)
+
+        # Then
+        self.assertTrue(result)
+
+    def test_matches_MatchingListOfLists_ReturnsTrue(self):
+        # Given
+        expected = [['foo']]
+        actual = [['foo']]
+
+        # When
+        result = validation.matches(expected, actual)
+
+        # Then
+        self.assertTrue(result)
+
+    def test_matches_MatchingListOfStringsOutOfOrder_ReturnsTrue(self):
+        # Given
+        expected = ['foo', 'bar']
+        actual = ['bar', 'foo']
+
+        # When
+        result = validation.matches(expected, actual)
+
+        # Then
+        self.assertTrue(result)
+
+    def test_matches_MatchingListOfDictsOutOfOrder_ReturnsTrue(self):
+        # Given
+        expected = [{'foo': 'bar'}, {'bazz': 'buzz'}]
+        actual = [{'bazz': 'buzz'}, {'foo': 'bar'}]
+
+        # When
+        result = validation.matches(expected, actual)
+
+        # Then
+        self.assertTrue(result)
+
+    def test_matches_MatchingListOfListsOutOfOrder_ReturnsTrue(self):
+        # Given
+        expected = [['foo'], ['bar']]
+        actual = [['bar'], ['foo']]
+
+        # When
+        result = validation.matches(expected, actual)
+
+        # Then
+        self.assertTrue(result)
+
     def test_matches_NonMatchingStrings_ReturnsFalse(self):
         # Given
         expected = 'foo'
