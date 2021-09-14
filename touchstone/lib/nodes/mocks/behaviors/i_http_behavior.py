@@ -31,61 +31,61 @@ class IHttpSetup(object):
 
 class IHttpVerify(object):
     @abc.abstractmethod
-    def get_called(self, endpoint: str, times: int = 1) -> bool:
+    def get_called(self, endpoint: str, times: int = 1, url_pattern: bool = False) -> bool:
         """Returns True if the given endpoint has been called with a GET request the given number of times.
         If times is set to None, the endpoint can be called any number of times."""
         pass
 
     @abc.abstractmethod
-    def post_called(self, endpoint: str, times: int = 1) -> bool:
+    def post_called(self, endpoint: str, times: int = 1, url_pattern: bool = False) -> bool:
         """Returns True if the given endpoint has been called with a POST request the given number of times.
         If times is set to None, the endpoint can be called any number of times."""
         pass
 
     @abc.abstractmethod
-    def post_contained(self, endpoint: str, expected_body: str) -> bool:
+    def post_contained(self, endpoint: str, expected_body: str, url_pattern: bool = False) -> bool:
         """Returns True if the given endpoint has been called with a POST request containing the given expected
         body."""
         pass
 
     @abc.abstractmethod
-    def post_contained_json(self, endpoint: str, expected_body: dict) -> bool:
+    def post_contained_json(self, endpoint: str, expected_body: dict, url_pattern: bool = False) -> bool:
         """Returns True if the given endpoint has been called with a POST request containing the given expected
         JSON body."""
         pass
 
     @abc.abstractmethod
-    def put_called(self, endpoint: str, times: int = 1) -> bool:
+    def put_called(self, endpoint: str, times: int = 1, url_pattern: bool = False) -> bool:
         """Returns True if the given endpoint has been called with a PUT request the given number of times.
         If times is set to None, the endpoint can be called any number of times."""
         pass
 
     @abc.abstractmethod
-    def put_contained(self, endpoint: str, expected_body: str) -> bool:
+    def put_contained(self, endpoint: str, expected_body: str, url_pattern: bool = False) -> bool:
         """Returns True if the given endpoint has been called with a PUT request containing the given expected
         body."""
         pass
 
     @abc.abstractmethod
-    def put_contained_json(self, endpoint: str, expected_body: dict) -> bool:
+    def put_contained_json(self, endpoint: str, expected_body: dict, url_pattern: bool = False) -> bool:
         """Returns True if the given endpoint has been called with a PUT request containing the given expected
         JSON body."""
         pass
 
     @abc.abstractmethod
-    def delete_called(self, endpoint: str, times: int = 1) -> bool:
+    def delete_called(self, endpoint: str, times: int = 1, url_pattern: bool = False) -> bool:
         """Returns True if the given endpoint has been called with a DELETE request the given number of times.
         If times is set to None, the endpoint can be called any number of times."""
         pass
 
     @abc.abstractmethod
-    def delete_contained(self, endpoint: str, expected_body: str) -> bool:
+    def delete_contained(self, endpoint: str, expected_body: str, url_pattern: bool = False) -> bool:
         """Returns True if the given endpoint has been called with a DELETE request containing the given expected
         body."""
         pass
 
     @abc.abstractmethod
-    def delete_contained_json(self, endpoint: str, expected_body: dict) -> bool:
+    def delete_contained_json(self, endpoint: str, expected_body: dict, url_pattern: bool = False) -> bool:
         """Returns True if the given endpoint has been called with a DELETE request containing the given expected
         JSON body."""
         pass

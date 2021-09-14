@@ -14,40 +14,40 @@ class DockerHttpVerify(IHttpVerify):
     def set_url(self, url: str):
         self.__url = url
 
-    def get_called(self, endpoint: str, times: int = 1) -> bool:
-        return self.__count_verification(endpoint, 'GET', times)
+    def get_called(self, endpoint: str, times: int = 1, url_pattern: bool = False) -> bool:
+        return self.__count_verification(endpoint, 'GET', times, url_pattern)
 
-    def post_called(self, endpoint: str, times: int = 1) -> bool:
-        return self.__count_verification(endpoint, 'POST', times)
+    def post_called(self, endpoint: str, times: int = 1, url_pattern: bool = False) -> bool:
+        return self.__count_verification(endpoint, 'POST', times, url_pattern)
 
-    def post_contained(self, endpoint: str, expected_body: str) -> bool:
-        return self.__contained_verification(endpoint, 'POST', expected_body)
+    def post_contained(self, endpoint: str, expected_body: str, url_pattern: bool = False) -> bool:
+        return self.__contained_verification(endpoint, 'POST', expected_body, url_pattern)
 
-    def post_contained_json(self, endpoint: str, expected_body: dict) -> bool:
-        return self.__contained_json_verification(endpoint, 'POST', expected_body)
+    def post_contained_json(self, endpoint: str, expected_body: dict, url_pattern: bool = False) -> bool:
+        return self.__contained_json_verification(endpoint, 'POST', expected_body, url_pattern)
 
-    def put_called(self, endpoint: str, times: int = 1) -> bool:
-        return self.__count_verification(endpoint, 'PUT', times)
+    def put_called(self, endpoint: str, times: int = 1, url_pattern: bool = False) -> bool:
+        return self.__count_verification(endpoint, 'PUT', times, url_pattern)
 
-    def put_contained(self, endpoint: str, expected_body: str) -> bool:
-        return self.__contained_verification(endpoint, 'PUT', expected_body)
+    def put_contained(self, endpoint: str, expected_body: str, url_pattern: bool = False) -> bool:
+        return self.__contained_verification(endpoint, 'PUT', expected_body, url_pattern)
 
-    def put_contained_json(self, endpoint: str, expected_body: dict) -> bool:
-        return self.__contained_json_verification(endpoint, 'PUT', expected_body)
+    def put_contained_json(self, endpoint: str, expected_body: dict, url_pattern: bool = False) -> bool:
+        return self.__contained_json_verification(endpoint, 'PUT', expected_body, url_pattern)
 
-    def delete_called(self, endpoint: str, times: int = 1) -> bool:
-        return self.__count_verification(endpoint, 'DELETE', times)
+    def delete_called(self, endpoint: str, times: int = 1, url_pattern: bool = False) -> bool:
+        return self.__count_verification(endpoint, 'DELETE', times, url_pattern)
 
-    def delete_contained(self, endpoint: str, expected_body: str) -> bool:
-        return self.__contained_verification(endpoint, 'DELETE', expected_body)
+    def delete_contained(self, endpoint: str, expected_body: str, url_pattern: bool = False) -> bool:
+        return self.__contained_verification(endpoint, 'DELETE', expected_body, url_pattern)
 
-    def delete_contained_json(self, endpoint: str, expected_body: dict) -> bool:
-        return self.__contained_json_verification(endpoint, 'DELETE', expected_body)
+    def delete_contained_json(self, endpoint: str, expected_body: dict, url_pattern: bool = False) -> bool:
+        return self.__contained_json_verification(endpoint, 'DELETE', expected_body, url_pattern)
 
-    def __count_verification(self, endpoint, http_verb, times):
+    def __count_verification(self, endpoint, http_verb, times, url_pattern):
         payload = {
             'method': http_verb,
-            'url': endpoint
+            self.__get_url_type(url_pattern): endpoint
         }
         data = json.dumps(payload).encode('utf-8')
         request = urllib.request.Request(
@@ -60,10 +60,10 @@ class DockerHttpVerify(IHttpVerify):
             return call_count > 0
         return validation.matches(times, call_count)
 
-    def __get_request_bodies(self, endpoint, http_verb):
+    def __get_request_bodies(self, endpoint, http_verb, url_pattern):
         payload = {
             'method': http_verb,
-            'url': endpoint
+            self.__get_url_type(url_pattern): endpoint
         }
         data = json.dumps(payload).encode('utf-8')
         request = urllib.request.Request(
@@ -76,12 +76,17 @@ class DockerHttpVerify(IHttpVerify):
             bodies.append(request['body'])
         return bodies
 
-    def __contained_verification(self, endpoint, http_verb, expected_body):
-        bodies = self.__get_request_bodies(endpoint, http_verb)
+    def __get_url_type(self, url_pattern: bool):
+        if url_pattern:
+            return 'urlPattern'
+        return 'url'
+
+    def __contained_verification(self, endpoint, http_verb, expected_body, url_pattern):
+        bodies = self.__get_request_bodies(endpoint, http_verb, url_pattern)
         return validation.contains(expected_body, bodies)
 
-    def __contained_json_verification(self, endpoint, http_verb, expected_body):
-        bodies = self.__get_request_bodies(endpoint, http_verb)
+    def __contained_json_verification(self, endpoint, http_verb, expected_body, url_pattern):
+        bodies = self.__get_request_bodies(endpoint, http_verb, url_pattern)
         for body in bodies:
             try:
                 body = json.loads(body)
