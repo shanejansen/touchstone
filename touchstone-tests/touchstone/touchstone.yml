@@ -16,3 +16,4 @@ mocks:
   mysql:
   s3:
   filesystem:
+  redis:

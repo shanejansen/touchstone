@@ -7,6 +7,7 @@ from touchstone.lib.nodes.mocks.behaviors.i_http_behavior import IHttpBehavior
 from touchstone.lib.nodes.mocks.behaviors.i_mongodb_behavior import IMongodbBehavior
 from touchstone.lib.nodes.mocks.behaviors.i_mysql_behabior import IMysqlBehavior
 from touchstone.lib.nodes.mocks.behaviors.i_rabbitmq_behavior import IRabbitmqBehavior
+from touchstone.lib.nodes.mocks.behaviors.i_redis_behavior import IRedisBehavior
 from touchstone.lib.nodes.mocks.behaviors.i_s3_behavior import IS3Behavior
 from touchstone.lib.nodes.mocks.docker.runnable_docker_mock import RunnableDockerMock
 from touchstone.lib.nodes.mocks.i_mockable import IMockable
@@ -21,6 +22,7 @@ class Mocks(object):
         self.mysql: IMysqlBehavior = None
         self.s3: IS3Behavior = None
         self.filesystem: IFilesystemBehavior = None
+        self.redis: IRedisBehavior = None
         self.__runnable_docker_mocks: List[RunnableDockerMock] = []
         self.__runnable_local_mocks: List[RunnableLocalMock] = []
         self.__mocks_running = False

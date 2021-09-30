@@ -112,6 +112,7 @@ example, foo-app might make a call to `bar-app:8080/some-endpoint`.
 * [Rabbit MQ](./docs/mocks/rabbitmq.md)
 * [S3](./docs/mocks/s3.md)
 * [Filesystem](./docs/mocks/filesystem.md)
+* [Redis](./docs/mocks/redis.md)
 * [Add one!](./docs/add-mock.md)
 
 If a specific mock is not supported, consider building your service independent of the implementation layer. For example, if you have a dependency on PostgreSQL, use the MySQL mock as your database implementation during testing.

@@ -23,6 +23,9 @@ from touchstone.lib.nodes.mocks.docker.rabbitmq.docker_rabbitmq import DockerRab
 from touchstone.lib.nodes.mocks.docker.rabbitmq.docker_rabbitmq_context import DockerRabbitmqContext
 from touchstone.lib.nodes.mocks.docker.rabbitmq.docker_rabbitmq_setup import DockerRabbitmqSetup
 from touchstone.lib.nodes.mocks.docker.rabbitmq.docker_rabbitmq_verify import DockerRabbitmqVerify
+from touchstone.lib.nodes.mocks.docker.redis.docker_redis import DockerRedis
+from touchstone.lib.nodes.mocks.docker.redis.docker_redis_setup import DockerRedisSetup
+from touchstone.lib.nodes.mocks.docker.redis.docker_redis_verify import DockerRedisVerify
 from touchstone.lib.nodes.mocks.docker.runnable_docker_mock import RunnableDockerMock
 from touchstone.lib.nodes.mocks.docker.s3.docker_s3 import DockerS3
 from touchstone.lib.nodes.mocks.docker.s3.docker_s3_setup import DockerS3Setup
@@ -99,4 +102,11 @@ class MockFactory(object):
             verify = LocalFilesystemVerify(files_path)
             runnable = LocalFilesystem(defaults_configurer, files_path, setup, verify)
             mock = RunnableLocalMock('filesystem', 'Filesystem', runnable)
+        elif mock_name == 'redis':
+            defaults_configurer = FileConfigurer(mock_defaults_paths)
+            setup = DockerRedisSetup()
+            verify = DockerRedisVerify()
+            runnable = DockerRedis(defaults_configurer, self.__is_dev_mode, setup, verify, self.__docker_manager,
+                                   DockerNetwork())
+            mock = RunnableDockerMock('redis', 'Redis', runnable)
         return mock
