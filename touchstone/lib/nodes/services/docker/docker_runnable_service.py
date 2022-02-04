@@ -60,19 +60,20 @@ class DockerRunnableService(IService, ITestable, IRunnable, INetworkable):
         elif self.__docker_image is not None:
             self.__log('Running Docker image...')
             docker_artifact = self.__docker_image
+        log_path = None
+        if self.__log_directory:
+            log_path = os.path.join(self.__log_directory, f'{self.__name}.log')
         run_result = self.__docker_manager.run_background_image(docker_artifact, self.__port,
                                                                 environment_vars=environment_vars,
                                                                 hostname=self.__name,
+                                                                log_path=log_path,
                                                                 options=self.__docker_options)
         self.__docker_network.set_container_id(run_result.container_id)
         self.__docker_network.set_external_port(run_result.external_port)
 
     def stop(self):
         if self.__docker_network.container_id():
-            log_path = None
-            if self.__log_directory:
-                log_path = os.path.join(self.__log_directory, f'{self.__name}.log')
-            self.__docker_manager.stop_container(self.__docker_network.container_id(), log_path)
+            self.__docker_manager.stop_container(self.__docker_network.container_id())
             self.__docker_network.set_container_id(None)
 
     def is_running(self) -> bool:
