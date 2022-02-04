@@ -96,7 +96,7 @@ class DockerManager(object):
 
     def __run_image(self, additional_params: str, image: str, hostname: str = None) -> str:
         container_id = uuid.uuid4().hex
-        command = f'docker run --rm -d --network {self.__network} '
+        command = f'docker run -d --network {self.__network} '
         if hostname:
             command += f'--hostname {hostname} '
         command += f'--name {container_id} {additional_params} {image}'
@@ -139,6 +139,7 @@ class DockerManager(object):
                 subprocess.run(['docker', 'container', 'logs', id], stdout=file)
         common.logger.debug(f'Stopping container: {id}')
         subprocess.run(['docker', 'container', 'stop', id], stdout=subprocess.DEVNULL)
+        subprocess.run(['docker', 'container', 'rm', '-v', id], stdout=subprocess.DEVNULL)
         self.__containers.remove(id)
 
     def cleanup(self):
