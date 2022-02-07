@@ -37,7 +37,7 @@ class DockerManager(object):
 
     def run_background_image(self, image: str, port: int = None, exposed_port: int = None, ui_port: int = None,
                              environment_vars: List[Tuple[str, str]] = [], hostname: str = None,
-                             options: str = None) -> RunResult:
+                             log_path: str = None, options: str = None) -> RunResult:
         exposed_port = port if not exposed_port else exposed_port
         self.__create_network()
 
@@ -49,7 +49,7 @@ class DockerManager(object):
             additional_params += ' '
             additional_params += options
 
-        container_id = self.__run_image(additional_params, image, hostname)
+        container_id = self.__run_image(additional_params, image, log_path, hostname)
 
         # Extract the auto-discovered ports
         exposed_port = self.__extract_port_mapping(container_id, port)
@@ -94,7 +94,7 @@ class DockerManager(object):
             additional_params += f' -e {var}="{value}"'
         return additional_params[1:]
 
-    def __run_image(self, additional_params: str, image: str, hostname: str = None) -> str:
+    def __run_image(self, additional_params: str, image: str, log_path: Optional[str], hostname: str = None) -> str:
         container_id = uuid.uuid4().hex
         command = f'docker run -d --network {self.__network} '
         if hostname:
@@ -102,6 +102,10 @@ class DockerManager(object):
         command += f'--name {container_id} {additional_params} {image}'
         common.logger.debug(f'Running container with command: {command}')
         result = subprocess.run(command, shell=True, stdout=subprocess.DEVNULL)
+        if log_path:
+            common.logger.debug(f'Writing container logs: {log_path}')
+            with open(log_path, 'w') as file:
+                subprocess.Popen(['docker', 'container', 'logs', '--follow', container_id], stdout=file)
         if result.returncode is not 0:
             raise exceptions.ContainerException(
                 f'Container image {image} could not be started. Ensure Docker is running and ports are not already in '
@@ -132,11 +136,7 @@ class DockerManager(object):
                 return new_port
         return given_port
 
-    def stop_container(self, id: str, log_path: str = None):
-        if log_path:
-            common.logger.debug(f'Writing container logs: {log_path}')
-            with open(log_path, 'w') as file:
-                subprocess.run(['docker', 'container', 'logs', id], stdout=file)
+    def stop_container(self, id: str):
         common.logger.debug(f'Stopping container: {id}')
         subprocess.run(['docker', 'container', 'stop', id], stdout=subprocess.DEVNULL)
         subprocess.run(['docker', 'container', 'rm', '-v', id], stdout=subprocess.DEVNULL)
