@@ -1,55 +1,58 @@
 from typing import List, Iterable
 
-from pymysql.cursors import Cursor
+import psycopg2
 
 from touchstone import common
 from touchstone.lib.nodes.mocks.behaviors.i_database_behabior import IDatabaseSetup
-from touchstone.lib.nodes.mocks.docker.mysql.docker_mysql_context import DockerMysqlContext
+from touchstone.lib.nodes.mocks.docker.postgres.docker_postgres_context import DockerPostgresContext
 
 
-class DockerMysqlSetup(IDatabaseSetup):
-    def __init__(self, mysql_context: DockerMysqlContext):
-        self.__mysql_context = mysql_context
+class DockerPostgresSetup(IDatabaseSetup):
+    def __init__(self, postgres_context: DockerPostgresContext):
+        self.__postgres_context = postgres_context
         self.__cursor = None
         self.__convert_camel_to_snake = False
 
-    def set_cursor(self, cursor: Cursor):
+    def set_cursor(self, cursor):
         self.__cursor = cursor
 
     def set_convert_camel_to_snake(self, convert_camel_to_snake: bool):
         self.__convert_camel_to_snake = convert_camel_to_snake
 
     def recreate_databases(self):
-        for database in self.__mysql_context.databases:
-            self.__cursor.execute(f'DROP DATABASE {database}')
-            self.__cursor.execute(f'CREATE DATABASE {database} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci')
+        for database in self.__postgres_context.databases:
+            self.__cursor.execute(f'DROP SCHEMA {database}')
+            self.__cursor.execute(f'CREATE SCHEMA {database}')
 
     def init(self, defaults: dict):
-        for database in self.__mysql_context.databases:
-            self.__cursor.execute(f'DROP DATABASE {database}')
-        self.__mysql_context.clear()
+        for database in self.__postgres_context.databases:
+            self.__cursor.execute(f'DROP SCHEMA {database} CASCADE')
+        self.__postgres_context.clear()
 
         for database in defaults.get('databases', []):
             database_name = database['name']
-            self.__cursor.execute(f'CREATE DATABASE {database_name} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci')
-            self.__cursor.execute(f'USE {database_name}')
-            self.__mysql_context.add_database(database_name)
+            try:
+                self.__cursor.execute(f'CREATE SCHEMA {database_name}')
+            except psycopg2.errors.DuplicateSchema:
+                pass
+            self.__cursor.execute(f'SET search_path TO {database_name}')
+            self.__postgres_context.add_database(database_name)
             for statement in database.get('statements', []):
                 self.__cursor.execute(statement)
 
     def execute(self, database: str, sql: str):
-        if self.__mysql_context.database_exists(database):
-            self.__cursor.execute(f'USE {database}')
+        if self.__postgres_context.database_exists(database):
+            self.__cursor.execute(f'SET search_path TO {database}')
             self.__cursor.execute(sql)
 
     def insert_row(self, database: str, table: str, data: dict):
-        if self.__mysql_context.database_exists(database):
+        if self.__postgres_context.database_exists(database):
             if self.__convert_camel_to_snake:
                 data = common.to_snake(data)
             values = self.__sql_values_from_dict(data)
             sql = self.__build_insert_sql(table, data.keys(), values)
             common.logger.debug(f'Executing: {sql}')
-            self.__cursor.execute(f'USE {database}')
+            self.__cursor.execute(f'SET search_path TO {database}')
             self.__cursor.execute(sql, data)
 
     def insert_rows(self, database: str, table: str, data: List[dict]):

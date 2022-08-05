@@ -115,7 +115,7 @@ example, foo-app might make a call to `bar-app:8080/some-endpoint`.
 * [Redis](./docs/mocks/redis.md)
 * [Add one!](./docs/add-mock.md)
 
-If a specific mock is not supported, consider building your service independent of the implementation layer. For example, if you have a dependency on PostgreSQL, use the MySQL mock as your database implementation during testing.
+If a specific mock is not supported, consider building your service independent of the implementation layer. For example, if you have a dependency on SQLite, use the MySQL or PostgreSQL mock as your database implementation during testing.
  
 When running via `touchstone develop`, dev ports for each mock are used. When running touchstone via `touchstone run`, ports are automatically discovered and available to your service containers via the following environment variables:
  * `TS_{MOCK_NAME}_HOST` - Host where the mock is running.

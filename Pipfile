@@ -15,7 +15,8 @@ pymongo = "~=3.10"
 pymysql = "~=0.9.3"
 minio = "~=5.0.7"
 redis = "~=3.5.3"
-touchstone-testing = {editable = true,path = "."}
+psycopg2-binary = "~=2.9.3"
+touchstone-testing = {editable = true, path = "."}
 
 [requires]
 python_version = "3.6"

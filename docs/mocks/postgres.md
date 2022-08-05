@@ -1,17 +1,18 @@
-MySQL
+PostgreSQL
 ======
-Used to mock a MySQL dependency.
+Used to mock a PostgreSQL dependency. Uses the database `root`. All references to `database` in the Touchstone APIs refer to a PostgreSQL `schema`.
 
 
 ## Specs
- * Name: mysql
- * Dev Port: 3306
+ * Name: postgres
+ * Dev Port: 5432
  * Username: root
  * Password: root
+ * Database: root
  
  
 ## Configuration
- * `camel_to_snake` - Default: True. When supplying a dict to this mock's API, this value determines if the dict keys should be converted to snake case to match MySQL's convention.
+ * `camel_to_snake` - Default: True. When supplying a dict to this mock's API, this value determines if the dict keys should be converted to snake case to match PostgreSQL's convention.
  * `snapshot_databases` - Default: False. When set to True, a snapshot of the database(s) specified in the defaults file is taken when the services become healthy. This snapshot is then used during each reset of the mock. This can be useful if your app uses a database migration tool (e.g. Flyway) where some initial data is inserted by the apps themselves.
 
 
@@ -30,8 +31,8 @@ databases:
 ## Usage Example
 ```python
 # Insert a row into a table
-self.mocks.mysql.setup().insert_row('my_db', 'my_table', {'foo': 'bar'})
+self.mocks.postgres.setup().insert_row('my_db', 'my_table', {'foo': 'bar'})
 
 # Verify that a row exists in a table
-result: bool = self.mocks.mysql.verify().row_exists('my_db', 'my_table', {'foo': 'bar'})
+result: bool = self.mocks.postgres.verify().row_exists('my_db', 'my_table', {'foo': 'bar'})
 ```

@@ -23,7 +23,8 @@ setup(
         'pymongo~=3.10',
         'pymysql~=0.9.3',
         'minio~=5.0.7',
-        'redis~=3.5.3'
+        'redis~=3.5.3',
+        'psycopg2-binary~=2.9.3'
     ],
     entry_points={
         'console_scripts': [

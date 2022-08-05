@@ -10,10 +10,11 @@ services:
     availability_endpoint: /
     tests: null
 mocks:
-  http:
-  rabbitmq:
-  mongodb:
-  mysql:
-  s3:
-  filesystem:
-  redis:
+#  http:
+#  rabbitmq:
+#  mongodb:
+#  mysql:
+  postgres:
+#  s3:
+#  filesystem:
+#  redis:

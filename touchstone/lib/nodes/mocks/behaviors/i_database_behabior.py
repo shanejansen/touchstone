@@ -4,7 +4,7 @@ from typing import List
 from touchstone.lib.nodes.mocks.behaviors.i_behavior import IBehavior
 
 
-class IMysqlSetup(object):
+class IDatabaseSetup(object):
     @abc.abstractmethod
     def execute(self, database: str, sql: str):
         """Executes arbitrary SQL on the given database."""
@@ -25,7 +25,7 @@ class IMysqlSetup(object):
         pass
 
 
-class IMysqlVerify(object):
+class IDatabaseVerify(object):
     @abc.abstractmethod
     def row_exists(self, database: str, table: str, where_conditions: dict, num_expected: int = 1) -> bool:
         """Returns True if the given where conditions are found in the given database. If num_expected is set to None,
@@ -38,16 +38,16 @@ class IMysqlVerify(object):
         pass
 
 
-class IMysqlBehavior(IBehavior):
+class IDatabaseBehavior(IBehavior):
     DEFAULT_CONFIG = {
         'camel_to_snake': True,
         'snapshot_databases': False
     }
 
     @abc.abstractmethod
-    def setup(self) -> IMysqlSetup:
+    def setup(self) -> IDatabaseSetup:
         pass
 
     @abc.abstractmethod
-    def verify(self) -> IMysqlVerify:
+    def verify(self) -> IDatabaseVerify:
         pass

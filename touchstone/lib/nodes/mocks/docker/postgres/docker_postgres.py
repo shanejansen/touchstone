@@ -1,8 +1,7 @@
 import subprocess
 
-import pymysql
+import psycopg2
 
-from build.lib.touchstone.lib.nodes.mocks.behaviors.i_mysql_behabior import IMysqlSetup, IMysqlVerify
 from touchstone.lib import exceptions
 from touchstone.lib.configurers.i_configurable import IConfigurable
 from touchstone.lib.listeners.i_services_available_listener import IServicesAvailableListener
@@ -10,24 +9,25 @@ from touchstone.lib.managers.docker_manager import DockerManager
 from touchstone.lib.networking.docker_network import DockerNetwork
 from touchstone.lib.networking.i_network import INetwork
 from touchstone.lib.nodes.mocks.behaviors.i_behavior import IBehavior
-from touchstone.lib.nodes.mocks.behaviors.i_database_behabior import IDatabaseBehavior
+from touchstone.lib.nodes.mocks.behaviors.i_database_behabior import IDatabaseBehavior, IDatabaseVerify, IDatabaseSetup
 from touchstone.lib.nodes.mocks.docker.i_runnable_docker import IRunnableDocker
-from touchstone.lib.nodes.mocks.docker.mysql.docker_mysql_context import DockerMysqlContext
-from touchstone.lib.nodes.mocks.docker.mysql.docker_mysql_setup import DockerMysqlSetup
-from touchstone.lib.nodes.mocks.docker.mysql.docker_mysql_verify import DockerMysqlVerify
+from touchstone.lib.nodes.mocks.docker.postgres.docker_postgres_context import DockerPostgresContext
+from touchstone.lib.nodes.mocks.docker.postgres.docker_postgres_setup import DockerPostgresSetup
+from touchstone.lib.nodes.mocks.docker.postgres.docker_postgres_verify import DockerPostgresVerify
 from touchstone.lib.ts_context import TsContext
 
 
-class DockerMysql(IRunnableDocker, IDatabaseBehavior, IServicesAvailableListener):
+class DockerPostgres(IRunnableDocker, IDatabaseBehavior, IServicesAvailableListener):
     __USERNAME = 'root'
     __PASSWORD = 'root'
 
-    def __init__(self, ts_context: TsContext, defaults_configurer: IConfigurable, mysql_context: DockerMysqlContext,
-                 is_dev_mode: bool, configurer: IConfigurable, setup: DockerMysqlSetup, verify: DockerMysqlVerify,
-                 docker_manager: DockerManager, docker_network: DockerNetwork):
+    def __init__(self, ts_context: TsContext, defaults_configurer: IConfigurable,
+                 postgres_context: DockerPostgresContext, is_dev_mode: bool, configurer: IConfigurable,
+                 setup: DockerPostgresSetup, verify: DockerPostgresVerify, docker_manager: DockerManager,
+                 docker_network: DockerNetwork):
         ts_context.register_services_available_listener(self)
         self.__defaults_configurer = defaults_configurer
-        self.__mysql_context = mysql_context
+        self.__postgres_context = postgres_context
         self.__is_dev_mode = is_dev_mode
         self.__configurer = configurer
         self.__setup = setup
@@ -43,13 +43,11 @@ class DockerMysql(IRunnableDocker, IDatabaseBehavior, IServicesAvailableListener
         return self.__docker_network
 
     def initialize(self):
-        connection = pymysql.connect(host=self.__docker_network.external_host(),
-                                     port=self.__docker_network.external_port(),
-                                     user=self.__USERNAME,
-                                     password=self.__PASSWORD,
-                                     charset='utf8mb4',
-                                     autocommit=True,
-                                     cursorclass=pymysql.cursors.DictCursor)
+        connection = psycopg2.connect(host=self.__docker_network.external_host(),
+                                      port=self.__docker_network.external_port(),
+                                      user=self.__USERNAME,
+                                      password=self.__PASSWORD)
+        connection.set_isolation_level(psycopg2.extensions.ISOLATION_LEVEL_AUTOCOMMIT)
         cursor = connection.cursor()
         convert_camel_to_snake = self.__configurer.get_config()['camel_to_snake']
         self.__setup.set_cursor(cursor)
@@ -60,8 +58,8 @@ class DockerMysql(IRunnableDocker, IDatabaseBehavior, IServicesAvailableListener
 
     def start(self):
         run_result = self.__docker_manager.run_background_image(
-            'mysql:8.0.20 --default-authentication-plugin=mysql_native_password', port=3306,
-            environment_vars=[('MYSQL_ROOT_PASSWORD', self.__USERNAME)])
+            'postgres:14.4-alpine', port=5432,
+            environment_vars=[('POSTGRES_USER', self.__USERNAME), ('POSTGRES_PASSWORD', self.__PASSWORD)])
         self.__docker_network.set_container_id(run_result.container_id)
         if self.__is_dev_mode:
             ui_run_result = self.__docker_manager.run_background_image('adminer:4.7.5-standalone',
@@ -85,37 +83,35 @@ class DockerMysql(IRunnableDocker, IDatabaseBehavior, IServicesAvailableListener
     def reset(self):
         if self.__configurer.get_config()['snapshot_databases']:
             self.__setup.recreate_databases()
-            for database in self.__mysql_context.databases:
-                subprocess.run(f'docker exec {self.__docker_network.container_id()} sh -c "mysql -u {self.__USERNAME} '
-                               f'-p{self.__PASSWORD} {database} < dump-{database}.sql"', shell=True,
-                               stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.run(f'docker exec {self.__docker_network.container_id()} sh -c "psql {self.__USERNAME} '
+                           f'< dump-{self.__USERNAME}.bak"', shell=True,
+                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         else:
             self.__setup.init(self.__defaults_configurer.get_config())
 
     def is_healthy(self) -> bool:
         try:
-            pymysql.connect(host=self.__docker_network.external_host(),
-                            port=self.__docker_network.external_port(),
-                            user=self.__USERNAME,
-                            password=self.__PASSWORD)
+            psycopg2.connect(host=self.__docker_network.external_host(),
+                             port=self.__docker_network.external_port(),
+                             user=self.__USERNAME,
+                             password=self.__PASSWORD)
             return True
         except Exception:
             return False
 
-    def setup(self) -> IMysqlSetup:
+    def setup(self) -> IDatabaseSetup:
         if not self.__setup:
             raise exceptions.MockException('Setup unavailable. Mock is still starting.')
         return self.__setup
 
-    def verify(self) -> IMysqlVerify:
+    def verify(self) -> IDatabaseVerify:
         if not self.__verify:
             raise exceptions.MockException('Verify unavailable. Mock is still starting.')
         return self.__verify
 
     def services_available(self):
         if self.__configurer.get_config()['snapshot_databases']:
-            for database in self.__mysql_context.databases:
-                subprocess.run(
-                    f'docker exec {self.__docker_network.container_id()} sh -c "mysqldump -u {self.__USERNAME} '
-                    f'-p{self.__PASSWORD} --no-create-db {database} > dump-{database}.sql"', shell=True,
-                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            subprocess.run(
+                f'docker exec {self.__docker_network.container_id()} sh -c "pg_dump {self.__USERNAME} '
+                f'> dump-{self.__USERNAME}.bak"', shell=True,
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

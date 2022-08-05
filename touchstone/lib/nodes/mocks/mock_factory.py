@@ -6,7 +6,7 @@ from touchstone.lib.configurers.FileConfigurer import FileConfigurer
 from touchstone.lib.health_checks.http_health_check import HttpHealthCheck
 from touchstone.lib.managers.docker_manager import DockerManager
 from touchstone.lib.networking.docker_network import DockerNetwork
-from touchstone.lib.nodes.mocks.behaviors.i_mysql_behabior import IMysqlBehavior
+from touchstone.lib.nodes.mocks.behaviors.i_database_behabior import IDatabaseBehavior
 from touchstone.lib.nodes.mocks.behaviors.i_rabbitmq_behavior import IRabbitmqBehavior
 from touchstone.lib.nodes.mocks.docker.http.docker_http import DockerHttp
 from touchstone.lib.nodes.mocks.docker.http.docker_http_setup import DockerHttpSetup
@@ -19,6 +19,10 @@ from touchstone.lib.nodes.mocks.docker.mysql.docker_mysql import DockerMysql
 from touchstone.lib.nodes.mocks.docker.mysql.docker_mysql_context import DockerMysqlContext
 from touchstone.lib.nodes.mocks.docker.mysql.docker_mysql_setup import DockerMysqlSetup
 from touchstone.lib.nodes.mocks.docker.mysql.docker_mysql_verify import DockerMysqlVerify
+from touchstone.lib.nodes.mocks.docker.postgres.docker_postgres import DockerPostgres
+from touchstone.lib.nodes.mocks.docker.postgres.docker_postgres_context import DockerPostgresContext
+from touchstone.lib.nodes.mocks.docker.postgres.docker_postgres_setup import DockerPostgresSetup
+from touchstone.lib.nodes.mocks.docker.postgres.docker_postgres_verify import DockerPostgresVerify
 from touchstone.lib.nodes.mocks.docker.rabbitmq.docker_rabbitmq import DockerRabbitmq
 from touchstone.lib.nodes.mocks.docker.rabbitmq.docker_rabbitmq_context import DockerRabbitmqContext
 from touchstone.lib.nodes.mocks.docker.rabbitmq.docker_rabbitmq_setup import DockerRabbitmqSetup
@@ -78,7 +82,7 @@ class MockFactory(object):
             mock = RunnableDockerMock('mongodb', 'Mongo DB', runnable)
         elif mock_name == 'mysql':
             defaults_configurer = FileConfigurer(mock_defaults_paths)
-            configurer = BasicConfigurer(IMysqlBehavior.DEFAULT_CONFIG)
+            configurer = BasicConfigurer(IDatabaseBehavior.DEFAULT_CONFIG)
             configurer.merge_config(config)
             context = DockerMysqlContext()
             setup = DockerMysqlSetup(context)
@@ -86,6 +90,16 @@ class MockFactory(object):
             runnable = DockerMysql(self.__ts_context, defaults_configurer, context, self.__is_dev_mode, configurer,
                                    setup, verify, self.__docker_manager, DockerNetwork())
             mock = RunnableDockerMock('mysql', 'MySQL', runnable)
+        elif mock_name == 'postgres':
+            defaults_configurer = FileConfigurer(mock_defaults_paths)
+            configurer = BasicConfigurer(IDatabaseBehavior.DEFAULT_CONFIG)
+            configurer.merge_config(config)
+            context = DockerPostgresContext()
+            setup = DockerPostgresSetup(context)
+            verify = DockerPostgresVerify(context)
+            runnable = DockerPostgres(self.__ts_context, defaults_configurer, context, self.__is_dev_mode, configurer,
+                                      setup, verify, self.__docker_manager, DockerNetwork())
+            mock = RunnableDockerMock('postgres', 'PostgreSQL', runnable)
         elif mock_name == 's3':
             defaults_configurer = FileConfigurer(mock_defaults_paths)
             base_objects_path = os.path.join(self.__root, 'defaults')

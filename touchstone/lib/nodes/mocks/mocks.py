@@ -2,10 +2,10 @@ from typing import List, Tuple
 
 from touchstone.lib import exceptions
 from touchstone.lib.health_checks.blocking_health_check import BlockingHealthCheck
+from touchstone.lib.nodes.mocks.behaviors.i_database_behabior import IDatabaseBehavior
 from touchstone.lib.nodes.mocks.behaviors.i_filesystem_behavior import IFilesystemBehavior
 from touchstone.lib.nodes.mocks.behaviors.i_http_behavior import IHttpBehavior
 from touchstone.lib.nodes.mocks.behaviors.i_mongodb_behavior import IMongodbBehavior
-from touchstone.lib.nodes.mocks.behaviors.i_mysql_behabior import IMysqlBehavior
 from touchstone.lib.nodes.mocks.behaviors.i_rabbitmq_behavior import IRabbitmqBehavior
 from touchstone.lib.nodes.mocks.behaviors.i_redis_behavior import IRedisBehavior
 from touchstone.lib.nodes.mocks.behaviors.i_s3_behavior import IS3Behavior
@@ -19,7 +19,8 @@ class Mocks(object):
         self.http: IHttpBehavior = None
         self.rabbitmq: IRabbitmqBehavior = None
         self.mongodb: IMongodbBehavior = None
-        self.mysql: IMysqlBehavior = None
+        self.mysql: IDatabaseBehavior = None
+        self.postgres: IDatabaseBehavior = None
         self.s3: IS3Behavior = None
         self.filesystem: IFilesystemBehavior = None
         self.redis: IRedisBehavior = None
