@@ -5,6 +5,6 @@ services:
     type: executable
     dockerfile: ../Dockerfile
     develop_command: spark-submit --jars jars/mysql-connector-java-8.0.21.jar ./src/main.py
-mocks:
+dependencies:
   filesystem:
   mysql:

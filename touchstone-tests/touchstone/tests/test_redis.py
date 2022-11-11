@@ -8,11 +8,11 @@ class Set(TouchstoneTest):
         pass
 
     def when(self, given) -> object:
-        self.mocks.redis.setup().set('foo', 'bar')
+        self.deps.redis.setup().set('foo', 'bar')
         return None
 
     def then(self, given, result) -> bool:
-        return self.mocks.redis.verify().value_matches('foo', 'bar')
+        return self.deps.redis.verify().value_matches('foo', 'bar')
 
 
 class ValueExists(TouchstoneTest):
@@ -20,11 +20,11 @@ class ValueExists(TouchstoneTest):
         pass
 
     def when(self, given) -> object:
-        self.mocks.redis.setup().set('foo', 'bar')
+        self.deps.redis.setup().set('foo', 'bar')
         return None
 
     def then(self, given, result) -> bool:
-        return self.mocks.redis.verify().value_exists('foo')
+        return self.deps.redis.verify().value_exists('foo')
 
 
 class ValueMatches(TouchstoneTest):
@@ -32,11 +32,11 @@ class ValueMatches(TouchstoneTest):
         pass
 
     def when(self, given) -> object:
-        self.mocks.redis.setup().set('foo', 'bar')
+        self.deps.redis.setup().set('foo', 'bar')
         return None
 
     def then(self, given, result) -> bool:
-        return self.mocks.redis.verify().value_matches('foo', 'bar')
+        return self.deps.redis.verify().value_matches('foo', 'bar')
 
 
 class ValueMatchesJson(TouchstoneTest):
@@ -44,8 +44,8 @@ class ValueMatchesJson(TouchstoneTest):
         return {'foo': 'bar'}
 
     def when(self, given) -> object:
-        self.mocks.redis.setup().set('foo', json.dumps(given))
+        self.deps.redis.setup().set('foo', json.dumps(given))
         return None
 
     def then(self, given, result) -> bool:
-        return self.mocks.redis.verify().value_matches_json('foo', given)
+        return self.deps.redis.verify().value_matches_json('foo', given)

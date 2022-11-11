@@ -8,7 +8,7 @@ class TouchstoneConfig(IConfigurable):
         self.__basic_configurer = BasicConfigurer({
             'root': root,
             'services': [],
-            'mocks': []
+            'dependencies': []
         })
 
     def get_config(self) -> dict:
@@ -20,5 +20,5 @@ class TouchstoneConfig(IConfigurable):
     def verify(self):
         if self.__basic_configurer.get_config()['services'] is None:
             raise exceptions.TouchstoneException(f'"services" has not been set. Check your "touchstone.yml".')
-        if self.__basic_configurer.get_config()['mocks'] is None:
-            raise exceptions.TouchstoneException(f'"mocks" has not been set. Check your "touchstone.yml".')
+        if self.__basic_configurer.get_config()['dependencies'] is None:
+            raise exceptions.TouchstoneException(f'"dependencies" has not been set. Check your "touchstone.yml".')

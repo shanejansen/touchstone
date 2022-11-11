@@ -4,7 +4,7 @@ services:
   - name: my-app
     availability_endpoint: /actuator/health
     dockerfile: ../Dockerfile
-mocks:
+dependencies:
   http:
   rabbitmq:
     auto_create: False

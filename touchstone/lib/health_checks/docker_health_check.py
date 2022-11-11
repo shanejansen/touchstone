@@ -16,7 +16,7 @@ class DockerHealthCheck(IHealthCheckable):
 
     def is_healthy(self) -> bool:
         if not self.__container_id:
-            raise exceptions.MockException('Container ID must be set before checking health.')
+            raise exceptions.DepException('Container ID must be set before checking health.')
         try:
             common.logger.debug(f'Executing Docker health check for container ID: {self.__container_id}')
             passed = 'healthy' in str(

@@ -1,20 +1,20 @@
 import abc
 
-from touchstone.lib.nodes.mocks.mocks import Mocks
+from touchstone.lib.nodes.deps.deps import Deps
 from touchstone.lib.nodes.services.i_service_executor import IServiceExecutor
 
 
 class TouchstoneTest(object):
     __metaclass__ = abc.ABCMeta
 
-    def __init__(self, service_url: str, mocks: Mocks, service_executor: IServiceExecutor):
+    def __init__(self, service_url: str, deps: Deps, service_executor: IServiceExecutor):
         self.service_url = service_url
-        self.mocks = mocks
+        self.deps = deps
         self.service_executor = service_executor
 
     def processing_period(self) -> float:
-        """The amount of time to wait before "then" is executed. This is useful to configure if you are using a mock
-        or service that does not operate synchronously (e.g. Rabbit MQ)."""
+        """The amount of time to wait before "then" is executed. This is useful to configure if you are using a
+        dependency or service that does not operate synchronously (e.g. Rabbit MQ)."""
         return 0.0
 
     @abc.abstractmethod

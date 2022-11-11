@@ -4,7 +4,7 @@ import inspect
 import os
 import sys
 
-from touchstone.lib.nodes.mocks.mocks import Mocks
+from touchstone.lib.nodes.deps.deps import Deps
 from touchstone.lib.nodes.services.i_service_executor import IServiceExecutor
 from touchstone.lib.test import TestContainer, TestClass
 
@@ -12,8 +12,8 @@ from touchstone.lib.test import TestContainer, TestClass
 class Tests(object):
     __TEST_PREFIX = 'test_'
 
-    def __init__(self, mocks: Mocks, service_executor: IServiceExecutor, tests_path: str):
-        self.__mocks = mocks
+    def __init__(self, deps: Deps, service_executor: IServiceExecutor, tests_path: str):
+        self.__deps = deps
         self.__service_executor = service_executor
         self.__tests_path = tests_path
 
@@ -25,7 +25,7 @@ class Tests(object):
         if not test_container:
             print(f'No tests found with file name "{file_name}".')
             return False
-        return test_container.execute(service_url, self.__mocks, self.__service_executor)
+        return test_container.execute(service_url, self.__deps, self.__service_executor)
 
     def run_all(self, service_url: str = None) -> bool:
         self.__load_package(self.__tests_path)
@@ -38,10 +38,10 @@ class Tests(object):
         tests_passed = True
         for test_container in all_test_containers:
             print(f'\n{test_container.file}')
-            if not test_container.execute(service_url, self.__mocks, self.__service_executor):
+            if not test_container.execute(service_url, self.__deps, self.__service_executor):
                 tests_passed = False
 
-        self.__mocks.reset()
+        self.__deps.reset()
         return tests_passed
 
     def __load_module(self, name: str, path):

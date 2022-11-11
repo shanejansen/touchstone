@@ -9,12 +9,12 @@ services:
     port: 80
     availability_endpoint: /
     tests: null
-mocks:
-#  http:
-#  rabbitmq:
-#  mongodb:
-#  mysql:
+dependencies:
+  http:
+  rabbitmq:
+  mongodb:
+  mysql:
   postgres:
-#  s3:
-#  filesystem:
-#  redis:
+  s3:
+  filesystem:
+  redis:

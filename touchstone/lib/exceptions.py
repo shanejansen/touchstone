@@ -10,11 +10,11 @@ class TestException(Exception):
     pass
 
 
-class MockException(Exception):
+class DepException(Exception):
     pass
 
 
-class MockNotSupportedException(Exception):
+class DepNotSupportedException(Exception):
     pass
 
 

@@ -13,11 +13,11 @@ class RowInserted(TouchstoneTest):
         }
 
     def when(self, given) -> object:
-        self.mocks.postgres.setup().insert_row(postgres_database, postgres_table, given)
+        self.deps.postgres.setup().insert_row(postgres_database, postgres_table, given)
         return None
 
     def then(self, given, result) -> bool:
-        return self.mocks.postgres.verify().row_exists(postgres_database, postgres_table, given)
+        return self.deps.postgres.verify().row_exists(postgres_database, postgres_table, given)
 
 
 class RowsInserted(TouchstoneTest):
@@ -38,7 +38,7 @@ class RowsInserted(TouchstoneTest):
         ]
 
     def when(self, given) -> object:
-        self.mocks.postgres.setup().insert_rows(postgres_database, postgres_table, given)
+        self.deps.postgres.setup().insert_rows(postgres_database, postgres_table, given)
         return None
 
     def then(self, given, result) -> bool:
@@ -49,8 +49,8 @@ class RowsInserted(TouchstoneTest):
         expected_baz = {
             'firstName': 'Baz'
         }
-        return self.mocks.postgres.verify().row_exists(postgres_database, postgres_table, expected_foo, num_expected=2) \
-               and self.mocks.postgres.verify().row_exists(postgres_database, postgres_table, expected_baz)
+        return self.deps.postgres.verify().row_exists(postgres_database, postgres_table, expected_foo, num_expected=2) \
+               and self.deps.postgres.verify().row_exists(postgres_database, postgres_table, expected_baz)
 
 
 class NullValueInserted(TouchstoneTest):
@@ -61,11 +61,11 @@ class NullValueInserted(TouchstoneTest):
         }
 
     def when(self, given) -> object:
-        self.mocks.postgres.setup().insert_row(postgres_database, postgres_table, given)
+        self.deps.postgres.setup().insert_row(postgres_database, postgres_table, given)
         return None
 
     def then(self, given, result) -> bool:
-        return self.mocks.postgres.verify().row_exists(postgres_database, postgres_table, given)
+        return self.deps.postgres.verify().row_exists(postgres_database, postgres_table, given)
 
 
 class CheckNotNull(TouchstoneTest):
@@ -76,7 +76,7 @@ class CheckNotNull(TouchstoneTest):
         }
 
     def when(self, given) -> object:
-        self.mocks.postgres.setup().insert_row(postgres_database, postgres_table, given)
+        self.deps.postgres.setup().insert_row(postgres_database, postgres_table, given)
         return None
 
     def then(self, given, result) -> bool:
@@ -84,4 +84,4 @@ class CheckNotNull(TouchstoneTest):
             'firstName': 'Foo',
             'lastName': validation.ANY
         }
-        return self.mocks.postgres.verify().row_exists(postgres_database, postgres_table, check)
+        return self.deps.postgres.verify().row_exists(postgres_database, postgres_table, check)
