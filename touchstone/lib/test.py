@@ -2,7 +2,7 @@ import time
 import traceback
 from typing import List
 
-from touchstone.lib.nodes.mocks.mocks import Mocks
+from touchstone.lib.nodes.deps.deps import Deps
 from touchstone.lib.nodes.services.i_service_executor import IServiceExecutor
 from touchstone.lib.touchstone_test import TouchstoneTest
 
@@ -21,13 +21,13 @@ class TestContainer(object):
     def add_test_class(self, test_class: TestClass):
         self.test_classes.append(test_class)
 
-    def execute(self, service_url: str, mocks: Mocks, service_executor: IServiceExecutor) -> bool:
+    def execute(self, service_url: str, deps: Deps, service_executor: IServiceExecutor) -> bool:
         all_passed = True
         for test_class in self.test_classes:
-            class_instance: TouchstoneTest = test_class.clazz(service_url, mocks, service_executor)
+            class_instance: TouchstoneTest = test_class.clazz(service_url, deps, service_executor)
             test = Test(test_class.name, class_instance)
             print(f'{test.name} :: RUNNING')
-            mocks.reset()
+            deps.reset()
 
             did_pass = False
             try:

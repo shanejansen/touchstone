@@ -2,7 +2,7 @@ import unittest
 from unittest import TestCase
 from unittest.mock import Mock
 
-from touchstone.lib.nodes.mocks.mocks import Mocks
+from touchstone.lib.nodes.deps.deps import Deps
 
 
 class TestMocks(TestCase):
@@ -11,24 +11,24 @@ class TestMocks(TestCase):
         self.mock_rabbitmq = Mock()
         self.mock_mongodb = Mock()
 
-        self.mocks = Mocks()
+        self.deps = Deps()
 
-    def test_start_mocksNotRunning_mocksAreRunning(self):
+    def test_start_depsNotRunning_depsAreRunning(self):
         # When
-        self.mocks.start()
+        self.deps.start()
 
         # Then
-        self.assertTrue(self.mocks.are_running())
+        self.assertTrue(self.deps.are_running())
 
-    def test_start_mocksRunning_mocksAreNotRunning(self):
+    def test_start_depsRunning_depsAreNotRunning(self):
         # Given
-        self.mocks.start()
+        self.deps.start()
 
         # When
-        self.mocks.stop()
+        self.deps.stop()
 
         # Then
-        self.assertFalse(self.mocks.are_running())
+        self.assertFalse(self.deps.are_running())
 
 
 if __name__ == '__main__':

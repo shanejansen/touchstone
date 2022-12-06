@@ -15,7 +15,7 @@ class HttpHealthCheck(IHealthCheckable):
 
     def is_healthy(self) -> bool:
         if not self.__url:
-            raise exceptions.MockException('URL must be set before checking health.')
+            raise exceptions.DepException('URL must be set before checking health.')
         try:
             common.logger.debug(f'Executing HTTP health check for: {self.__url}')
             code = urllib.request.urlopen(self.__url).getcode()

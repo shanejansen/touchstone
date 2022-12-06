@@ -11,8 +11,8 @@ def execute(should_log_services=False):
     print(figlet_format('Touchstone', font='larry3d'))
 
     try:
-        bootstrap.mocks.start()
-        bootstrap.services.add_environment_vars(bootstrap.mocks.environment_vars())
+        bootstrap.deps.start()
+        bootstrap.services.add_environment_vars(bootstrap.deps.environment_vars())
         bootstrap.services.start()
         bootstrap.ts_context.trigger_services_available()
         tests_did_pass = bootstrap.services.run_all_tests()

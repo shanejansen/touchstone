@@ -13,8 +13,8 @@ def execute(should_log_services=False):
     print(figlet_format('Touchstone', font='larry3d'))
 
     try:
-        bootstrap.mocks.start()
-        bootstrap.mocks.print_available_mocks()
+        bootstrap.deps.start()
+        bootstrap.deps.print_available_deps()
 
         __print_help()
         while True:
@@ -35,17 +35,17 @@ def execute(should_log_services=False):
                 bootstrap.services.run_test(parts[1], parts[2], parts[3])
             elif command == 'services start':
                 try:
-                    bootstrap.services.add_environment_vars(bootstrap.mocks.environment_vars())
+                    bootstrap.services.add_environment_vars(bootstrap.deps.environment_vars())
                     bootstrap.services.start()
                     bootstrap.ts_context.trigger_services_available()
                 except KeyboardInterrupt:
                     bootstrap.services.stop()
             elif command == 'services stop':
                 bootstrap.services.stop()
-            elif command == 'mocks print':
-                bootstrap.mocks.print_available_mocks()
-            elif command == 'mocks reset':
-                bootstrap.mocks.reset()
+            elif command == 'deps print':
+                bootstrap.deps.print_available_deps()
+            elif command == 'deps reset':
+                bootstrap.deps.reset()
             elif command == 'exit':
                 bootstrap.exit(True)
             elif command == '':
@@ -62,9 +62,9 @@ def __print_help():
     print('\nDevelopment mode:\n'
           'help - Prints this message.\n'
           'run - Runs all Touchstone tests.\n'
-          'run {service} {test file name} {test name} - Run a single test. Leaves mocks in the tested state.\n'
+          'run {service} {test file name} {test name} - Run a single test. Leaves dependencies in the tested state.\n'
           'services start - If you don\'t want to run services manually, this starts all networked services with a non-empty Dockerfile.\n'
           'services stop - Stops all started containerized services.\n'
-          'mocks print - Prints mock UI URLs.\n'
-          'mocks reset - Resets all mocks to their default state.\n'
+          'deps print - Prints dependency UI URLs.\n'
+          'deps reset - Resets all dependencies to their default state.\n'
           'exit - Exit Touchstone.\n')

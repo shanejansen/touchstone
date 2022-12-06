@@ -21,8 +21,8 @@ class OrderMessageReceived(TouchstoneTest):
         }
 
     def when(self, given) -> object:
-        self.mocks.rabbitmq.setup().publish('order-placed.exchange', json.dumps(given))
+        self.deps.rabbitmq.setup().publish('order-placed.exchange', json.dumps(given))
         return None
 
     def then(self, given, result) -> bool:
-        return self.mocks.mongodb.verify().document_exists(creds.MONGO_DATABASE, creds.MONGO_COLLECTION, given)
+        return self.deps.mongodb.verify().document_exists(creds.MONGO_DATABASE, creds.MONGO_COLLECTION, given)

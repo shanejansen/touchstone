@@ -1,10 +1,10 @@
 ---
-touchstone_version: 1.4.1
+touchstone_version: 1.4.2
 services:
   - name: my-exec
     type: executable
     dockerfile: ../Dockerfile
     develop_command: spark-submit --jars jars/mysql-connector-java-8.0.21.jar ./src/main.py
-mocks:
+dependencies:
   filesystem:
   mysql:

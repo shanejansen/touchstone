@@ -1,5 +1,5 @@
 ---
-touchstone_version: 1.4.1
+touchstone_version: 1.4.2
 services:
   - name: my-app
     port: 8080
@@ -9,11 +9,12 @@ services:
     port: 80
     availability_endpoint: /
     tests: null
-mocks:
+dependencies:
   http:
   rabbitmq:
   mongodb:
   mysql:
+  postgres:
   s3:
   filesystem:
   redis:

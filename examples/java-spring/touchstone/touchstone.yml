@@ -1,10 +1,10 @@
 ---
-touchstone_version: 1.4.1
+touchstone_version: 1.4.2
 services:
   - name: my-app
     availability_endpoint: /actuator/health
     dockerfile: ../Dockerfile
-mocks:
+dependencies:
   http:
   rabbitmq:
     auto_create: False

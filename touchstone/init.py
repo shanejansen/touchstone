@@ -16,7 +16,7 @@ touchstone_version: {__version__}
 services:
   - name: my-app
     port: 8080
-mocks:
+dependencies:
 """
         file.writelines(data)
     open(os.path.join('touchstone', 'defaults', '.gitkeep'), 'a').close()
