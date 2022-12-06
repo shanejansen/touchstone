@@ -1,7 +1,7 @@
 Touchstone
 ======
-![Unit Tests](https://github.com/shane-jansen/touchstone/workflows/Unit%20Tests/badge.svg?branch=develop)
-![Touchstone Tests](https://github.com/shane-jansen/touchstone/workflows/Touchstone%20Tests/badge.svg?branch=develop)
+![Unit Tests](https://github.com/shane-jansen/touchstone/workflows/Unit%20Tests/badge.svg?branch=master)
+![Touchstone Tests](https://github.com/shane-jansen/touchstone/workflows/Touchstone%20Tests/badge.svg?branch=master)
 
 Touchstone is a testing framework for your services that focuses on [component](https://martinfowler.com/articles/microservice-testing/#testing-component-out-of-process-diagram), [end-to-end](https://martinfowler.com/articles/microservice-testing/#testing-end-to-end-introduction), and [exploratory](https://martinfowler.com/bliki/ExploratoryTesting.html) testing.  
 
