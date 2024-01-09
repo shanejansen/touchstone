@@ -1,5 +1,5 @@
 ---
-touchstone_version: 1.4.2
+touchstone_version: 1.4.3
 services:
   - name: my-app
     availability_endpoint: /actuator/health

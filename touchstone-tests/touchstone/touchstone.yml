@@ -1,5 +1,5 @@
 ---
-touchstone_version: 1.4.2
+touchstone_version: 1.4.3
 docker:
   registry: docker-all.artifactory.8451.cloud
 services:
