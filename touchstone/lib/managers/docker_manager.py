@@ -17,10 +17,11 @@ class RunResult(object):
 
 
 class DockerManager(object):
-    def __init__(self, should_auto_discover: bool = True):
+    def __init__(self, should_auto_discover: bool = True, registry: str = ''):
         self.__images: list = []
         self.__containers: list = []
         self.__should_auto_discover = should_auto_discover
+        self.__registry = registry
         self.__network: Optional[str] = None
 
     def build_dockerfile(self, dockerfile_path: str) -> str:
@@ -37,7 +38,7 @@ class DockerManager(object):
 
     def run_background_image(self, image: str, port: int = None, exposed_port: int = None, ui_port: int = None,
                              environment_vars: List[Tuple[str, str]] = [], hostname: str = None,
-                             log_path: str = None, options: str = None) -> RunResult:
+                             log_path: str = None, options: str = None, is_local_registry: bool = False) -> RunResult:
         exposed_port = port if not exposed_port else exposed_port
         self.__create_network()
 
@@ -49,7 +50,7 @@ class DockerManager(object):
             additional_params += ' '
             additional_params += options
 
-        container_id = self.__run_image(additional_params, image, log_path, hostname)
+        container_id = self.__run_image(additional_params, image, log_path, hostname, is_local_registry)
 
         # Extract the auto-discovered ports
         exposed_port = self.__extract_port_mapping(container_id, port)
@@ -94,19 +95,23 @@ class DockerManager(object):
             additional_params += f' -e {var}="{value}"'
         return additional_params[1:]
 
-    def __run_image(self, additional_params: str, image: str, log_path: Optional[str], hostname: str = None) -> str:
+    def __run_image(self, additional_params: str, image: str, log_path: Optional[str], hostname: str = None,
+                    is_local_registry: bool = False) -> str:
         container_id = uuid.uuid4().hex
         command = f'docker run -d --network {self.__network} '
         if hostname:
             command += f'--hostname {hostname} '
-        command += f'--name {container_id} {additional_params} {image}'
+        command += f'--name {container_id} {additional_params} '
+        if not is_local_registry:
+            command += f'{self.__registry}/'
+        command += image
         common.logger.debug(f'Running container with command: {command}')
         result = subprocess.run(command, shell=True, stdout=subprocess.DEVNULL)
         if log_path:
             common.logger.debug(f'Writing container logs: {log_path}')
             with open(log_path, 'w') as file:
                 subprocess.Popen(['docker', 'container', 'logs', '--follow', container_id], stdout=file)
-        if result.returncode is not 0:
+        if result.returncode != 0:
             raise exceptions.ContainerException(
                 f'Container image {image} could not be started. Ensure Docker is running and ports are not already in '
                 f'use.')
@@ -121,7 +126,7 @@ class DockerManager(object):
                 result = subprocess.run(command, shell=True, stdout=file)
         else:
             result = subprocess.run(command, shell=True)
-        if result.returncode is not 0:
+        if result.returncode != 0:
             raise exceptions.ContainerException(f'Container finished execution with non-zero return code.')
 
     def __extract_port_mapping(self, container_id: str, given_port: int) -> int:

@@ -16,15 +16,14 @@ setup(
     author_email='shanejjansen@gmail.com',
     packages=find_packages(exclude=['tests']),
     install_requires=[
-        'pyfiglet~=0.8',
-        'click~=7.0',
-        'pika~=1.1',
-        'pyyaml~=5.4',
-        'pymongo~=3.10',
-        'pymysql~=0.9.3',
-        'minio~=5.0.7',
-        'redis~=3.5.3',
-        'psycopg2-binary~=2.9.3'
+        'pyfiglet>=0.8',
+        'click>=8.1.7',
+        'pika>=1.3.2',
+        'pyyaml>=6.0.1',
+        'pymongo>=4.6.1',
+        'minio>=7.2.3',
+        'redis>=5.0.1',
+        'psycopg2-binary>=2.9.9'
     ],
     entry_points={
         'console_scripts': [

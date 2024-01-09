@@ -15,10 +15,6 @@ from touchstone.lib.nodes.deps.docker.mongodb.docker_mongo_context import Docker
 from touchstone.lib.nodes.deps.docker.mongodb.docker_mongodb import DockerMongodb
 from touchstone.lib.nodes.deps.docker.mongodb.docker_mongodb_setup import DockerMongodbSetup
 from touchstone.lib.nodes.deps.docker.mongodb.docker_mongodb_verify import DockerMongodbVerify
-from touchstone.lib.nodes.deps.docker.mysql.docker_mysql import DockerMysql
-from touchstone.lib.nodes.deps.docker.mysql.docker_mysql_context import DockerMysqlContext
-from touchstone.lib.nodes.deps.docker.mysql.docker_mysql_setup import DockerMysqlSetup
-from touchstone.lib.nodes.deps.docker.mysql.docker_mysql_verify import DockerMysqlVerify
 from touchstone.lib.nodes.deps.docker.postgres.docker_postgres import DockerPostgres
 from touchstone.lib.nodes.deps.docker.postgres.docker_postgres_context import DockerPostgresContext
 from touchstone.lib.nodes.deps.docker.postgres.docker_postgres_setup import DockerPostgresSetup
@@ -80,16 +76,6 @@ class DepFactory(object):
             runnable = DockerMongodb(defaults_configurer, self.__is_dev_mode, setup, verify, self.__docker_manager,
                                      DockerNetwork())
             dep = RunnableDockerDep('mongodb', 'Mongo DB', runnable)
-        elif dep_name == 'mysql':
-            defaults_configurer = FileConfigurer(dep_defaults_paths)
-            configurer = BasicConfigurer(IDatabaseBehavior.DEFAULT_CONFIG)
-            configurer.merge_config(config)
-            context = DockerMysqlContext()
-            setup = DockerMysqlSetup(context)
-            verify = DockerMysqlVerify(context)
-            runnable = DockerMysql(self.__ts_context, defaults_configurer, context, self.__is_dev_mode, configurer,
-                                   setup, verify, self.__docker_manager, DockerNetwork())
-            dep = RunnableDockerDep('mysql', 'MySQL', runnable)
         elif dep_name == 'postgres':
             defaults_configurer = FileConfigurer(dep_defaults_paths)
             configurer = BasicConfigurer(IDatabaseBehavior.DEFAULT_CONFIG)

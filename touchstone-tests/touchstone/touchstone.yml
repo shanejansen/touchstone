@@ -1,5 +1,7 @@
 ---
 touchstone_version: 1.4.2
+docker:
+  registry: docker-all.artifactory.8451.cloud
 services:
   - name: my-app
     port: 8080
@@ -13,7 +15,6 @@ dependencies:
   http:
   rabbitmq:
   mongodb:
-  mysql:
   postgres:
   s3:
   filesystem:

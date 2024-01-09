@@ -19,7 +19,6 @@ class Deps(object):
         self.http: IHttpBehavior = None
         self.rabbitmq: IRabbitmqBehavior = None
         self.mongodb: IMongodbBehavior = None
-        self.mysql: IDatabaseBehavior = None
         self.postgres: IDatabaseBehavior = None
         self.s3: IS3Behavior = None
         self.filesystem: IFilesystemBehavior = None

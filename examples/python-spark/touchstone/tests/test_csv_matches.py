@@ -19,7 +19,7 @@ class OutputCsvMatch(TouchstoneTest):
             writer.writerow(['name', 'email'])
             writer.writerow(['John', 'john@example.com'])
             writer.writerow(['Jane', 'jane@example.com'])
-        self.deps.mysql.setup().insert_rows('myapp', 'numbers', [
+        self.deps.postgres.setup().insert_rows('myapp', 'numbers', [
             {
                 'name': 'John',
                 'number': '5555551234'

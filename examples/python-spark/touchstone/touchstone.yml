@@ -4,7 +4,7 @@ services:
   - name: my-exec
     type: executable
     dockerfile: ../Dockerfile
-    develop_command: spark-submit --jars jars/mysql-connector-java-8.0.21.jar ./src/main.py
+    develop_command: spark-submit --jars jars/postgresql-42.7.1.jar ./src/main.py
 dependencies:
   filesystem:
-  mysql:
+  postgres:

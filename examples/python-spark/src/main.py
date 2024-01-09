@@ -7,8 +7,8 @@ spark = SparkSession.builder.appName('app').getOrCreate()
 
 emails = spark.read.csv('./touchstone/io/emails.csv').toDF('name', 'email')
 numbers = spark.read.format('jdbc').options(
-    url=f'jdbc:mysql://{config.vars["db_host"]}:{config.vars["db_port"]}/myapp',
-    driver='com.mysql.jdbc.Driver',
+    url=f'jdbc:postgresql://{config.vars["db_host"]}:{config.vars["db_port"]}/myapp',
+    driver='com.postgresql.jdbc.Driver',
     dbtable='numbers',
     user=config.vars['db_username'],
     password=config.vars['db_password']

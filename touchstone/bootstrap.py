@@ -26,7 +26,8 @@ class Bootstrap(object):
             log_directory = os.path.join(root, 'logs')
             os.makedirs(log_directory, exist_ok=True)
         self.ts_context = TsContext()
-        self.docker_manager = DockerManager(should_auto_discover=not is_dev_mode)
+        self.docker_manager = DockerManager(should_auto_discover=not is_dev_mode,
+                                            registry=touchstone_config.get_config()['docker']['registry'])
         self.deps = self.__build_deps(is_dev_mode,
                                       touchstone_config.get_config()['root'],
                                       touchstone_config.get_config()['dependencies'])

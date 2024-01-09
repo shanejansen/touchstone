@@ -18,7 +18,7 @@ class GetUser(TouchstoneTest):
             'lastName': 'Brown',
             'email': 'jane789@example.com'
         }
-        self.deps.mysql.setup().insert_row(creds.MYSQL_DATABASE, creds.MYSQL_TABLE, given)
+        self.deps.postgres.setup().insert_row(creds.POSTGRES_DATABASE, creds.POSTGRES_TABLE, given)
         return given
 
     def when(self, given) -> object:
@@ -60,8 +60,8 @@ class PostUser(TouchstoneTest):
             'lastName': given['lastName'],
             'email': given['email']
         }
-        return validation.matches(expected_response, result) and self.deps.mysql.verify().row_exists(
-            creds.MYSQL_DATABASE, creds.MYSQL_TABLE, given)
+        return validation.matches(expected_response, result) and self.deps.postgres.verify().row_exists(
+            creds.POSTGRES_DATABASE, creds.POSTGRES_TABLE, given)
 
 
 class PutUser(TouchstoneTest):
@@ -85,7 +85,7 @@ class PutUser(TouchstoneTest):
             'lastName': 'Brown',
             'email': 'jane789@example.com'
         }
-        self.deps.mysql.setup().insert_row(creds.MYSQL_DATABASE, creds.MYSQL_TABLE, existing_user)
+        self.deps.postgres.setup().insert_row(creds.POSTGRES_DATABASE, creds.POSTGRES_TABLE, existing_user)
         return new_info
 
     def when(self, given) -> object:
@@ -93,7 +93,7 @@ class PutUser(TouchstoneTest):
         return None
 
     def then(self, given, result) -> bool:
-        return self.deps.mysql.verify().row_exists(creds.MYSQL_DATABASE, creds.MYSQL_TABLE, given)
+        return self.deps.postgres.verify().row_exists(creds.POSTGRES_DATABASE, creds.POSTGRES_TABLE, given)
 
 
 class DeleteUser(TouchstoneTest):
@@ -117,7 +117,7 @@ class DeleteUser(TouchstoneTest):
             'lastName': 'Brown',
             'email': 'jane789@example.com'
         }
-        self.deps.mysql.setup().insert_row(creds.MYSQL_DATABASE, creds.MYSQL_TABLE, user)
+        self.deps.postgres.setup().insert_row(creds.POSTGRES_DATABASE, creds.POSTGRES_TABLE, user)
         return user_id
 
     def when(self, given) -> object:
@@ -129,4 +129,4 @@ class DeleteUser(TouchstoneTest):
             'id': given
         }
         return self.deps.rabbitmq.verify().payload_published('user.exchange', str(given), 'user-deleted') and \
-               self.deps.mysql.verify().row_does_not_exist(creds.MYSQL_DATABASE, creds.MYSQL_TABLE, where)
+               self.deps.postgres.verify().row_does_not_exist(creds.POSTGRES_DATABASE, creds.POSTGRES_TABLE, where)

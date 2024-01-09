@@ -7,6 +7,9 @@ class TouchstoneConfig(IConfigurable):
     def __init__(self, root):
         self.__basic_configurer = BasicConfigurer({
             'root': root,
+            'docker': {
+                'registry': ''
+            },
             'services': [],
             'dependencies': []
         })

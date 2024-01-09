@@ -67,7 +67,8 @@ class DockerRunnableService(IService, ITestable, IRunnable, INetworkable):
                                                                 environment_vars=environment_vars,
                                                                 hostname=self.__name,
                                                                 log_path=log_path,
-                                                                options=self.__docker_options)
+                                                                options=self.__docker_options,
+                                                                is_local_registry=True)
         self.__docker_network.set_container_id(run_result.container_id)
         self.__docker_network.set_external_port(run_result.external_port)
 

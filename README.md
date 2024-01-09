@@ -66,8 +66,8 @@ Your services and their monitored dependencies are defined here. Default values 
    * View each [dependency's docs](#dependencies) for values and additional configuration.
 
 ### `/defaults`
-[Example](./examples/java-spring/touchstone/defaults/mysql.yml)  
-This directory contains YAML files where default values for dependencies are defined. Defaults make it easy to test your service(s) locally by setting up your dependencies with sensible defaults. The name of each YAML file should match the name of a dependency. For instance, with the MySQL dependency, a `mysql.yml` file would contain default databases and tables to be created as well as statements to insert initial data. View each [dependency's docs](#dependencies) for allowable values.
+[Example](./examples/java-spring/touchstone/defaults/postgres.yml)  
+This directory contains YAML files where default values for dependencies are defined. Defaults make it easy to test your service(s) locally by setting up your dependencies with sensible defaults. The name of each YAML file should match the name of a dependency. For instance, with the Postgres dependency, a `postgres.yml` file would contain default databases and tables to be created as well as statements to insert initial data. View each [dependency's docs](#dependencies) for allowable values.
 
 
 ### `/tests`
@@ -108,7 +108,7 @@ example, foo-app might make a call to `bar-app:8080/some-endpoint`.
 
 * [HTTP](./docs/dependencies/http.md)
 * [Mongo DB](./docs/dependencies/mongodb.md)
-* [MySQL](./docs/dependencies/mysql.md)
+* [Postgres](./docs/dependencies/postgres.md)
 * [Rabbit MQ](./docs/dependencies/rabbitmq.md)
 * [S3](./docs/dependencies/s3.md)
 * [Filesystem](./docs/dependencies/filesystem.md)

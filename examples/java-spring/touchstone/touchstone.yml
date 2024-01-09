@@ -9,4 +9,4 @@ dependencies:
   rabbitmq:
     auto_create: False
   mongodb:
-  mysql:
+  postgres:
